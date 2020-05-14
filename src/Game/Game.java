@@ -1,12 +1,7 @@
 package Game;
 
-import General.Shared.MBButton;
-import General.Shared.MBLabel;
+import Game.Models.Map;
 import General.Shared.MBPanel;
-import General.MB;
-import Server.LobbyView;
-
-import javax.swing.*;
 
 /**
  * This class displays and handles the game
@@ -14,21 +9,36 @@ import javax.swing.*;
 public class Game extends MBPanel {
 
     /**
+     * The sidebar
+     */
+    Sidebar sidebar;
+    /**
+     * The battleground
+     */
+    Battleground battleground;
+
+    /**
      * Setup the layout
      */
     @Override
     public void beforeVisible() {
-        // The title
-        MBLabel title = new MBLabel("Game", SwingConstants.CENTER, MBLabel.H1);
-        addComponent(title, () -> title.setBounds(getWidth() / 2 - 100, 50, 200, 40));
+        // Add the sidebar
+        sidebar = new Sidebar();
+        addComponent(sidebar, () -> sidebar.setBounds(
+                (int) (getWidth() / 2 - 0.75 * getHeight()),
+                0,
+                (int) (0.5 * getHeight()),
+                getHeight()
+        ));
 
-        // The button for opening a lobby overview
-        MBButton back = new MBButton("Back");
-        back.addActionListener(e -> MB.show(new LobbyView()));
-        addComponent(back, () -> back.setBounds(getWidth() / 2 - 70, 100, 140, 40));
-
-        // Add the buttons to a group
-        addButtonGroup(back);
+        // Add the battleground
+        battleground = new Battleground(new Map());
+        addComponent(battleground, () -> battleground.setBounds(
+                (int) (getWidth() / 2 - 0.25 * getHeight()),
+                0,
+                getHeight(),
+                getHeight()
+        ));
     }
 
     /**
@@ -36,6 +46,7 @@ public class Game extends MBPanel {
      */
     @Override
     public void afterVisible() {
-        setupButtonGroup();
+        sidebar.afterVisible();
+        battleground.afterVisible();
     }
 }
