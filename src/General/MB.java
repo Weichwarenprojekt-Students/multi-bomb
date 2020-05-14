@@ -86,14 +86,12 @@ public class MB {
     /**
      * Load a image file from the rsc folder via directory/name.
      *
-     * @param relativePath
-     * @return
+     * @param relativePath to the image
+     * @return the loaded image
      */
     public static BufferedImage load(String relativePath){
-        System.out.println(System.getProperty("user.dir"));
         try {
-            return ImageIO.read(new File(System.getProperty("user.dir") +
-                    File.separator + "rsc" + File.separator + relativePath));
+            return ImageIO.read(MB.class.getResource("/Resources/" + relativePath));
         } catch (IOException e) {
             return null;
         }
