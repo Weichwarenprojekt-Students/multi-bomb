@@ -3,10 +3,14 @@ package General;
 
 import General.Shared.MBPanel;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class MB {
 
@@ -77,6 +81,20 @@ public class MB {
         frame.revalidate();
         frame.repaint();
         panel.afterVisible();
+    }
+
+    /**
+     * Load a image file from the rsc folder via directory/name.
+     *
+     * @param relativePath to the image
+     * @return the loaded image
+     */
+    public static BufferedImage load(String relativePath){
+        try {
+            return ImageIO.read(MB.class.getResource("/Resources/" + relativePath));
+        } catch (IOException e) {
+            return null;
+        }
     }
 
 }
