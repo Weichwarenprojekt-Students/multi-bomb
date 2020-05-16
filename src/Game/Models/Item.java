@@ -63,6 +63,15 @@ public enum Item {
     }
 
     /**
+     * Check if item is passable
+     *
+     * @return True if the item is passable
+     */
+    public boolean isPassable() {
+        return id <= 0;
+    }
+
+    /**
      * Get an item by id
      *
      * @param id of the item
@@ -74,6 +83,6 @@ public enum Item {
                 return item;
             }
         }
-        return null;
+        return SOLID_0;
     }
 }

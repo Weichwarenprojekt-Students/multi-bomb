@@ -2,10 +2,7 @@ package General.Shared;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 public abstract class MBPanel extends JPanel {
@@ -19,16 +16,6 @@ public abstract class MBPanel extends JPanel {
      * The buttons for the group
      */
     private MBButton[] buttons;
-
-    /**
-     * Setup the panels content
-     */
-    public abstract void beforeVisible();
-
-    /**
-     * This method is executed when the panel is visible
-     */
-    public abstract void afterVisible();
 
     /**
      * This class provides a general setup for a panel
@@ -49,6 +36,16 @@ public abstract class MBPanel extends JPanel {
             }
         });
     }
+
+    /**
+     * Setup the panels content
+     */
+    public abstract void beforeVisible();
+
+    /**
+     * This method is executed when the panel is visible
+     */
+    public abstract void afterVisible();
 
     /**
      * Add a component and resize it
@@ -99,6 +96,27 @@ public abstract class MBPanel extends JPanel {
                 },
                 50
         );
+    }
+
+    /**
+     * Add a key binding to the panel
+     *
+     * @param released true if the action should be executed on key release
+     * @param key      name of the key
+     * @param action   to be executed
+     * @param keycodes to be bound to the action
+     */
+    public void addKeybinding(Boolean released, String key, ActionListener action, int... keycodes) {
+        InputMap im = getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap am = getActionMap();
+        for (int code : keycodes) {
+            im.put(KeyStroke.getKeyStroke(code, 0, released), key);
+        }
+        am.put(key, new AbstractAction() {
+            public void actionPerformed(ActionEvent evt) {
+                action.actionPerformed(evt);
+            }
+        });
     }
 
     /**

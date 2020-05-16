@@ -19,7 +19,10 @@ public class Sidebar extends MBPanel {
 
         // The button for opening a lobby overview
         MBButton back = new MBButton("Back");
-        back.addActionListener(e -> MB.show(new LobbyView()));
+        back.addActionListener(e -> {
+            Game.gameOver = true;
+            MB.show(new LobbyView());
+        });
         addComponent(back, () -> back.setBounds(getWidth() / 2 - 70, 100, 140, 40));
 
         // Add the buttons to a group

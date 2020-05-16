@@ -1,9 +1,15 @@
 package Game.Models;
 
+import java.util.Arrays;
+
 /**
  * The model for a map
  */
 public class Map {
+    /**
+     * The size of a field
+     */
+    public static int FIELD_SIZE = 30;
     /**
      * The size of the map
      */
@@ -12,6 +18,10 @@ public class Map {
      * The name of the map
      */
     public String name = "Default";
+    /**
+     * The spawn points
+     */
+    public Position[] spawns = new Position[8];
     /**
      * The theme of the map
      */
@@ -35,6 +45,11 @@ public class Map {
             // The top and bottom line
             fields[0][n] = Item.SOLID_0.id;
             fields[SIZE - 1][n] = Item.SOLID_0.id;
+        }
+
+        // Initialize the spawn points
+        for (int i = 0; i < spawns.length; i++) {
+            spawns[i] = new Position();
         }
     }
 }

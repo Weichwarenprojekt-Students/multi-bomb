@@ -2,6 +2,7 @@ package Game;
 
 import Game.Models.Item;
 import Game.Models.Map;
+import Game.Models.Player;
 import General.MB;
 import General.Shared.MBPanel;
 
@@ -11,25 +12,34 @@ import java.awt.event.ComponentEvent;
 
 public class Battleground extends MBPanel {
     /**
+     * The ratio of the battleground compared to the design size
+     */
+    public static float ratio = 0;
+    /**
+     * The offset to the top and to the left of the panel
+     */
+    public static int offset = 0;
+    /**
      * The size of field
      */
     private int size = 30;
     /**
-     * The offset to the top and to the left of the panel
-     */
-    private int offset = 0;
-    /**
      * The map to be drawn
      */
     private final Map map;
+    /**
+     * The player to be drawn
+     */
+    private final Player player;
 
     /**
      * Constructor
      *
      * @param map to be drawn
      */
-    public Battleground(Map map) {
+    public Battleground(Map map, Player player) {
         this.map = map;
+        this.player = player;
 
         // Load the item textures
         Item.loadTextures(map.theme);
@@ -49,6 +59,8 @@ public class Battleground extends MBPanel {
     private void calculateSize() {
         // Calculate the field size
         size = (int) ((float) getHeight() / Map.SIZE);
+        // Calculate the ratio
+        ratio = (float) size / Map.FIELD_SIZE;
         // Calculate the offset
         offset = (getHeight() - size * Map.SIZE) / 2;
     }
@@ -99,6 +111,11 @@ public class Battleground extends MBPanel {
                             (int) (size * ratio),
                             null
                     );
+                }
+
+                // Check if it should draw the player
+                if (player.isOnField(m, n)) {
+                    player.draw(g);
                 }
             }
         }

@@ -46,6 +46,9 @@ public class MBButton extends JButton {
                 }
             }
         });
+
+        // Disable the space key
+        getInputMap().put(KeyStroke.getKeyStroke("SPACE"), "none");
     }
 
     /**
