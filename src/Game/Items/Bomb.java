@@ -26,7 +26,7 @@ public class Bomb extends Item {
     /**
      * The total time in seconds
      */
-    public static float TOTAL_TIME = 3.25f;
+    public static float TOTAL_TIME = 3.3f;
     /**
      * The count of bombs
      */
@@ -175,19 +175,20 @@ public class Bomb extends Item {
      */
     private int[] calculateEndpoints(int field, float percentage, float firstPercentage, float secondPercentage) {
         int[] d = new int[2];
+        float offset = 0.65f;
 
         // Calculate the first endpoint
         if (firstPercentage < 1) {
-            d[0] = (int) ((field + 0.5) * Map.FIELD_SIZE - firstPercentage * BOMB_SIZE * Map.FIELD_SIZE);
+            d[0] = (int) ((field + offset) * Map.FIELD_SIZE - firstPercentage * BOMB_SIZE * Map.FIELD_SIZE);
         } else {
-            d[0] = (int) ((field + 0.5) * Map.FIELD_SIZE - percentage * BOMB_SIZE * Map.FIELD_SIZE);
+            d[0] = (int) ((field + offset) * Map.FIELD_SIZE - percentage * BOMB_SIZE * Map.FIELD_SIZE);
         }
 
         // Calculate the second endpoint
         if (secondPercentage < 1) {
-            d[1] = (int) ((field + 0.5) * Map.FIELD_SIZE + secondPercentage * BOMB_SIZE * Map.FIELD_SIZE);
+            d[1] = (int) ((field + offset) * Map.FIELD_SIZE + secondPercentage * BOMB_SIZE * Map.FIELD_SIZE);
         } else {
-            d[1] = (int) ((field + 0.5) * Map.FIELD_SIZE + percentage * BOMB_SIZE * Map.FIELD_SIZE);
+            d[1] = (int) ((field + offset) * Map.FIELD_SIZE + percentage * BOMB_SIZE * Map.FIELD_SIZE);
         }
         return d;
     }
@@ -329,8 +330,8 @@ public class Bomb extends Item {
     private void drawCore(Graphics g, int m, int n, float percentage) {
         g.drawImage(
                 coreImage,
-                (int) (n * Battleground.size - Battleground.size / 4 * percentage + Battleground.ratio),
-                (int) (m * Battleground.size - Battleground.size / 4 * percentage + Battleground.ratio),
+                (int) (n * Battleground.size - Battleground.size / 4 * percentage + Battleground.ratio * 3.5),
+                (int) (m * Battleground.size - Battleground.size / 4 * percentage + Battleground.ratio * 3.5),
                 (int) (Battleground.size + Battleground.size / 2 * percentage),
                 (int) (Battleground.size + Battleground.size / 2 * percentage),
                 null
