@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 /**
  * This class contains the information about the items (blocks and consumables)
  */
-public enum Item {
+public enum Field {
 
     GROUND(0, "Ground", false, false),
     SOLID_0(1, "First Solid", false, false),
@@ -39,7 +39,7 @@ public enum Item {
     /**
      * Constructor
      */
-    Item(int id, String name, boolean breakable, boolean consumable) {
+    Field(int id, String name, boolean breakable, boolean consumable) {
         this.id = (byte) id;
         this.name = name;
         this.breakable = breakable;
@@ -63,26 +63,26 @@ public enum Item {
     }
 
     /**
+     * Get an item by id
+     *
+     * @param id of the item
+     * @return the right item
+     */
+    public static Field getItem(byte id) {
+        for (Field field : Field.values()) {
+            if (field.id == id) {
+                return field;
+            }
+        }
+        return SOLID_0;
+    }
+
+    /**
      * Check if item is passable
      *
      * @return True if the item is passable
      */
     public boolean isPassable() {
         return id <= 0;
-    }
-
-    /**
-     * Get an item by id
-     *
-     * @param id of the item
-     * @return the right item
-     */
-    public static Item getItem(byte id) {
-        for (Item item : Item.values()) {
-            if (item.id == id) {
-                return item;
-            }
-        }
-        return SOLID_0;
     }
 }

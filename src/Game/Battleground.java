@@ -1,6 +1,6 @@
 package Game;
 
-import Game.Models.Item;
+import Game.Models.Field;
 import Game.Models.Map;
 import Game.Models.Player;
 import General.MB;
@@ -22,7 +22,7 @@ public class Battleground extends MBPanel {
     /**
      * The size of field
      */
-    private int size = 30;
+    public static int size = 30;
     /**
      * The map to be drawn
      */
@@ -42,7 +42,7 @@ public class Battleground extends MBPanel {
         this.player = player;
 
         // Load the item textures
-        Item.loadTextures(map.theme);
+        Field.loadTextures(map.theme);
 
         // Listen for resize events
         addComponentListener(new ComponentAdapter() {
@@ -87,7 +87,7 @@ public class Battleground extends MBPanel {
         // Draw the ground
         for (int m = 0; m < Map.SIZE; m++) {
             for (int n = 0; n < Map.SIZE; n++) {
-                g.drawImage(Item.GROUND.image, n * size + offset, m * size + offset, size, size, null);
+                g.drawImage(Field.GROUND.image, n * size + offset, m * size + offset, size, size, null);
             }
         }
 
@@ -95,16 +95,16 @@ public class Battleground extends MBPanel {
         for (int m = 0; m < Map.SIZE; m++) {
             for (int n = 0; n < Map.SIZE; n++) {
                 // Identify the field item
-                Item item = Item.getItem(map.fields[m][n]);
+                Field field = Field.getItem(map.fields[m][n]);
 
                 // Check if item doesn't exist or is ground
-                if (item != null && item.id != Item.GROUND.id) {
+                if (field != null && field.id != Field.GROUND.id) {
                     // Calculate the images ratio
-                    float ratio = (float) item.image.getHeight() / item.image.getWidth();
+                    float ratio = (float) field.image.getHeight() / field.image.getWidth();
 
                     // Draw the image respecting the images ratio and the required offset
                     g.drawImage(
-                            item.image,
+                            field.image,
                             n * size + offset,
                             (int) ((m + 1 - ratio) * size + offset),
                             size,
@@ -116,6 +116,11 @@ public class Battleground extends MBPanel {
                 // Check if it should draw the player
                 if (player.isOnField(m, n)) {
                     player.draw(g);
+                }
+
+                // Draw item above player
+                if (map.items[m][n] != null) {
+                    map.items[m][n] = map.items[m][n].draw((Graphics2D) g, m, n);
                 }
             }
         }

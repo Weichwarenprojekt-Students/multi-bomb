@@ -1,5 +1,6 @@
 package Game;
 
+import Game.Items.Bomb;
 import Game.Models.Map;
 import Game.Models.Player;
 import General.MB;
@@ -27,6 +28,14 @@ public class Game extends MBPanel {
      */
     public static boolean gameOver = true;
     /**
+     * The map
+     */
+    public static Map map;
+    /**
+     * The player that the client is controlling
+     */
+    public static Player player;
+    /**
      * The sidebar
      */
     private Sidebar sidebar;
@@ -34,14 +43,6 @@ public class Game extends MBPanel {
      * The battleground
      */
     private Battleground battleground;
-    /**
-     * The player that the client is controlling
-     */
-    private Player player;
-    /**
-     * The map
-     */
-    private Map map;
 
     /**
      * Setup the layout
@@ -86,6 +87,8 @@ public class Game extends MBPanel {
      * Start the game
      */
     public void startGame() {
+        // Reset the bomb upgrades
+        Bomb.reset();
         // Initialize the player
         player.initialize(this, map);
 

@@ -2,6 +2,8 @@ package Game.Models;
 
 import Game.Battleground;
 import Game.Game;
+import Game.Items.Bomb;
+import Game.Items.Item;
 import General.MB;
 import General.Shared.MBPanel;
 
@@ -22,6 +24,10 @@ public class Player {
      */
     public static int SPRITE_SIZE = 64;
     /**
+     * The sprite of the player
+     */
+    private final BufferedImage sprite;
+    /**
      * The name of the player
      */
     public String name;
@@ -34,13 +40,9 @@ public class Player {
      */
     public String theme = "Philipp";
     /**
-     * The map, the player is currently on
+     * The players item
      */
-    public Map map;
-    /**
-     * The sprite of the player
-     */
-    private final BufferedImage sprite;
+    private Item item = new Bomb();
 
     /**
      * Constructor
@@ -57,9 +59,6 @@ public class Player {
      * @param map   the player is on
      */
     public void initialize(MBPanel panel, Map map) {
-        // Save the map
-        this.map = map;
-
         // Set the players position
         position.x = map.spawns[0].x * Map.FIELD_SIZE + (float) Map.FIELD_SIZE / 2;
         position.y = map.spawns[0].y * Map.FIELD_SIZE + (float) Map.FIELD_SIZE / 2;
@@ -135,6 +134,14 @@ public class Player {
                 KeyEvent.VK_LEFT,
                 KeyEvent.VK_A
         );
+
+        // Use an item
+        panel.addKeybinding(
+                false,
+                "USE ITEM",
+                (e) -> useItem(),
+                KeyEvent.VK_SPACE
+        );
     }
 
     /**
@@ -142,9 +149,16 @@ public class Player {
      *
      * @param direction of movement
      */
-    public void startMoving(Direction direction) {
+    private void startMoving(Direction direction) {
         position.direction = direction;
         direction.moving = true;
+    }
+
+    /**
+     * Use the players current item
+     */
+    private void useItem() {
+        item = item.use(position);
     }
 
     /**
@@ -160,7 +174,7 @@ public class Player {
         int n = (int) (newX + position.direction.x * 10) / Map.FIELD_SIZE;
 
         // Check if character should move
-        if (position.direction.moving && Item.getItem(map.fields[m][n]).isPassable()) {
+        if (position.direction.moving && Field.getItem(Game.map.fields[m][n]).isPassable()) {
             position.x = newX;
             position.y = newY;
         }
