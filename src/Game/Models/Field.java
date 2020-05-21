@@ -13,7 +13,10 @@ public enum Field {
     SOLID_0(1, "First Solid", false, false),
     SOLID_1(2, "Second Solid", false, false),
     BREAKABLE_0(3, "First Breakable", true, false),
-    BREAKABLE_1(4, "Second Breakable", true, false);
+    BREAKABLE_1(4, "Second Breakable", true, false),
+    BOMB(-1, "Bomb", false, true),
+    SPEED(-2, "Speed", false, true),
+    HEART(-3, "Heart", false, true);
 
     /**
      * The id of the item
@@ -60,6 +63,11 @@ public enum Field {
         SOLID_1.image = MB.load("Maps/" + theme + "/solid_1.png");
         BREAKABLE_0.image = MB.load("Maps/" + theme + "/breakable_0.png");
         BREAKABLE_1.image = MB.load("Maps/" + theme + "/breakable_1.png");
+
+        // The consumables
+        BOMB.image = MB.load("Items/Consumable/bubble_bomb.png");
+        SPEED.image = MB.load("Items/Consumable/bubble_speed.png");
+        HEART.image = MB.load("Items/Consumable/bubble_heart.png");
     }
 
     /**
