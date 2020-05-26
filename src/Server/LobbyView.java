@@ -6,8 +6,10 @@ import General.Shared.MBLabel;
 
 import General.Shared.MBPanel;
 import General.MB;
+import Menu.Menu;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 
 /**
  * This class provides an lobby overview
@@ -32,6 +34,12 @@ public class LobbyView extends MBPanel {
         MBButton back = new MBButton("Back");
         back.addActionListener(e -> MB.show(new ServerView(), false));
         addComponent(back, () -> back.setBounds(getWidth() / 2 - 70, 150, 140, 40));
+        addKeybinding(
+                false,
+                "Close LobbyView",
+                (e) -> MB.show(new ServerView(), false),
+                KeyEvent.VK_ESCAPE
+        );
 
         // Add the buttons to a group
         addButtonGroup(play, back);
