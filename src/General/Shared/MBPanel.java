@@ -11,7 +11,10 @@ public abstract class MBPanel extends JPanel {
      * The component sizer
      */
     private final ArrayList<ComponentResize> components = new ArrayList<>();
-
+    /**
+     * Other resize events
+     */
+    private final ArrayList<ComponentResize> events = new ArrayList<>();
     /**
      * The buttons for the group
      */
@@ -33,8 +36,18 @@ public abstract class MBPanel extends JPanel {
                 for (ComponentResize component : components) {
                     component.resize();
                 }
+                resize();
             }
         });
+    }
+
+    /**
+     * Toggle the resize events
+     */
+    public void resize() {
+        for (ComponentResize resize : events) {
+            resize.resize();
+        }
     }
 
     /**
@@ -54,6 +67,25 @@ public abstract class MBPanel extends JPanel {
         componentSizer.resize();
         components.add(componentSizer);
         add(component);
+    }
+
+    /**
+     * Add a component resize event
+     *
+     * @param resize event to be added
+     */
+    public void addComponentEvent(ComponentResize resize) {
+        components.add(resize);
+    }
+
+
+    /**
+     * Add a resize event
+     *
+     * @param resize event to be added
+     */
+    public void addResizeEvent(ComponentResize resize) {
+        events.add(resize);
     }
 
     /**

@@ -5,16 +5,11 @@ import Game.Game;
 import Game.Models.Field;
 import Game.Models.Map;
 import Game.Models.Position;
-import General.MB;
+import General.Shared.MBImage;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public class Bomb extends Item {
-    /**
-     * The size of the animation sprites
-     */
-    public static int SPRITE_SIZE = 128;
     /**
      * The name of the item
      */
@@ -36,29 +31,37 @@ public class Bomb extends Item {
      */
     public static float BOMB_SIZE = 5;
     /**
-     * The bomb sprite
+     * The horizontal sprite
      */
-    private final BufferedImage bombImage = MB.load("Items/Bomb/bomb.png");
+    private static final MBImage horizontalImage = new MBImage("Items/Bomb/side.png");
     /**
-     * The core sprite
+     * The left end sprite
      */
-    private final BufferedImage coreImage = MB.load("Items/Bomb/core.png");
+    private static final MBImage leftEndImage = new MBImage("Items/Bomb/left_end.png");
     /**
-     * The side sprite
+     * The right end sprite
      */
-    private final BufferedImage sideImage = MB.load("Items/Bomb/side.png");
-    /**
-     * The side end sprite
-     */
-    private final BufferedImage sideEndImage = MB.load("Items/Bomb/side_end.png");
+    private static final MBImage rightEndImage = new MBImage("Items/Bomb/right_end.png");
     /**
      * The top sprite
      */
-    private final BufferedImage topImage = MB.load("Items/Bomb/top.png");
+    private static final MBImage verticalImage = new MBImage("Items/Bomb/top.png");
     /**
      * The top end sprite
      */
-    private final BufferedImage topEndImage = MB.load("Items/Bomb/top_end.png");
+    private static final MBImage topEndImage = new MBImage("Items/Bomb/top_end.png");
+    /**
+     * The top end sprite
+     */
+    private static final MBImage bottomEndImage = new MBImage("Items/Bomb/bottom_end.png");
+    /**
+     * The core sprite
+     */
+    private final MBImage coreImage = new MBImage("Items/Bomb/core.png");
+    /**
+     * The bomb sprite
+     */
+    private static MBImage bombImage;
     /**
      * The counter for the detonation
      */
@@ -93,6 +96,13 @@ public class Bomb extends Item {
     public static void reset() {
         BOMB_COUNT = 1;
         BOMB_SIZE = 1;
+
+        // Initialize the bomb sprite
+        bombImage = new MBImage("Items/Bomb/bomb.png", () -> {
+            bombImage.width = (int) (1.2 * Battleground.size);
+            bombImage.height = (int) (1.2 * Battleground.size);
+        });
+        bombImage.rescale((int) (1.2 * Battleground.size), (int) (1.2 * Battleground.size));
     }
 
     /**
@@ -137,11 +147,9 @@ public class Bomb extends Item {
         if (counter < DETONATION_TIME) {
             // Draw the image
             g.drawImage(
-                    bombImage,
+                    bombImage.image,
                     n * Battleground.size + Battleground.offset - (int) (Battleground.ratio * 4),
                     m * Battleground.size + Battleground.offset - (int) (Battleground.ratio * 7),
-                    (int) (1.2 * Battleground.size),
-                    (int) (1.2 * Battleground.size),
                     null
             );
         } else if (counter < TOTAL_TIME) {
@@ -219,39 +227,23 @@ public class Bomb extends Item {
 
         // Draw the images
         g.drawImage(
-                sideEndImage,
+                leftEndImage.image,
                 (int) (dx[0] * Battleground.ratio) - Battleground.size,
                 m * Battleground.size + Battleground.offset,
-                Battleground.size + (int) (dx[0] * Battleground.ratio) - Battleground.size,
-                (m + 1) * Battleground.size + Battleground.offset,
-                SPRITE_SIZE,
-                0,
-                0,
-                SPRITE_SIZE,
                 null
         );
         g.drawImage(
-                sideImage,
+                horizontalImage.image,
                 (int) (dx[0] * Battleground.ratio),
                 m * Battleground.size + Battleground.offset,
-                (int) (dx[1] * Battleground.ratio),
-                (m + 1) * Battleground.size + Battleground.offset,
-                SPRITE_SIZE,
-                0,
-                0,
-                SPRITE_SIZE,
+                (int) ((dx[1] - dx[0]) * Battleground.ratio),
+                horizontalImage.height,
                 null
         );
         g.drawImage(
-                sideEndImage,
+                rightEndImage.image,
                 (int) (dx[1] * Battleground.ratio),
                 m * Battleground.size + Battleground.offset,
-                Battleground.size + (int) (dx[1] * Battleground.ratio),
-                (m + 1) * Battleground.size + Battleground.offset,
-                0,
-                0,
-                SPRITE_SIZE,
-                SPRITE_SIZE,
                 null
         );
     }
@@ -282,39 +274,23 @@ public class Bomb extends Item {
 
         // Draw the images
         g.drawImage(
-                topEndImage,
+                topEndImage.image,
                 n * Battleground.size + Battleground.offset,
                 (int) (dy[0] * Battleground.ratio) - Battleground.size,
-                (n + 1) * Battleground.size + Battleground.offset,
-                Battleground.size + (int) (dy[0] * Battleground.ratio) - Battleground.size,
-                0,
-                0,
-                SPRITE_SIZE,
-                SPRITE_SIZE,
                 null
         );
         g.drawImage(
-                topImage,
+                verticalImage.image,
                 n * Battleground.size + Battleground.offset,
                 (int) (dy[0] * Battleground.ratio),
-                (n + 1) * Battleground.size + Battleground.offset,
-                (int) (dy[1] * Battleground.ratio),
-                SPRITE_SIZE,
-                0,
-                0,
-                SPRITE_SIZE,
+                verticalImage.width,
+                (int) ((dy[1] - dy[0]) * Battleground.ratio),
                 null
         );
         g.drawImage(
-                topEndImage,
+                bottomEndImage.image,
                 n * Battleground.size + Battleground.offset,
                 (int) (dy[1] * Battleground.ratio),
-                (n + 1) * Battleground.size + Battleground.offset,
-                Battleground.size + (int) (dy[1] * Battleground.ratio),
-                0,
-                SPRITE_SIZE,
-                SPRITE_SIZE,
-                0,
                 null
         );
     }
@@ -328,12 +304,17 @@ public class Bomb extends Item {
      * @param percentage of the progress of the explosion
      */
     private void drawCore(Graphics g, int m, int n, float percentage) {
+        // Rescale the image
+        coreImage.rescale(
+                (int) ((1 + 0.5 * percentage) * Battleground.size),
+                (int) ((1 + 0.5 * percentage) * Battleground.size)
+        );
+
+        // Draw the core
         g.drawImage(
-                coreImage,
-                (int) (n * Battleground.size - Battleground.size / 4 * percentage + Battleground.ratio * 3.5),
-                (int) (m * Battleground.size - Battleground.size / 4 * percentage + Battleground.ratio * 3.5),
-                (int) (Battleground.size + Battleground.size / 2 * percentage),
-                (int) (Battleground.size + Battleground.size / 2 * percentage),
+                coreImage.image,
+                (int) ((n - 0.25 * percentage) * Battleground.size + Battleground.offset),
+                (int) ((m - 0.25 * percentage) * Battleground.size + Battleground.offset),
                 null
         );
     }

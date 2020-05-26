@@ -2,14 +2,10 @@ package General;
 
 
 import General.Shared.MBPanel;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 public class MB {
 
@@ -21,6 +17,10 @@ public class MB {
      * The general settings
      */
     public static Settings settings = new Settings();
+    /**
+     * The shown panel
+     */
+    public static MBPanel activePanel;
 
     /**
      * Setup the JFrame and show the menu
@@ -76,24 +76,10 @@ public class MB {
      * @param panel to be showed
      */
     public static void show(MBPanel panel) {
+        activePanel = panel;
         frame.setContentPane(panel);
         frame.revalidate();
         frame.repaint();
         panel.afterVisible();
     }
-
-    /**
-     * Load a image file from the rsc folder via directory/name.
-     *
-     * @param relativePath to the image
-     * @return the loaded image
-     */
-    public static BufferedImage load(String relativePath) {
-        try {
-            return ImageIO.read(MB.class.getResource("/Resources/" + relativePath));
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
 }

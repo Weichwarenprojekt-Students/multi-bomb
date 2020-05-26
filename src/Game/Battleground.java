@@ -7,8 +7,6 @@ import General.MB;
 import General.Shared.MBPanel;
 
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 public class Battleground extends MBPanel {
     /**
@@ -31,6 +29,10 @@ public class Battleground extends MBPanel {
      * The player to be drawn
      */
     private final Player player;
+    /**
+     * True if the panel should start drawing the battleground
+     */
+    private boolean startDrawing = false;
 
     /**
      * Constructor
@@ -41,16 +43,8 @@ public class Battleground extends MBPanel {
         this.map = map;
         this.player = player;
 
-        // Load the item textures
-        Field.loadTextures(map.theme);
-
         // Listen for resize events
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                calculateSize();
-            }
-        });
+        MB.activePanel.addComponentEvent(this::calculateSize);
     }
 
     /**
@@ -65,29 +59,46 @@ public class Battleground extends MBPanel {
         offset = (getHeight() - size * Map.SIZE) / 2;
     }
 
+    /**
+     * Executed before panel is visible
+     */
     @Override
     public void beforeVisible() {
     }
 
+    /**
+     * Executed after panel is visible
+     */
     @Override
     public void afterVisible() {
+        // Calculate the field sizes
         calculateSize();
-        repaint();
+
+        // Load the item textures and repaint
+        Field.loadTextures(map.theme);
+        MB.activePanel.resize();
+        startDrawing = true;
     }
 
     /**
      * Draw the battleground
-     *
-     * @param g the corresponding graphics
      */
     public void paint(Graphics g) {
         super.paint(g);
+        if (!startDrawing) {
+            return;
+        }
         MB.settings.enableAntiAliasing(g);
 
         // Draw the ground
         for (int m = 0; m < Map.SIZE; m++) {
             for (int n = 0; n < Map.SIZE; n++) {
-                g.drawImage(Field.GROUND.image, n * size + offset, m * size + offset, size, size, null);
+                g.drawImage(
+                        Field.GROUND.image.image,
+                        n * size + offset,
+                        m * size + offset,
+                        null
+                );
             }
         }
 
@@ -99,16 +110,11 @@ public class Battleground extends MBPanel {
 
                 // Check if item doesn't exist or is ground
                 if (field != null && field.id != Field.GROUND.id) {
-                    // Calculate the images ratio
-                    float ratio = (float) field.image.getHeight() / field.image.getWidth();
-
                     // Draw the image respecting the images ratio and the required offset
                     g.drawImage(
-                            field.image,
-                            n * size + offset,
-                            (int) ((m + 1 - ratio) * size + offset),
-                            size,
-                            (int) (size * ratio),
+                            field.image.image,
+                            n * size + offset - Field.offsetX(),
+                            m * size + offset - Field.offsetY(),
                             null
                     );
                 }

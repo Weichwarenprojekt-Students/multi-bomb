@@ -1,8 +1,7 @@
 package Game.Models;
 
-import General.MB;
-
-import java.awt.image.BufferedImage;
+import Game.Battleground;
+import General.Shared.MBImage;
 
 /**
  * This class contains the information about the items (blocks and consumables)
@@ -18,6 +17,14 @@ public enum Field {
     SPEED(-2, "Speed", false, true),
     HEART(-3, "Heart", false, true);
 
+    /**
+     * The ratio for map fields
+     */
+    public static final float RATIO = 1.5f;
+    /**
+     * The horizontal offset
+     */
+    private static final float OFFSET = (278f / 256 - 1);
     /**
      * The id of the item
      */
@@ -37,7 +44,7 @@ public enum Field {
     /**
      * The image of the item
      */
-    public BufferedImage image;
+    public MBImage image;
 
     /**
      * Constructor
@@ -50,24 +57,50 @@ public enum Field {
     }
 
     /**
+     * @return the horizontal offset for fields
+     */
+    public static int offsetX() {
+        return (int) (OFFSET * Battleground.size);
+    }
+
+    /**
+     * @return the vertical offset for fields
+     */
+    public static int offsetY() {
+        return (int) ((RATIO - 1) * Battleground.size + offsetX());
+    }
+
+    /**
      * Load the textures of the items
      *
      * @param theme name of the theme
      */
     public static void loadTextures(String theme) {
         // The ground block
-        GROUND.image = MB.load("Maps/" + theme + "/ground.png");
+        GROUND.image = new MBImage("Maps/" + theme + "/ground.png");
 
         // The other blocks
-        SOLID_0.image = MB.load("Maps/" + theme + "/solid_0.png");
-        SOLID_1.image = MB.load("Maps/" + theme + "/solid_1.png");
-        BREAKABLE_0.image = MB.load("Maps/" + theme + "/breakable_0.png");
-        BREAKABLE_1.image = MB.load("Maps/" + theme + "/breakable_1.png");
+        SOLID_0.image = new MBImage("Maps/" + theme + "/solid_0.png", () -> {
+            SOLID_0.image.width = (int) ((OFFSET + 1) * Battleground.size);
+            SOLID_0.image.height = (int) (RATIO * SOLID_0.image.width);
+        });
+        SOLID_1.image = new MBImage("Maps/" + theme + "/solid_1.png", () -> {
+            SOLID_1.image.width = (int) ((OFFSET + 1) * Battleground.size);
+            SOLID_1.image.height = (int) (RATIO * SOLID_0.image.width);
+        });
+        BREAKABLE_0.image = new MBImage("Maps/" + theme + "/breakable_0.png", () -> {
+            BREAKABLE_0.image.width = (int) ((OFFSET + 1) * Battleground.size);
+            BREAKABLE_0.image.height = (int) (RATIO * SOLID_0.image.width);
+        });
+        BREAKABLE_1.image = new MBImage("Maps/" + theme + "/breakable_1.png", () -> {
+            BREAKABLE_1.image.width = (int) ((OFFSET + 1) * Battleground.size);
+            BREAKABLE_1.image.height = (int) (RATIO * SOLID_0.image.width);
+        });
 
         // The consumables
-        BOMB.image = MB.load("Items/Consumable/bubble_bomb.png");
-        SPEED.image = MB.load("Items/Consumable/bubble_speed.png");
-        HEART.image = MB.load("Items/Consumable/bubble_heart.png");
+        BOMB.image = new MBImage("Items/Consumable/bubble_bomb.png");
+        SPEED.image = new MBImage("Items/Consumable/bubble_speed.png");
+        HEART.image = new MBImage("Items/Consumable/bubble_heart.png");
     }
 
     /**

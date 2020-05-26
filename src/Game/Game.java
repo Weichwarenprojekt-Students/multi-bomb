@@ -57,7 +57,13 @@ public class Game extends MBPanel {
                 (int) (0.5 * getHeight()),
                 getHeight()
         ));
+    }
 
+    /**
+     * Method that is executed when panel is visible
+     */
+    @Override
+    public void afterVisible() {
         // Add the battleground
         map = new Map();
         player = new Player();
@@ -68,13 +74,7 @@ public class Game extends MBPanel {
                 getHeight(),
                 getHeight()
         ));
-    }
 
-    /**
-     * Method that is executed when panel is visible
-     */
-    @Override
-    public void afterVisible() {
         // Call the after visible methods
         sidebar.afterVisible();
         battleground.afterVisible();

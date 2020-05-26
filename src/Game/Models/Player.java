@@ -4,12 +4,11 @@ import Game.Battleground;
 import Game.Game;
 import Game.Items.Bomb;
 import Game.Items.Item;
-import General.MB;
+import General.Shared.MBImage;
 import General.Shared.MBPanel;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
 
 /**
  * The basic player model
@@ -26,7 +25,7 @@ public class Player {
     /**
      * The sprite of the player
      */
-    private final BufferedImage sprite;
+    private MBImage sprite;
     /**
      * The name of the player
      */
@@ -49,7 +48,10 @@ public class Player {
      */
     public Player() {
         // Load the sprite
-        sprite = MB.load("Characters/" + theme + ".png");
+        sprite = new MBImage("Characters/" + theme + ".png", () -> {
+            sprite.width = (int) (sprite.original.getWidth(null) * Battleground.ratio);
+            sprite.height = (int) (sprite.original.getHeight(null) * Battleground.ratio);
+        });
     }
 
     /**
@@ -210,20 +212,19 @@ public class Player {
 
         // Calculate the position of the sprite
         int[] spritePosition = position.direction.getSpritePosition();
-        int sx = spritePosition[1] * SPRITE_SIZE;
-        int sy = spritePosition[0] * SPRITE_SIZE;
+        int sx = (int) (spritePosition[1] * SPRITE_SIZE * Battleground.ratio);
+        int sy = (int) (spritePosition[0] * SPRITE_SIZE * Battleground.ratio);
 
         // Draw the image
         g.drawImage(
-                sprite,
+                sprite.getSub(
+                        sx,
+                        sy,
+                        (int) (SPRITE_SIZE * Battleground.ratio),
+                        (int) (SPRITE_SIZE * Battleground.ratio)
+                ),
                 dx,
                 dy,
-                (int) (SPRITE_SIZE * Battleground.ratio) + dx,
-                (int) (SPRITE_SIZE * Battleground.ratio) + dy,
-                sx,
-                sy,
-                sx + SPRITE_SIZE,
-                sy + SPRITE_SIZE,
                 null
         );
     }
