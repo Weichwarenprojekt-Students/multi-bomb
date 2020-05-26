@@ -25,12 +25,12 @@ public class LobbyView extends MBPanel {
 
         // The button for opening a lobby overview
         MBButton play = new MBButton("Play");
-        play.addActionListener(e -> MB.show(new Game()));
+        play.addActionListener(e -> MB.show(new Game(), false));
         addComponent(play, () -> play.setBounds(getWidth() / 2 - 70, 100, 140, 40));
 
         // The button for opening a lobby overview
         MBButton back = new MBButton("Back");
-        back.addActionListener(e -> MB.show(new ServerView()));
+        back.addActionListener(e -> MB.show(new ServerView(), false));
         addComponent(back, () -> back.setBounds(getWidth() / 2 - 70, 150, 140, 40));
 
         // Add the buttons to a group

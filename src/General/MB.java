@@ -74,12 +74,15 @@ public class MB {
      * Show a panel and remove the old one
      *
      * @param panel to be showed
+     * @param known true if the panel was already shown
      */
-    public static void show(MBPanel panel) {
+    public static void show(MBPanel panel, boolean known) {
         activePanel = panel;
         frame.setContentPane(panel);
         frame.revalidate();
         frame.repaint();
-        panel.afterVisible();
+        if (!known) {
+            panel.afterVisible();
+        }
     }
 }

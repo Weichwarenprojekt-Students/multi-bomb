@@ -6,6 +6,8 @@ import Game.Models.Player;
 import General.MB;
 import General.Shared.MBPanel;
 
+import java.awt.event.KeyEvent;
+
 /**
  * This class displays and handles the game
  */
@@ -28,6 +30,10 @@ public class Game extends MBPanel {
      */
     public static boolean gameOver = true;
     /**
+     * The overlay
+     */
+    public static Overlay overlay;
+    /**
      * The map
      */
     public static Map map;
@@ -49,6 +55,17 @@ public class Game extends MBPanel {
      */
     @Override
     public void beforeVisible() {
+        // The button for opening a lobby overview
+        overlay = new Overlay();
+        overlay.setVisible(false);
+        addComponent(overlay, () -> overlay.setBounds(0, 0, getWidth(), getHeight()));
+        addKeybinding(
+                false,
+                "Open Overlay",
+                (e) -> overlay.setVisible(!overlay.isVisible()),
+                KeyEvent.VK_ESCAPE
+        );
+
         // Add the sidebar
         sidebar = new Sidebar();
         addComponent(sidebar, () -> sidebar.setBounds(
@@ -104,7 +121,7 @@ public class Game extends MBPanel {
 
             // Update the player and repaint
             player.update();
-            battleground.repaint();
+            MB.frame.repaint();
 
             // Wait for the next run
             targetRefreshRate(start);

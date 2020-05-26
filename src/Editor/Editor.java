@@ -25,7 +25,7 @@ public class Editor extends MBPanel {
 
         // The button for opening a lobby overview
         MBButton back = new MBButton("Back");
-        back.addActionListener(e -> MB.show(new Menu()));
+        back.addActionListener(e -> MB.show(new Menu(), false));
         addComponent(back, () -> back.setBounds(getWidth() / 2 - 70, 100, 140, 40));
 
         // Add the buttons to a group

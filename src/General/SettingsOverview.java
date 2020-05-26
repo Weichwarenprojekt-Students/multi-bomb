@@ -3,11 +3,11 @@ package General;
 import General.Shared.MBButton;
 import General.Shared.MBLabel;
 import General.Shared.MBPanel;
-import Menu.Menu;
 import Game.Game;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 /**
  * This class provides some settings like sound and graphics
@@ -25,6 +25,19 @@ public class SettingsOverview extends MBPanel {
      * The button to change the refresh rate
      */
     private MBButton refreshRate;
+    /**
+     * The last panel that was open
+     */
+    private final MBPanel last;
+
+    /**
+     * Constructor
+     *
+     * @param last panel that was visible
+     */
+    public SettingsOverview(MBPanel last) {
+        this.last = last;
+    }
 
     /**
      * Setup the layout
@@ -64,8 +77,14 @@ public class SettingsOverview extends MBPanel {
 
         // The button for opening a lobby overview
         MBButton back = new MBButton("Back");
-        back.addActionListener(e -> MB.show(new Menu()));
+        back.addActionListener(e -> MB.show(last, true));
         addComponent(back, () -> back.setBounds(getWidth() / 2 - 70, 220, 140, 30));
+        addKeybinding(
+                false,
+                "Close Settings",
+                (e) -> MB.show(last, true),
+                KeyEvent.VK_ESCAPE
+        );
 
         // Add the buttons to a group
         addButtonGroup(fullscreen, antiAliasing, back);
@@ -119,15 +138,9 @@ public class SettingsOverview extends MBPanel {
     public void changeRefreshRate() {
         // Change the refresh rate
         switch (MB.settings.refreshRate) {
-            case 60:
-                MB.settings.refreshRate = 144;
-                break;
-            case 144:
-                MB.settings.refreshRate = 244;
-                break;
-            case 244:
-                MB.settings.refreshRate = 60;
-                break;
+            case 60 -> MB.settings.refreshRate = 144;
+            case 144 -> MB.settings.refreshRate = 244;
+            case 244 -> MB.settings.refreshRate = 60;
         }
         // Update the wait value
         Game.WAIT_TIME = 1000 / MB.settings.refreshRate;

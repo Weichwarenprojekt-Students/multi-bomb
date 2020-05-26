@@ -26,17 +26,17 @@ public class Menu extends MBPanel {
 
         // The button for opening a lobby overview
         MBButton play = new MBButton("Play");
-        play.addActionListener(e -> MB.show(new ServerView()));
+        play.addActionListener(e -> MB.show(new ServerView(), false));
         addComponent(play, () -> play.setBounds(getWidth() / 2 - 70, 100, 140, 40));
 
         // The button for opening the map editor
         MBButton editor = new MBButton("Editor");
-        editor.addActionListener(e -> MB.show(new Editor()));
+        editor.addActionListener(e -> MB.show(new Editor(), false));
         addComponent(editor, () -> editor.setBounds(getWidth() / 2 - 70, 150, 140, 40));
 
         // The button for opening the settings
         MBButton settings = new MBButton("Settings");
-        settings.addActionListener(e -> MB.show(new SettingsOverview()));
+        settings.addActionListener(e -> MB.show(new SettingsOverview(this), false));
         addComponent(settings, () -> settings.setBounds(getWidth() / 2 - 70, 200, 140, 40));
 
         // The button for opening a lobby overview

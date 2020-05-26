@@ -32,7 +32,7 @@ public class Battleground extends MBPanel {
     /**
      * True if the panel should start drawing the battleground
      */
-    private boolean startDrawing = false;
+    public boolean startDrawing = false;
 
     /**
      * Constructor
@@ -83,8 +83,8 @@ public class Battleground extends MBPanel {
     /**
      * Draw the battleground
      */
-    public void paint(Graphics g) {
-        super.paint(g);
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         if (!startDrawing) {
             return;
         }
