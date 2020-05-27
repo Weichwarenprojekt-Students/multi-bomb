@@ -95,8 +95,8 @@ public class Battleground extends MBPanel {
             for (int n = 0; n < Map.SIZE; n++) {
                 g.drawImage(
                         Field.GROUND.image.image,
-                        n * size + offset,
-                        m * size + offset,
+                        n * size + offset - Field.offsetX(),
+                        m * size + offset - Field.offsetY(),
                         null
                 );
             }

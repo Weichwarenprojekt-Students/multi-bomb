@@ -24,7 +24,7 @@ public enum Field {
     /**
      * The horizontal offset
      */
-    private static final float OFFSET = (278f / 256 - 1);
+    public static final float OFFSET = (302f / 256 - 1);
     /**
      * The id of the item
      */
@@ -77,30 +77,18 @@ public enum Field {
      */
     public static void loadTextures(String theme) {
         // The ground block
-        GROUND.image = new MBImage("Maps/" + theme + "/ground.png");
+        GROUND.image = new MBImage("Maps/" + theme + "/ground.png", false);
 
         // The other blocks
-        SOLID_0.image = new MBImage("Maps/" + theme + "/solid_0.png", () -> {
-            SOLID_0.image.width = (int) ((OFFSET + 1) * Battleground.size);
-            SOLID_0.image.height = (int) (RATIO * SOLID_0.image.width);
-        });
-        SOLID_1.image = new MBImage("Maps/" + theme + "/solid_1.png", () -> {
-            SOLID_1.image.width = (int) ((OFFSET + 1) * Battleground.size);
-            SOLID_1.image.height = (int) (RATIO * SOLID_0.image.width);
-        });
-        BREAKABLE_0.image = new MBImage("Maps/" + theme + "/breakable_0.png", () -> {
-            BREAKABLE_0.image.width = (int) ((OFFSET + 1) * Battleground.size);
-            BREAKABLE_0.image.height = (int) (RATIO * SOLID_0.image.width);
-        });
-        BREAKABLE_1.image = new MBImage("Maps/" + theme + "/breakable_1.png", () -> {
-            BREAKABLE_1.image.width = (int) ((OFFSET + 1) * Battleground.size);
-            BREAKABLE_1.image.height = (int) (RATIO * SOLID_0.image.width);
-        });
+        SOLID_0.image = new MBImage("Maps/" + theme + "/solid_0.png", false);
+        SOLID_1.image = new MBImage("Maps/" + theme + "/solid_1.png", false);
+        BREAKABLE_0.image = new MBImage("Maps/" + theme + "/breakable_0.png", false);
+        BREAKABLE_1.image = new MBImage("Maps/" + theme + "/breakable_1.png", false);
 
         // The consumables
-        BOMB.image = new MBImage("Items/Consumable/bubble_bomb.png");
-        SPEED.image = new MBImage("Items/Consumable/bubble_speed.png");
-        HEART.image = new MBImage("Items/Consumable/bubble_heart.png");
+        BOMB.image = new MBImage("Items/Consumable/bubble_bomb.png", false);
+        SPEED.image = new MBImage("Items/Consumable/bubble_speed.png", false);
+        HEART.image = new MBImage("Items/Consumable/bubble_heart.png", false);
     }
 
     /**

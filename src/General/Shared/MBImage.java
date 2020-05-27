@@ -1,6 +1,7 @@
 package General.Shared;
 
 import Game.Battleground;
+import Game.Models.Field;
 import General.MB;
 
 import javax.imageio.ImageIO;
@@ -35,11 +36,18 @@ public class MBImage {
      *
      * @param relativePath to the image
      */
-    public MBImage(String relativePath) {
-        this.resize = () -> {
-            this.width = Battleground.size;
-            this.height = Battleground.size;
-        };
+    public MBImage(String relativePath, boolean square) {
+        if (square) {
+            this.resize = () -> {
+                this.width = Battleground.size;
+                this.height = Battleground.size;
+            };
+        } else {
+            this.resize = () -> {
+                width = (int) ((Field.OFFSET + 1) * Battleground.size);
+                height = (int) (Field.RATIO * width);
+            };
+        }
         initialize(relativePath);
     }
 

@@ -20,7 +20,7 @@ public class MBImageButton extends JLabel {
      * @param path of the image
      */
     public MBImageButton(String path) {
-        this.image = new MBImage(path);
+        this.image = new MBImage(path, true);
     }
 
     /**
@@ -57,7 +57,7 @@ public class MBImageButton extends JLabel {
      * @param path of the image
      */
     public void setImage(String path) {
-        this.image = new MBImage(path);
+        this.image = new MBImage(path, true);
     }
 
     /**
