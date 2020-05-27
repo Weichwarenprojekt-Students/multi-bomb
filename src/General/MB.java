@@ -30,7 +30,7 @@ public class MB {
     public static void main(String[] args) {
         MB.settings.loadSettings();
         setupFrame();
-        show(new Intro());
+        show(new Intro(), false);
 
         // Set fullscreen if necessary
         if (settings.fullscreen) {
