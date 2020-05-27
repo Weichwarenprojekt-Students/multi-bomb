@@ -15,7 +15,8 @@ public enum Field {
     BREAKABLE_1(4, "Second Breakable", true, false),
     BOMB(-1, "Bomb", false, true),
     SPEED(-2, "Speed", false, true),
-    HEART(-3, "Heart", false, true);
+    HEART(-3, "Heart", false, true),
+    EXPLOSION(-4, "Explosion", false, true);
 
     /**
      * The ratio for map fields
@@ -89,6 +90,7 @@ public enum Field {
         BOMB.image = new MBImage("Items/Consumable/bubble_bomb.png", false);
         SPEED.image = new MBImage("Items/Consumable/bubble_speed.png", false);
         HEART.image = new MBImage("Items/Consumable/bubble_heart.png", false);
+        EXPLOSION.image = new MBImage("Items/Consumable/bubble_explosion.png", false);
     }
 
     /**
