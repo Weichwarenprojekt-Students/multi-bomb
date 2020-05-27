@@ -138,9 +138,17 @@ public class SettingsOverview extends MBPanel {
     public void changeRefreshRate() {
         // Change the refresh rate
         switch (MB.settings.refreshRate) {
-            case 60 -> MB.settings.refreshRate = 144;
-            case 144 -> MB.settings.refreshRate = 244;
-            case 244 -> MB.settings.refreshRate = 60;
+            case 60:
+                MB.settings.refreshRate = 144;
+                break;
+
+            case 144:
+                MB.settings.refreshRate = 244;
+                break;
+
+            case 244:
+                MB.settings.refreshRate = 60;
+                break;
         }
         // Update the wait value
         Game.WAIT_TIME = 1000 / MB.settings.refreshRate;
