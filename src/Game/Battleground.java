@@ -134,6 +134,5 @@ public class Battleground extends MBPanel {
                 }
             }
         }
-        g.drawRect(size + offset, size + offset, size, size);
     }
 }
