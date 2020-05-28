@@ -7,6 +7,10 @@ import Game.Items.Item;
  */
 public class Map {
     /**
+     * The size of a field in pixels
+     */
+    public static float FIELD_SIZE_PIXELS = 256;
+    /**
      * The size of a field
      */
     public static int FIELD_SIZE = 30;

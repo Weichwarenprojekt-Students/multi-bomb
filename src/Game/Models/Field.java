@@ -19,13 +19,21 @@ public enum Field {
     EXPLOSION(-4, "Explosion", false, true);
 
     /**
-     * The ratio for map fields
+     * The width of a field (the actual width would be 300px but the value is slightly increased to avoid white gaps)
      */
-    public static final float RATIO = 1.5f;
+    public static int WIDTH = (int) (310f / Map.FIELD_SIZE_PIXELS * Map.FIELD_SIZE);
     /**
-     * The horizontal offset
+     * The height of a field (the actual width would be 450px but the value is slightly increased to avoid white gaps)
      */
-    public static final float OFFSET = (302f / 256 - 1);
+    public static int HEIGHT = (int) (465f / Map.FIELD_SIZE_PIXELS * Map.FIELD_SIZE);
+    /**
+     * The horizontal offset for fields
+     */
+    public static int offset_x = (int) -((WIDTH - Map.FIELD_SIZE) / 2 * Battleground.ratio);
+    /**
+     * The vertical offset for fields
+     */
+    public static int offset_y = (int) -((HEIGHT - Map.FIELD_SIZE) * Battleground.ratio);
     /**
      * The id of the item
      */
@@ -55,20 +63,6 @@ public enum Field {
         this.name = name;
         this.breakable = breakable;
         this.consumable = consumable;
-    }
-
-    /**
-     * @return the horizontal offset for fields
-     */
-    public static int offsetX() {
-        return (int) (OFFSET * Battleground.size);
-    }
-
-    /**
-     * @return the vertical offset for fields
-     */
-    public static int offsetY() {
-        return (int) ((RATIO - 1) * Battleground.size + offsetX());
     }
 
     /**

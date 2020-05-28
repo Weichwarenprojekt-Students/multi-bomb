@@ -35,6 +35,7 @@ public class MBImage {
      * Constructor
      *
      * @param relativePath to the image
+     * @param square true if the image is a square
      */
     public MBImage(String relativePath, boolean square) {
         if (square) {
@@ -44,8 +45,8 @@ public class MBImage {
             };
         } else {
             this.resize = () -> {
-                width = (int) ((Field.OFFSET + 1) * Battleground.size);
-                height = (int) (Field.RATIO * width);
+                width = (int) ((Field.WIDTH) * Battleground.ratio);
+                height = (int) ((Field.HEIGHT) * Battleground.ratio);
             };
         }
         initialize(relativePath);
