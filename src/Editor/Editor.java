@@ -8,6 +8,7 @@ import General.Shared.MBPanel;
 import General.MB;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 
 /**
  * This class is the core of the editor
@@ -25,8 +26,14 @@ public class Editor extends MBPanel {
 
         // The button for opening a lobby overview
         MBButton back = new MBButton("Back");
-        back.addActionListener(e -> MB.show(new Menu()));
+        back.addActionListener(e -> MB.show(new Menu(), false));
         addComponent(back, () -> back.setBounds(getWidth() / 2 - 70, 100, 140, 40));
+        addKeybinding(
+                false,
+                "Close Editor",
+                (e) -> MB.show(new Menu(), false),
+                KeyEvent.VK_ESCAPE
+        );
 
         // Add the buttons to a group
         addButtonGroup(back);

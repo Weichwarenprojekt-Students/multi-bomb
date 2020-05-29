@@ -8,6 +8,7 @@ import General.Shared.MBPanel;
 import General.MB;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 
 /**
  * This class provides an lobby overview
@@ -25,13 +26,19 @@ public class ServerView extends MBPanel {
 
         // The button for opening a lobby overview
         MBButton play = new MBButton("Join Lobby 1");
-        play.addActionListener(e -> MB.show(new LobbyView()));
+        play.addActionListener(e -> MB.show(new LobbyView(), false));
         addComponent(play, () -> play.setBounds(getWidth() / 2 - 70, 100, 140, 40));
 
         // The button for opening a lobby overview
         MBButton back = new MBButton("Back");
-        back.addActionListener(e -> MB.show(new Menu()));
+        back.addActionListener(e -> MB.show(new Menu(), false));
         addComponent(back, () -> back.setBounds(getWidth() / 2 - 70, 150, 140, 40));
+        addKeybinding(
+                false,
+                "Close ServerView",
+                (e) -> MB.show(new Menu(), false),
+                KeyEvent.VK_ESCAPE
+        );
 
         // Add the buttons to a group
         addButtonGroup(play, back);

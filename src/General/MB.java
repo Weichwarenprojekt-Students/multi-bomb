@@ -2,15 +2,10 @@ package General;
 
 
 import General.Shared.MBPanel;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 public class MB {
 
@@ -22,6 +17,10 @@ public class MB {
      * The general settings
      */
     public static Settings settings = new Settings();
+    /**
+     * The shown panel
+     */
+    public static MBPanel activePanel;
 
     /**
      * Setup the JFrame and show the menu
@@ -31,7 +30,7 @@ public class MB {
     public static void main(String[] args) {
         MB.settings.loadSettings();
         setupFrame();
-        show(new Intro());
+        show(new Intro(), false);
 
         // Set fullscreen if necessary
         if (settings.fullscreen) {
@@ -75,26 +74,15 @@ public class MB {
      * Show a panel and remove the old one
      *
      * @param panel to be showed
+     * @param known true if the panel was already shown
      */
-    public static void show(MBPanel panel) {
+    public static void show(MBPanel panel, boolean known) {
+        activePanel = panel;
         frame.setContentPane(panel);
         frame.revalidate();
         frame.repaint();
-        panel.afterVisible();
-    }
-
-    /**
-     * Load a image file from the rsc folder via directory/name.
-     *
-     * @param relativePath to the image
-     * @return the loaded image
-     */
-    public static BufferedImage load(String relativePath){
-        try {
-            return ImageIO.read(MB.class.getResource("/Resources/" + relativePath));
-        } catch (IOException e) {
-            return null;
+        if (!known) {
+            panel.afterVisible();
         }
     }
-
 }

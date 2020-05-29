@@ -24,6 +24,10 @@ public class Settings {
      * True if anti aliasing is active
      */
     public boolean antiAliasing = true;
+    /**
+     * The refresh rate the game should target
+     */
+    public int refreshRate = 60;
 
     /**
      * Load the settings
@@ -35,8 +39,11 @@ public class Settings {
         } catch (FileNotFoundException e) {
             // Create the file and make the directories if necessary
             File file = new File(PATH + "Settings.json");
-            file.getParentFile().mkdirs();
-            saveSettings();
+            if (file.getParentFile().mkdirs()) {
+                saveSettings();
+            } else {
+                System.out.println("ERROR! Couldn't setup the directory for the game data!");
+            }
         }
     }
 

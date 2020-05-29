@@ -33,6 +33,6 @@ public class Intro extends MBPanel {
             e.printStackTrace();
         }
         // Continue with the menu
-        MB.show(new Menu());
+        MB.show(new Menu(), false);
     }
 }
