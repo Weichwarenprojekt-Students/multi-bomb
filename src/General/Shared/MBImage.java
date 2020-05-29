@@ -40,8 +40,8 @@ public class MBImage {
     public MBImage(String relativePath, boolean square) {
         if (square) {
             this.resize = () -> {
-                this.width = Battleground.size;
-                this.height = Battleground.size;
+                this.width = Battleground.fieldSize;
+                this.height = Battleground.fieldSize;
             };
         } else {
             this.resize = () -> {
@@ -91,8 +91,8 @@ public class MBImage {
             rescale();
         } catch (NullPointerException e) {
             // Set to default values
-            this.width = Battleground.size;
-            this.height = Battleground.size;
+            this.width = Battleground.fieldSize;
+            this.height = Battleground.fieldSize;
             rescale();
         }
     }

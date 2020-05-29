@@ -20,7 +20,7 @@ public class Battleground extends MBPanel {
     /**
      * The size of field
      */
-    public static int size = 30;
+    public static int fieldSize = 30;
     /**
      * The map to be drawn
      */
@@ -52,11 +52,11 @@ public class Battleground extends MBPanel {
      */
     private void calculateSize() {
         // Calculate the field size
-        size = (int) ((float) getHeight() / Map.SIZE);
+        fieldSize = (int) ((float) getHeight() / Map.SIZE);
         // Calculate the ratio
-        ratio = (float) size / Map.FIELD_SIZE;
+        ratio = (float) fieldSize / Map.FIELD_SIZE;
         // Calculate the offset
-        offset = (getHeight() - size * Map.SIZE) / 2;
+        offset = (getHeight() - fieldSize * Map.SIZE) / 2;
         // Calculate the offset for fields
         Field.offset_x = (int) -((Field.WIDTH - Map.FIELD_SIZE) / 2 * ratio);
         // Calculate the offset for fields
@@ -99,8 +99,8 @@ public class Battleground extends MBPanel {
             for (int n = 0; n < Map.SIZE; n++) {
                 g.drawImage(
                         Field.GROUND.image.image,
-                        n * size + offset + Field.offset_x,
-                        m * size + offset + Field.offset_y,
+                        n * fieldSize + offset + Field.offset_x,
+                        m * fieldSize + offset + Field.offset_y,
                         null
                 );
             }
@@ -117,8 +117,8 @@ public class Battleground extends MBPanel {
                     // Draw the image respecting the images ratio and the required offset
                     g.drawImage(
                             field.image.image,
-                            n * size + offset + Field.offset_x,
-                            m * size + offset + Field.offset_y,
+                            n * fieldSize + offset + Field.offset_x,
+                            m * fieldSize + offset + Field.offset_y,
                             null
                     );
                 }

@@ -99,10 +99,10 @@ public class Bomb extends Item {
 
         // Initialize the bomb sprite
         bombImage = new MBImage("Items/Bomb/bomb.png", () -> {
-            bombImage.width = (int) (1.2 * Battleground.size);
-            bombImage.height = (int) (1.2 * Battleground.size);
+            bombImage.width = (int) (1.2 * Battleground.fieldSize);
+            bombImage.height = (int) (1.2 * Battleground.fieldSize);
         });
-        bombImage.rescale((int) (1.2 * Battleground.size), (int) (1.2 * Battleground.size));
+        bombImage.rescale((int) (1.2 * Battleground.fieldSize), (int) (1.2 * Battleground.fieldSize));
     }
 
     /**
@@ -148,8 +148,8 @@ public class Bomb extends Item {
             // Draw the image
             g.drawImage(
                     bombImage.image,
-                    n * Battleground.size + Battleground.offset - (int) (Battleground.ratio * 3),
-                    m * Battleground.size + Battleground.offset - (int) (Battleground.ratio * 8),
+                    n * Battleground.fieldSize + Battleground.offset - (int) (Battleground.ratio * 3),
+                    m * Battleground.fieldSize + Battleground.offset - (int) (Battleground.ratio * 8),
                     null
             );
         } else if (counter < TOTAL_TIME) {
@@ -230,14 +230,14 @@ public class Bomb extends Item {
         dx[1] = (int) (dx[1] * Battleground.ratio);
         g.drawImage(
                 leftEndImage.image,
-                dx[0] - Battleground.size + Battleground.offset,
-                m * Battleground.size + Battleground.offset,
+                dx[0] - Battleground.fieldSize + Battleground.offset,
+                m * Battleground.fieldSize + Battleground.offset,
                 null
         );
         g.drawImage(
                 horizontalImage.image,
                 dx[0] + Battleground.offset ,
-                m * Battleground.size + Battleground.offset,
+                m * Battleground.fieldSize + Battleground.offset,
                 dx[1] - dx[0],
                 horizontalImage.height,
                 null
@@ -245,7 +245,7 @@ public class Bomb extends Item {
         g.drawImage(
                 rightEndImage.image,
                 dx[1] + Battleground.offset ,
-                m * Battleground.size + Battleground.offset,
+                m * Battleground.fieldSize + Battleground.offset,
                 null
         );
     }
@@ -279,13 +279,13 @@ public class Bomb extends Item {
         dy[1] = (int) (dy[1] * Battleground.ratio);
         g.drawImage(
                 topEndImage.image,
-                n * Battleground.size + Battleground.offset,
-                dy[0] - Battleground.size + Battleground.offset ,
+                n * Battleground.fieldSize + Battleground.offset,
+                dy[0] - Battleground.fieldSize + Battleground.offset ,
                 null
         );
         g.drawImage(
                 verticalImage.image,
-                n * Battleground.size + Battleground.offset,
+                n * Battleground.fieldSize + Battleground.offset,
                 dy[0] + Battleground.offset ,
                 verticalImage.width,
                 dy[1] - dy[0],
@@ -293,7 +293,7 @@ public class Bomb extends Item {
         );
         g.drawImage(
                 bottomEndImage.image,
-                n * Battleground.size + Battleground.offset,
+                n * Battleground.fieldSize + Battleground.offset,
                 dy[1] + Battleground.offset,
                 null
         );
@@ -310,15 +310,15 @@ public class Bomb extends Item {
     private void drawCore(Graphics g, int m, int n, float percentage) {
         // Rescale the image
         coreImage.rescale(
-                (int) ((1 + 0.5 * percentage) * Battleground.size),
-                (int) ((1 + 0.5 * percentage) * Battleground.size)
+                (int) ((1 + 0.5 * percentage) * Battleground.fieldSize),
+                (int) ((1 + 0.5 * percentage) * Battleground.fieldSize)
         );
 
         // Draw the core
         g.drawImage(
                 coreImage.image,
-                (int) ((n - 0.25 * percentage) * Battleground.size + Battleground.offset) ,
-                (int) ((m - 0.25 * percentage) * Battleground.size + Battleground.offset),
+                (int) ((n - 0.25 * percentage) * Battleground.fieldSize + Battleground.offset) ,
+                (int) ((m - 0.25 * percentage) * Battleground.fieldSize + Battleground.offset),
                 null
         );
     }
