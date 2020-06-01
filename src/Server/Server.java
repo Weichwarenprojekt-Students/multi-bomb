@@ -9,6 +9,14 @@ public class Server implements Runnable {
      */
     public static final int UDP_PORT = 42420;
     /**
+     * Port for HTTP GET requests
+     */
+    public static final int HTTP_PORT = 42421;
+    /**
+     * HTTP server thread which provides information about this server
+     */
+    private final HttpThread httpThread;
+    /**
      * UDP Broadcast discovery thread
      */
     private final Thread discoveryThread;
@@ -42,6 +50,7 @@ public class Server implements Runnable {
         this.maxLobbies = maxLobbies;
 
         discoveryThread = new Thread(new DiscoveryThread());
+        httpThread = new HttpThread(this);
     }
 
     /**
@@ -60,5 +69,8 @@ public class Server implements Runnable {
     public void run() {
         // start UDP DiscoveryThread
         discoveryThread.start();
+
+        // start HTTP server thread
+        httpThread.start();
     }
 }
