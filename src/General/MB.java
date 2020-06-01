@@ -2,6 +2,8 @@ package General;
 
 
 import General.Shared.MBPanel;
+import Server.Server;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
@@ -28,14 +30,22 @@ public class MB {
      * @param args that were passed
      */
     public static void main(String[] args) {
-        MB.settings.loadSettings();
-        setupFrame();
-        show(new Intro(), false);
+        if (args.length > 0) {
+            if ("-s".equals(args[0])) {
+                new Server().run();
+            } else {
+                System.out.println("Option not recognized, try -s to start server only");
+            }
+        } else {
+            MB.settings.loadSettings();
+            setupFrame();
+            show(new Intro(), false);
 
-        // Set fullscreen if necessary
-        if (settings.fullscreen) {
-            Window activeWindow = javax.swing.FocusManager.getCurrentManager().getActiveWindow();
-            activeWindow.getGraphicsConfiguration().getDevice().setFullScreenWindow(MB.frame);
+            // Set fullscreen if necessary
+            if (settings.fullscreen) {
+                Window activeWindow = javax.swing.FocusManager.getCurrentManager().getActiveWindow();
+                activeWindow.getGraphicsConfiguration().getDevice().setFullScreenWindow(MB.frame);
+            }
         }
     }
 
