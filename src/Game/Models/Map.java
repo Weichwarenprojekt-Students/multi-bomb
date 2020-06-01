@@ -1,11 +1,13 @@
 package Game.Models;
 
 import Game.Items.Item;
+import Server.Messages.Message;
+import Server.Messages.Position;
 
 /**
  * The model for a map
  */
-public class Map {
+public class Map extends Message {
     /**
      * The size of a field in pixels
      */
@@ -43,6 +45,9 @@ public class Map {
      * Constructor
      */
     public Map() {
+        // Initialize Map as message
+        super(Message.MAP_TYPE);
+
         // Initialize the left and the right side of the field
         for (int m = 0; m < fields.length; m++) {
             // The left and right line

@@ -4,7 +4,7 @@ import Game.Battleground;
 import Game.Game;
 import Game.Models.Field;
 import Game.Models.Map;
-import Game.Models.Position;
+import Server.Messages.Position;
 import General.Shared.MBImage;
 
 import java.awt.*;
