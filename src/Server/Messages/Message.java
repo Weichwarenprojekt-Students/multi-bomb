@@ -40,4 +40,13 @@ public abstract class Message {
     public static Message fromJson(String json) {
         return gson.fromJson(json, Message.class);
     }
+
+    /**
+     * Turn Message object into json string
+     *
+     * @return json String
+     */
+    public String toJson() {
+        return gson.toJson(this);
+    }
 }
