@@ -13,6 +13,11 @@ public abstract class Message {
             LOBBY_STATE_TYPE = "lobbyState", PLAYER_STATE_TYPE = "playerState";
 
     /**
+     * Gson object with deserializer for Message.class
+     */
+    public static final Gson gson = new GsonBuilder().registerTypeAdapter(Message.class, new MBJsonDeserializer()).create();
+
+    /**
      * Type of the message
      */
     public final String type;
@@ -27,25 +32,12 @@ public abstract class Message {
     }
 
     /**
-     * Create Gson object with deserializer for Message.class
-     *
-     * @return a new Gson object
-     */
-    public static Gson createGson() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(Message.class, new MBJsonDeserializer());
-        return gsonBuilder.create();
-    }
-
-    /**
      * Generate Message object from json string
      *
      * @param json string of the message
      * @return a new Message object
      */
     public static Message fromJson(String json) {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(Message.class, new MBJsonDeserializer());
-        return gsonBuilder.create().fromJson(json, Message.class);
+        return gson.fromJson(json, Message.class);
     }
 }
