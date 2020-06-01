@@ -46,6 +46,12 @@ public class MBJsonDeserializer implements JsonDeserializer<Message> {
             case Message.PLAYER_STATE_TYPE:
                 typeModel = context.deserialize(json, PlayerState.class);
                 break;
+            case Message.SERVER_INFO_TYPE:
+                typeModel = context.deserialize(json, ServerInfo.class);
+                break;
+            case Message.LOBBY_INFO_TYPE:
+                typeModel = context.deserialize(json, LobbyInfo.class);
+                break;
             default:
                 typeModel = new Message(type) {};
         }
