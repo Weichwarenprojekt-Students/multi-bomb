@@ -18,7 +18,7 @@ public class MBJsonDeserializer implements JsonDeserializer<Message> {
         JsonElement jsonType = jsonObject.get("type");
         String type = jsonType.getAsString();
 
-        Message typeModel = null;
+        Message typeModel;
 
         // deserialize message depending on the type value
         switch (type) {
