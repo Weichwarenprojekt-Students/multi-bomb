@@ -1,6 +1,6 @@
 package Game.Items;
 
-import Game.Models.Position;
+import Server.Messages.Position;
 
 import java.awt.*;
 
