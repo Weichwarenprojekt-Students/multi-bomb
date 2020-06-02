@@ -9,6 +9,10 @@ import java.awt.event.*;
 public class MBScrollView extends JPanel {
 
     /**
+     * The colors of the scrollbar
+     */
+    public static final Color BACKGROUND_COLOR = new Color(0xA9A9A9), COLOR = new Color(0x696969);
+    /**
      * Size of the scrollbar
      */
     private static final int SIZE = 8;
@@ -198,9 +202,9 @@ public class MBScrollView extends JPanel {
         super.paintComponent(g);
         MB.settings.enableAntiAliasing(g);
         if (scrollable) {
-            g.setColor(new Color(0xA9A9A9));
+            g.setColor(BACKGROUND_COLOR);
             drawBar(g, 0, getHeight());
-            g.setColor(new Color(0x696969));
+            g.setColor(COLOR);
             drawBar(g, barY, barHeight);
         }
     }
