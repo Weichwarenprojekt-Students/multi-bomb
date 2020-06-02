@@ -4,11 +4,9 @@ import General.MB;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 
-public class MBScrollView extends MBPanel {
+public class MBScrollView extends JPanel {
 
     /**
      * Size of the scrollbar
@@ -50,7 +48,16 @@ public class MBScrollView extends MBPanel {
      */
     public MBScrollView(JPanel content) {
         this.content = content;
+        setLayout(null);
+        setOpaque(false);
+        setupScrollBehavior();
+        setupComponent();
+    }
 
+    /**
+     * Setup the scroll behavior for the mousewheel and the dragging
+     */
+    private void setupScrollBehavior() {
         // Make the component scrollable
         addMouseWheelListener(e -> scroll(content.getY() - e.getWheelRotation() * SPEED));
 
@@ -130,30 +137,37 @@ public class MBScrollView extends MBPanel {
         repaint();
     }
 
-    @Override
-    public void beforeVisible() {
-    }
-
     /**
      * Add the content
      */
-    @Override
-    public void afterVisible() {
-        addComponent(content, () -> {
-            // Check if the scroll view needs to be scrollable
-            scrollable = getHeight() < content.getHeight();
-
-            // Resize the content
-            content.setBounds(
-                    0,
-                    content.getY(),
-                    scrollable ? getWidth() - SIZE - 2 * MARGIN : getWidth(),
-                    content.getHeight()
-            );
-
-            // Update the scroll position (to make it scroll up if height increases when the bar is at the end)
-            scroll(content.getY());
+    private void setupComponent() {
+        add(content);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                onResize();
+            }
         });
+        onResize();
+    }
+
+    /**
+     * Handle resizing
+     */
+    private void onResize() {
+        // Check if the scroll view needs to be scrollable
+        scrollable = getHeight() < content.getHeight();
+
+        // Resize the content
+        content.setBounds(
+                0,
+                content.getY(),
+                scrollable ? getWidth() - SIZE - 2 * MARGIN : getWidth(),
+                content.getHeight()
+        );
+
+        // Update the scroll position (to make it scroll up if height increases when the bar is at the end)
+        scroll(content.getY());
     }
 
     /**
