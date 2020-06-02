@@ -30,10 +30,23 @@ public class MBSpinner extends JPanel {
     }
 
     /**
+     * Start the animation if visible
+     *
+     * @param visible true if component shall be visible
+     */
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        if (visible) {
+            new Thread(this::spin).start();
+        }
+    }
+
+    /**
      * Spin the spinner
      */
     private void spin() {
-        while (true) {
+        while (isVisible()) {
             // Update the progress
             progress += deltaAngle == 0 ? SPEED : -SPEED;
 
