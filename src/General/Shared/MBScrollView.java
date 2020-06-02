@@ -153,6 +153,15 @@ public class MBScrollView extends JPanel {
             }
         });
         onResize();
+
+        // Check if the content resizes
+        content.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                scroll(content.getY());
+                onResize();
+            }
+        });
     }
 
     /**
@@ -161,6 +170,9 @@ public class MBScrollView extends JPanel {
     private void onResize() {
         // Check if the scroll view needs to be scrollable
         scrollable = getHeight() < content.getHeight();
+        if (!scrollable) {
+            content.setLocation(content.getX(), 0);
+        }
 
         // Resize the content
         content.setBounds(
