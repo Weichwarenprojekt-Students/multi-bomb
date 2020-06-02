@@ -10,7 +10,8 @@ public abstract class Message {
     public static final String POSITION_TYPE = "position", ITEM_ACTION_TYPE = "itemAction",
             MAP_TYPE = "map", FIELD_DESTROYED_TYPE = "fieldDestroyed",
             GAME_STATE_TYPE = "gameState", ITEM_COLLECTED_TYPE = "itemCollected",
-            LOBBY_STATE_TYPE = "lobbyState", PLAYER_STATE_TYPE = "playerState";
+            LOBBY_STATE_TYPE = "lobbyState", PLAYER_STATE_TYPE = "playerState",
+            SERVER_INFO_TYPE = "serverInfo", LOBBY_INFO_TYPE = "lobbyInfo";
 
     /**
      * Gson object with deserializer for Message.class

@@ -32,7 +32,7 @@ public class MB {
     public static void main(String[] args) {
         if (args.length > 0) {
             if ("-s".equals(args[0])) {
-                new Server().run();
+                new Server("Multi-Bomb server").run();
             } else {
                 System.out.println("Option not recognized, try -s to start server only");
             }
