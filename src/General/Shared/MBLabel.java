@@ -75,4 +75,28 @@ public class MBLabel extends JLabel {
     private void setupLabel(int fontSize) {
         setFont(new Font(FONT_NAME, Font.PLAIN, fontSize));
     }
+
+    /**
+     * Change the font color of the label
+     *
+     * @param color of the font
+     */
+    public void setFontColor(Color color) {
+        setForeground(color);
+    }
+
+    /**
+     * Set the font bold
+     */
+    public void setBold() {
+        setFont(new Font(FONT_NAME, Font.BOLD, getFont().getSize()));
+    }
+
+    /**
+     * Align the text to the top
+     */
+    public void alignTextTop() {
+        setVerticalAlignment(JLabel.TOP);
+        setVerticalTextPosition(JLabel.TOP);
+    }
 }
