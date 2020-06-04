@@ -6,6 +6,10 @@ import java.awt.*;
 public class MBLabel extends JLabel {
 
     /**
+     * Name of the global font
+     */
+    public static final String FONT_NAME = "Calibri";
+    /**
      * Fontsize for H1 text
      */
     public static final int H1 = 20;
@@ -69,6 +73,30 @@ public class MBLabel extends JLabel {
      * @param fontSize of the text
      */
     private void setupLabel(int fontSize) {
-        setFont(new Font("Calibri", Font.PLAIN, fontSize));
+        setFont(new Font(FONT_NAME, Font.PLAIN, fontSize));
+    }
+
+    /**
+     * Change the font color of the label
+     *
+     * @param color of the font
+     */
+    public void setFontColor(Color color) {
+        setForeground(color);
+    }
+
+    /**
+     * Set the font bold
+     */
+    public void setBold() {
+        setFont(new Font(FONT_NAME, Font.BOLD, getFont().getSize()));
+    }
+
+    /**
+     * Align the text to the top
+     */
+    public void alignTextTop() {
+        setVerticalAlignment(JLabel.TOP);
+        setVerticalTextPosition(JLabel.TOP);
     }
 }
