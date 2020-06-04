@@ -1,5 +1,6 @@
 package Server;
 
+import Server.Messages.ErrorMessage;
 import Server.Messages.LobbyInfo;
 import Server.Messages.Message;
 import Server.Messages.ServerInfo;
@@ -7,7 +8,9 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
@@ -41,18 +44,8 @@ public class HttpThread extends Thread {
             ThreadPoolExecutor threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
 
             // add handlers for two routes /server and /lobby
-            httpServer.createContext("/server", new RequestHandler() {
-                @Override
-                public Message getMessage() {
-                    return new ServerInfo(server);
-                }
-            });
-            httpServer.createContext("/lobby", new RequestHandler() {
-                @Override
-                public Message getMessage() {
-                    return new LobbyInfo(server);
-                }
-            });
+            httpServer.createContext("/server", new ServerRequestHandler());
+            httpServer.createContext("/lobby", new LobbyRequestHandler());
 
             // assign ThreadPool to the HttpServer
             httpServer.setExecutor(threadPool);
@@ -65,19 +58,30 @@ public class HttpThread extends Thread {
         }
     }
 
-    public static abstract class RequestHandler implements HttpHandler {
+    public class ServerRequestHandler implements HttpHandler {
 
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
-            OutputStream outputStream = httpExchange.getResponseBody();
+            int code;
+            String responseString;
 
-            // generate response from Message object
-            String jsonResponse = getMessage().toJson();
+            if (httpExchange.getRequestMethod().equals("GET")) {
+                code = 200; // OK
 
-            httpExchange.sendResponseHeaders(200, jsonResponse.length());
-            outputStream.write(jsonResponse.getBytes());
-            outputStream.flush();
-            outputStream.close();
+                // generate response from Message object
+                responseString = getMessage().toJson();
+
+            } else {
+                code = 405; // Method Not Allowed
+                responseString = new ErrorMessage("Method Not Allowed").toJson();
+            }
+
+            byte[] response = responseString.getBytes();
+            httpExchange.sendResponseHeaders(code, response.length);
+
+            OutputStream os = httpExchange.getResponseBody();
+            os.write(response);
+            os.close();
         }
 
         /**
@@ -85,6 +89,61 @@ public class HttpThread extends Thread {
          *
          * @return new Message object
          */
-        public abstract Message getMessage();
+        public Message getMessage() {
+            return new ServerInfo(server);
+        }
+
+    }
+
+    public class LobbyRequestHandler implements HttpHandler {
+
+        @Override
+        public void handle(HttpExchange httpExchange) throws IOException {
+            int code;
+            String responseString;
+            if (httpExchange.getRequestMethod().equals("GET")) {
+                code = 200; // OK
+                // generate response from Message object
+                responseString = getMessage().toJson();
+
+            } else if (httpExchange.getRequestMethod().equals("POST")) {
+                BufferedReader reqBody = new BufferedReader(new InputStreamReader(httpExchange.getRequestBody()));
+
+                Message msg = Message.fromJson(reqBody.readLine());
+
+                if (msg.type.equals(Message.JOIN_LOBBY_TYPE)) {
+                    code = 501; // Not Implemented
+                    responseString = "";
+
+                } else if (msg.type.equals(Message.CREATE_LOBBY_TYPE)) {
+                    code = 501; // Not Implemented
+                    responseString = "";
+
+                } else {
+                    code = 400; // Bad Request
+                    responseString = new ErrorMessage("Bad Request").toJson();
+                }
+            } else {
+                code = 405; // Method Not Allowed
+                responseString = new ErrorMessage("Method Not Allowed").toJson();
+            }
+
+            byte[] response = responseString.getBytes();
+            httpExchange.sendResponseHeaders(code, response.length);
+
+            OutputStream os = httpExchange.getResponseBody();
+            os.write(response);
+            os.close();
+
+        }
+
+        /**
+         * Generate Message object for the response
+         *
+         * @return new Message object
+         */
+        public Message getMessage() {
+            return new LobbyInfo(server);
+        }
     }
 }
