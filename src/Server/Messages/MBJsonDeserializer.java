@@ -52,8 +52,16 @@ public class MBJsonDeserializer implements JsonDeserializer<Message> {
             case Message.LOBBY_INFO_TYPE:
                 typeModel = context.deserialize(json, LobbyInfo.class);
                 break;
+            case Message.JOIN_LOBBY_TYPE:
+                typeModel = context.deserialize(json, JoinLobby.class);
+                break;
+            case Message.CREATE_LOBBY_TYPE:
+                typeModel = context.deserialize(json, CreateLobby.class);
+                break;
+            case Message.ERROR_MESSAGE_TYPE:
+                typeModel = context.deserialize(json, ErrorMessage.class);
             default:
-                typeModel = new Message(type) {};
+                typeModel = new Message(Message.INVALID_TYPE) {};
         }
 
         return typeModel;
