@@ -113,7 +113,10 @@ public class HttpThread extends Thread {
                     String lobbyName = joinLobby.lobbyName;
                     String playerID = joinLobby.playerID;
 
-                    String remoteIp = httpExchange.getRemoteAddress().getAddress().getHostAddress();
+                    String remoteIp = httpExchange.getRequestHeaders().getFirst("X-FORWARDED-FOR");
+                    if (remoteIp == null) {
+                        remoteIp = httpExchange.getRemoteAddress().getAddress().getHostAddress();
+                    }
 
                     ErrorMessage errorMessage = server.prepareNewPlayer(remoteIp, lobbyName, playerID);
 
@@ -130,7 +133,10 @@ public class HttpThread extends Thread {
                     String lobbyName = createLobby.lobbyName;
                     String playerID = createLobby.playerID;
 
-                    String remoteIp = httpExchange.getRemoteAddress().getAddress().getHostAddress();
+                    String remoteIp = httpExchange.getRequestHeaders().getFirst("X-FORWARDED-FOR");
+                    if (remoteIp == null) {
+                        remoteIp = httpExchange.getRemoteAddress().getAddress().getHostAddress();
+                    }
 
                     ErrorMessage errorMessage = server.createLobby(lobbyName);
 
