@@ -38,21 +38,21 @@ public class DetailedLobbyView extends MBPanel {
      */
     private MBLabel title;
     /**
-     * The title of the lobby
+     * The list showing the players
      */
     private MBListView<PlayerItem> list;
     /**
      * The buttons for lobby configuration
      */
-    MBButton start, map, mode;
+    private MBButton start, map, mode;
     /**
      * The leave button
      */
-    MBButton leave;
+    private MBButton leave;
     /**
      * The crown images
      */
-    MBImage crown, crownChange;
+    private MBImage crown, crownChange;
 
     /**
      * Constructor
@@ -153,7 +153,7 @@ public class DetailedLobbyView extends MBPanel {
     @Override
     public void afterVisible() {
         setupButtonGroup();
-        enableConfigurationButtons();
+        changeButtonActivity();
 
         // Load the images
         crown = new MBImage("General/crown.png", () -> {
@@ -179,9 +179,9 @@ public class DetailedLobbyView extends MBPanel {
     }
 
     /**
-     * Enable the configuration buttons
+     * Enable/Disable the configuration buttons
      */
-    private void enableConfigurationButtons() {
+    private void changeButtonActivity() {
         // Check if player is host
         boolean enabled = lobby.isHost(player);
         // Enable/Disable buttons
@@ -229,7 +229,7 @@ public class DetailedLobbyView extends MBPanel {
                     if (player.equals(lobby.host) && !player.equals(name)) {
                         showDialog(new HostPromotion(name, lobby), () -> {
                             dialog = false;
-                            enableConfigurationButtons();
+                            changeButtonActivity();
                         });
                         dialog = true;
                     }
