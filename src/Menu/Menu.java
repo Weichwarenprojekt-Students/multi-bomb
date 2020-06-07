@@ -16,10 +16,16 @@ import javax.swing.*;
 public class Menu extends MBPanel {
 
     /**
+     * Constructor
+     */
+    public Menu() {
+        setupLayout();
+    }
+
+    /**
      * Setup the layout
      */
-    @Override
-    public void beforeVisible() {
+    public void setupLayout() {
         // The title
         MBLabel title = new MBLabel("Multi Bomb", SwingConstants.CENTER, MBLabel.H1);
         addComponent(title, () -> title.setBounds(getWidth() / 2 - 100, 50, 200, 40));

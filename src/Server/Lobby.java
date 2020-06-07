@@ -1,5 +1,7 @@
 package Server;
 
+import Game.GameModes.GameMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +26,7 @@ public class Lobby {
 
     public Lobby(String name) {
         this.name = name;
-        this.gameMode = "Battle Royale";
+        this.gameMode = GameMode.BATTLE_ROYALE;
         this.state = WAITING;
 
         players = new ArrayList<>();

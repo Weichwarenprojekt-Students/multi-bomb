@@ -21,6 +21,10 @@ public class MBLabel extends JLabel {
      * Fontsize for normal text
      */
     public static final int NORMAL = 14;
+    /**
+     * Fontsize for description text
+     */
+    public static final int DESCRIPTION = 12;
 
     /**
      * Constructor

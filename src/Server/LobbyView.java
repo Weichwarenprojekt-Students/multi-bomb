@@ -17,10 +17,16 @@ import java.awt.event.KeyEvent;
 public class LobbyView extends MBPanel {
 
     /**
+     * Constructor
+     */
+    public LobbyView() {
+        setupLayout();
+    }
+
+    /**
      * Setup the layout
      */
-    @Override
-    public void beforeVisible() {
+    public void setupLayout() {
         // The title
         MBLabel title = new MBLabel("Lobby 1", SwingConstants.CENTER, MBLabel.H1);
         addComponent(title, () -> title.setBounds(getWidth() / 2 - 100, 50, 200, 40));

@@ -16,10 +16,16 @@ import java.awt.event.KeyEvent;
 public class ServerView extends MBPanel {
 
     /**
+     * Constructor
+     */
+    public ServerView() {
+        setupLayout();
+    }
+
+    /**
      * Setup the layout
      */
-    @Override
-    public void beforeVisible() {
+    public void setupLayout() {
         // The title
         MBLabel title = new MBLabel("Server 1", SwingConstants.CENTER, MBLabel.H1);
         addComponent(title, () -> title.setBounds(getWidth() / 2 - 100, 50, 200, 40));

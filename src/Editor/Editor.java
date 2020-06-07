@@ -16,10 +16,16 @@ import java.awt.event.KeyEvent;
 public class Editor extends MBPanel {
 
     /**
+     * Constructor
+     */
+    public Editor() {
+        setupLayout();
+    }
+
+    /**
      * Setup the layout
      */
-    @Override
-    public void beforeVisible() {
+    public void setupLayout() {
         // The title
         MBLabel title = new MBLabel("Editor", SwingConstants.CENTER, MBLabel.H1);
         addComponent(title, () -> title.setBounds(getWidth() / 2 - 100, 50, 200, 40));
