@@ -188,9 +188,10 @@ public abstract class MBPanel extends JPanel {
      * Show a panel in a dialog
      *
      * @param panel to be shown
+     * @param onClose the close handler
      */
-    public void showDialog(JPanel panel) {
-        this.dialogManager.show(panel);
+    public void showDialog(JPanel panel, MBDialogManager.OnClose onClose) {
+        this.dialogManager.show(panel, onClose);
     }
 
     /**
@@ -374,6 +375,10 @@ public abstract class MBPanel extends JPanel {
          * The content of the dialog
          */
         private JPanel content;
+        /**
+         * On close handler for the dialog
+         */
+        private OnClose onClose;
 
         public MBDialogManager() {
             setLayout(null);
@@ -385,11 +390,13 @@ public abstract class MBPanel extends JPanel {
          * Show the dialog
          *
          * @param content to be shown
+         * @param onClose the close handler
          */
-        public void show(JPanel content) {
+        public void show(JPanel content, OnClose onClose) {
             // Overwrite the old content and remove it from the panel
             content.setOpaque(false);
             this.content = content;
+            this.onClose = onClose;
             removeAll();
             revalidate();
             repaint();
@@ -458,6 +465,7 @@ public abstract class MBPanel extends JPanel {
          */
         public void close() {
             setVisible(false);
+            onClose.onClose();
         }
 
         /**
@@ -475,6 +483,13 @@ public abstract class MBPanel extends JPanel {
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
             g2d.fillRect(0, 0, getWidth(), getHeight());
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+        }
+
+        /**
+         * Interface to notify if the dialog is closed
+         */
+        public interface OnClose {
+            void onClose();
         }
     }
 }
