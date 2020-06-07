@@ -60,10 +60,13 @@ public class DetailedLobbyView extends MBPanel {
     public DetailedLobbyView(String player, Lobby lobby) {
         this.player = player;
         this.lobby = lobby;
+        setupLayout();
     }
 
-    @Override
-    public void beforeVisible() {
+    /**
+     * Setup the layout
+     */
+    public void setupLayout() {
         // The title
         title = new MBLabel("Lobby", SwingConstants.CENTER, MBLabel.H1);
         addComponent(title, () -> title.setBounds(getWidth() / 2 - 100, 32, 200, 40));

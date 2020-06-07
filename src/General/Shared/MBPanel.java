@@ -41,8 +41,6 @@ public abstract class MBPanel extends JPanel {
         // Add the components (first the toast component so it is always on top)
         addComponent(toastManager, () -> toastManager.setBounds(0, 0, getWidth(), getHeight()));
         addComponent(dialogManager, () -> dialogManager.setBounds(0, 0, getWidth(), getHeight()));
-        beforeVisible();
-
 
         // Listen for resize events
         addComponentListener(new ComponentAdapter() {
@@ -64,11 +62,6 @@ public abstract class MBPanel extends JPanel {
             resize.resize();
         }
     }
-
-    /**
-     * Setup the panels content
-     */
-    public abstract void beforeVisible();
 
     /**
      * This method is executed when the panel is visible

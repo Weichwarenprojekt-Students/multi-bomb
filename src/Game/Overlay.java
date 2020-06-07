@@ -12,8 +12,17 @@ import java.awt.*;
 
 public class Overlay extends MBPanel {
 
-    @Override
-    public void beforeVisible() {
+    /**
+     * Constructor
+     */
+    public Overlay() {
+        setupLayout();
+    }
+
+    /**
+     * Setup the layout
+     */
+    public void setupLayout() {
         // Change to transparent background
         setBackground(new Color(0, 0, 0, 0.7f));
 

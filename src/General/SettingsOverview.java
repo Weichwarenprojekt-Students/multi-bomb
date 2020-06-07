@@ -37,13 +37,13 @@ public class SettingsOverview extends MBPanel {
      */
     public SettingsOverview(MBPanel last) {
         this.last = last;
+        setupLayout();
     }
 
     /**
      * Setup the layout
      */
-    @Override
-    public void beforeVisible() {
+    public void setupLayout() {
         // The title
         MBLabel title = new MBLabel("Settings", SwingConstants.CENTER, MBLabel.H1);
         addComponent(title, () -> title.setBounds(getWidth() / 2 - 100, 50, 200, 40));

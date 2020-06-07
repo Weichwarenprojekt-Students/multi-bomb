@@ -51,10 +51,16 @@ public class Game extends MBPanel {
     private Battleground battleground;
 
     /**
+     * Constructor
+     */
+    public Game() {
+        setupLayout();
+    }
+
+    /**
      * Setup the layout
      */
-    @Override
-    public void beforeVisible() {
+    public void setupLayout() {
         // The button for opening a lobby overview
         overlay = new Overlay();
         overlay.setVisible(false);
@@ -121,6 +127,7 @@ public class Game extends MBPanel {
 
             // Update the player and repaint
             player.update();
+            MB.frame.revalidate();
             MB.frame.repaint();
 
             // Wait for the next run

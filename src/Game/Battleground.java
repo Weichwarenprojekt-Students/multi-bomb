@@ -64,13 +64,6 @@ public class Battleground extends MBPanel {
     }
 
     /**
-     * Executed before panel is visible
-     */
-    @Override
-    public void beforeVisible() {
-    }
-
-    /**
      * Executed after panel is visible
      */
     @Override
@@ -124,7 +117,7 @@ public class Battleground extends MBPanel {
                 }
 
                 // Check if it should draw the player
-                if (player.isOnField(m, n)) {
+                if (player != null && player.isOnField(m, n)) {
                     player.draw(g);
                 }
 
