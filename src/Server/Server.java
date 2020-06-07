@@ -90,7 +90,7 @@ public class Server implements Runnable {
      *
      * @return a list of open lobbies
      */
-    public List<Lobby> getLobbies() {
+    public synchronized List<Lobby> getLobbies() {
         return lobbies.values().stream().filter(l -> l.isOpen()).collect(Collectors.toList());
     }
 
@@ -102,7 +102,7 @@ public class Server implements Runnable {
      * @param playerID  name of the player
      * @return ErrorMessage in case of failure, null in case of success
      */
-    public ErrorMessage prepareNewPlayer(String ipAddress, String lobbyName, String playerID) {
+    public synchronized ErrorMessage prepareNewPlayer(String ipAddress, String lobbyName, String playerID) {
         if (lobbies.containsKey(lobbyName)) {
 
             Lobby lobby = lobbies.get(lobbyName);
@@ -126,7 +126,7 @@ public class Server implements Runnable {
      * @param lobbyName name of the lobby
      * @return ErrorMessage in case of failure, null in case of success
      */
-    public ErrorMessage createLobby(String lobbyName) {
+    public synchronized ErrorMessage createLobby(String lobbyName) {
         if (lobbies.containsKey(lobbyName) && lobbies.get(lobbyName).isOpen()) {
             return new ErrorMessage("Lobby already exists");
         } else {
@@ -140,7 +140,7 @@ public class Server implements Runnable {
      *
      * @param lobbyName name of the lobby
      */
-    public void closeLobby(String lobbyName) {
+    public synchronized void closeLobby(String lobbyName) {
         if (lobbies.containsKey(lobbyName)) {
             Lobby lobby = lobbies.get(lobbyName);
             lobbies.remove(lobbyName);
