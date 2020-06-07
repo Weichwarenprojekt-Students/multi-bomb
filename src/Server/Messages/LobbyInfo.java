@@ -19,7 +19,7 @@ public class LobbyInfo extends Message {
         super(Message.LOBBY_INFO_TYPE);
 
         // transform all lobbies from server into SingleLobbyInfo objects
-        lobbies = server.lobbies.stream().map(SingleLobbyInfo::new).toArray(SingleLobbyInfo[]::new);
+        lobbies = server.getLobbies().stream().map(SingleLobbyInfo::new).toArray(SingleLobbyInfo[]::new);
     }
 
     /**

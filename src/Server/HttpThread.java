@@ -1,9 +1,6 @@
 package Server;
 
-import Server.Messages.ErrorMessage;
-import Server.Messages.LobbyInfo;
-import Server.Messages.Message;
-import Server.Messages.ServerInfo;
+import Server.Messages.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -112,16 +109,54 @@ public class HttpThread extends Thread {
                 Message msg = Message.fromJson(reqBody.readLine());
 
                 if (msg.type.equals(Message.JOIN_LOBBY_TYPE)) {
-                    code = 501; // Not Implemented
-                    responseString = "";
+                    JoinLobby joinLobby = (JoinLobby) msg;
+                    String lobbyName = joinLobby.lobbyName;
+                    String playerID = joinLobby.playerID;
+
+                    String remoteIp = httpExchange.getRemoteAddress().getAddress().getHostAddress();
+
+                    ErrorMessage errorMessage = server.prepareNewPlayer(remoteIp, lobbyName, playerID);
+
+                    if (errorMessage == null) {
+                        code = 200; // OK
+                        responseString = "";
+                    } else {
+                        code = 400; // Bad Request
+                        responseString = errorMessage.toJson();
+                    }
 
                 } else if (msg.type.equals(Message.CREATE_LOBBY_TYPE)) {
-                    code = 501; // Not Implemented
-                    responseString = "";
+                    CreateLobby createLobby = (CreateLobby) msg;
+                    String lobbyName = createLobby.lobbyName;
+                    String playerID = createLobby.playerID;
 
+                    String remoteIp = httpExchange.getRemoteAddress().getAddress().getHostAddress();
+
+                    ErrorMessage errorMessage = server.createLobby(lobbyName);
+
+                    if (errorMessage != null) {
+                        // Error with creating lobby
+                        code = 400; // Bad Request
+                        responseString = errorMessage.toJson();
+
+                    } else {
+                        errorMessage = server.prepareNewPlayer(remoteIp, lobbyName, playerID);
+
+                        if (errorMessage == null) {
+                            code = 200; // OK
+                            responseString = "";
+                        } else {
+                            // Error with joining lobby
+                            code = 400; // Bad Request
+                            responseString = errorMessage.toJson();
+
+                            server.closeLobby(lobbyName);
+                        }
+
+                    }
                 } else {
                     code = 400; // Bad Request
-                    responseString = new ErrorMessage("Bad Request").toJson();
+                    responseString = new ErrorMessage("JSON message not recognized").toJson();
                 }
             } else {
                 code = 405; // Method Not Allowed
