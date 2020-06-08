@@ -68,11 +68,13 @@ public class Lobby {
                 host = playerConnection;
             }
 
-            this.players.put(playerConnection.name, playerConnection);
-            playerConnection.color = getFreeColor();
+            if (!players.containsKey(playerConnection.name)) {
+                this.players.put(playerConnection.name, playerConnection);
+                playerConnection.color = getFreeColor();
 
-            sendToAllPlayers(new LobbyState(this));
-            return true;
+                sendToAllPlayers(new LobbyState(this));
+                return true;
+            }
         }
         // players can't join
         return false;
@@ -133,7 +135,9 @@ public class Lobby {
         HashMap<String, Integer> colors = new HashMap<>();
         players.forEach((k, v) -> colors.put(k, v.color));
         return colors;
-    };
+    }
+
+    ;
 
     /**
      * Close lobby

@@ -1,6 +1,7 @@
 package Server;
 
 import Server.Messages.CloseConnection;
+import Server.Messages.ErrorMessage;
 import Server.Messages.Message;
 
 import java.io.BufferedReader;
@@ -64,6 +65,10 @@ public class PlayerConnection extends Thread {
     @Override
     public void run() {
         alive = lobby.addPlayer(this);
+
+        if (!alive && lobby.getPlayerColors().containsKey(name)) {
+            send(new ErrorMessage("Name already taken, please choose a different one!"));
+        }
 
         String jsonMessage;
         while (alive) {

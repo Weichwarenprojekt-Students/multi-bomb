@@ -203,6 +203,8 @@ public class Server implements Runnable {
                 return new ErrorMessage("The requested lobby is full");
             } else if (!lobby.isOpen()) {
                 lobbies.remove(lobbyName);
+            } else if (lobby.getPlayerColors().containsKey(playerID)) {
+                return new ErrorMessage("Name already taken, please choose a different one!");
             } else {
                 preparedPlayers.put(ipAddress, new LobbyTimestamp(lobbyName, playerID));
                 return null;
