@@ -1,6 +1,7 @@
-package Server.Messages;
+package Server.Messages.REST;
 
 import Server.Lobby;
+import Server.Messages.Message;
 import Server.Server;
 
 public class LobbyInfo extends Message {

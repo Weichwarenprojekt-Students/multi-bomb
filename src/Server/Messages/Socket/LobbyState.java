@@ -1,6 +1,7 @@
-package Server.Messages;
+package Server.Messages.Socket;
 
 import Server.Lobby;
+import Server.Messages.Message;
 
 import java.util.HashMap;
 

@@ -1,4 +1,6 @@
-package Server.Messages;
+package Server.Messages.REST;
+
+import Server.Messages.Message;
 
 public class JoinLobby extends Message {
     /**

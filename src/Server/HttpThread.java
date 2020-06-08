@@ -1,6 +1,10 @@
 package Server;
 
 import Server.Messages.*;
+import Server.Messages.REST.CreateLobby;
+import Server.Messages.REST.JoinLobby;
+import Server.Messages.REST.LobbyInfo;
+import Server.Messages.REST.ServerInfo;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;

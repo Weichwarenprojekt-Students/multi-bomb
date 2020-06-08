@@ -1,4 +1,6 @@
-package Server.Messages;
+package Server.Messages.Socket;
+
+import Server.Messages.Message;
 
 public class GameState extends Message {
     /**

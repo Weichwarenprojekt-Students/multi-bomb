@@ -1,6 +1,6 @@
 package Server;
 
-import Server.Messages.CloseConnection;
+import Server.Messages.Socket.CloseConnection;
 import Server.Messages.ErrorMessage;
 
 import java.io.IOException;

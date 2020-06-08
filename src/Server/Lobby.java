@@ -1,6 +1,6 @@
 package Server;
 
-import Server.Messages.LobbyState;
+import Server.Messages.Socket.LobbyState;
 import Server.Messages.Message;
 
 import java.util.*;
