@@ -102,6 +102,9 @@ public class HttpThread extends Thread {
             }
         }
 
+        /**
+         * Handle post requests to /lobby
+         */
         private void handlePost() throws IOException {
             BufferedReader reqBody = new BufferedReader(new InputStreamReader(httpExchange.getRequestBody()));
 
@@ -120,6 +123,11 @@ public class HttpThread extends Thread {
             }
         }
 
+        /**
+         * Handle JoinLobby messages that are POSTed to /lobby
+         *
+         * @param joinLobby message from the POST request body
+         */
         private void handleJoin(JoinLobby joinLobby) throws IOException {
             String lobbyName = joinLobby.lobbyName;
             String playerID = joinLobby.playerID;
@@ -138,6 +146,11 @@ public class HttpThread extends Thread {
             }
         }
 
+        /**
+         * Handle CreateLobby messages that are POSTed to /lobby
+         *
+         * @param createLobby message from the POST request body
+         */
         private void handleCreate(CreateLobby createLobby) throws IOException {
             String lobbyName = createLobby.lobbyName;
             String playerID = createLobby.playerID;
@@ -168,6 +181,12 @@ public class HttpThread extends Thread {
             }
         }
 
+        /**
+         * Send http response to the requester
+         *
+         * @param code           http status code for the response
+         * @param responseString body of the response
+         */
         private void sendResponse(int code, String responseString) throws IOException {
             byte[] response = responseString.getBytes();
             httpExchange.sendResponseHeaders(code, response.length);
