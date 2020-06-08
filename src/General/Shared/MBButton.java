@@ -9,6 +9,10 @@ import java.awt.event.*;
 public class MBButton extends JButton {
 
     /**
+     * True if the button is enabled
+     */
+    public boolean enabled = true;
+    /**
      * The Button text
      */
     private String text;
@@ -71,7 +75,7 @@ public class MBButton extends JButton {
         MB.settings.enableAntiAliasing(g);
 
         // The hover effect
-        if (hasFocus()) {
+        if (hasFocus() && enabled) {
             g.setColor(Color.lightGray);
             g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
         }

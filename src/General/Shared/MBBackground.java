@@ -21,6 +21,15 @@ public class MBBackground extends JLabel {
     /**
      * Constructor
      *
+     * @param color of the background
+     */
+    public MBBackground(Color color) {
+        this.color = color;
+    }
+
+    /**
+     * Constructor
+     *
      * @param parent of the background
      * @param color of the background
      * @param follow true if the background shall follow the parent

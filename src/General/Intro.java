@@ -12,10 +12,16 @@ import javax.swing.*;
 public class Intro extends MBPanel {
 
     /**
+     * Constructor
+     */
+    public Intro() {
+        setupLayout();
+    }
+
+    /**
      * Setup the layout
      */
-    @Override
-    public void beforeVisible() {
+    public void setupLayout() {
         // The title
         MBLabel title = new MBLabel("Intro", SwingConstants.CENTER, MBLabel.H1);
         addComponent(title, () -> title.setBounds(getWidth() / 2 - 100, getHeight() / 2 - 20, 200, 40));

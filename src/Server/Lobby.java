@@ -1,5 +1,6 @@
 package Server;
 
+import Game.GameModes.GameMode;
 import Server.Messages.Socket.LobbyState;
 import Server.Messages.Message;
 
@@ -46,7 +47,7 @@ public class Lobby {
      */
     public Lobby(String name) {
         this.name = name;
-        this.gameMode = "Battle Royale";
+        this.gameMode = GameMode.BATTLE_ROYALE;
         this.state = WAITING;
 
         players = new HashMap<>();

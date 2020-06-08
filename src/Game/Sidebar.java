@@ -9,8 +9,18 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Sidebar extends MBPanel {
-    @Override
-    public void beforeVisible() {
+
+    /**
+     * Constructor
+     */
+    public Sidebar() {
+        setupLayout();
+    }
+
+    /**
+     * Setup the layout
+     */
+    public void setupLayout() {
         // The title
         MBLabel title = new MBLabel("Game", SwingConstants.CENTER, MBLabel.H1);
         addComponent(title, () -> title.setBounds(getWidth() / 2 - 100, 50, 200, 40));
