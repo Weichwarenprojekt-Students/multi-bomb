@@ -87,89 +87,94 @@ public class HttpThread extends Thread {
     }
 
     public class LobbyRequestHandler implements HttpHandler {
+        private HttpExchange httpExchange;
 
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
-            int code;
-            String responseString;
+            this.httpExchange = httpExchange;
+
             if (httpExchange.getRequestMethod().equals("GET")) {
-                code = 200; // OK
-                // generate response from Message object
-                responseString = new LobbyInfo(server).toJson();
-
+                sendResponse(200, new LobbyInfo(server).toJson()); // OK
             } else if (httpExchange.getRequestMethod().equals("POST")) {
-                BufferedReader reqBody = new BufferedReader(new InputStreamReader(httpExchange.getRequestBody()));
-
-                Message msg = Message.fromJson(reqBody.readLine());
-
-                if (msg.type.equals(Message.JOIN_LOBBY_TYPE)) {
-                    JoinLobby joinLobby = (JoinLobby) msg;
-                    String lobbyName = joinLobby.lobbyName;
-                    String playerID = joinLobby.playerID;
-
-                    String remoteIp = httpExchange.getRequestHeaders().getFirst("X-FORWARDED-FOR");
-                    if (remoteIp == null) {
-                        remoteIp = httpExchange.getRemoteAddress().getAddress().getHostAddress();
-                    }
-
-                    ErrorMessage errorMessage = server.prepareNewPlayer(remoteIp, lobbyName, playerID);
-
-                    if (errorMessage == null) {
-                        code = 200; // OK
-                        responseString = "";
-                    } else {
-                        code = 400; // Bad Request
-                        responseString = errorMessage.toJson();
-                    }
-
-                } else if (msg.type.equals(Message.CREATE_LOBBY_TYPE)) {
-                    CreateLobby createLobby = (CreateLobby) msg;
-                    String lobbyName = createLobby.lobbyName;
-                    String playerID = createLobby.playerID;
-
-                    String remoteIp = httpExchange.getRequestHeaders().getFirst("X-FORWARDED-FOR");
-                    if (remoteIp == null) {
-                        remoteIp = httpExchange.getRemoteAddress().getAddress().getHostAddress();
-                    }
-
-                    ErrorMessage errorMessage = server.createLobby(lobbyName);
-
-                    if (errorMessage != null) {
-                        // Error with creating lobby
-                        code = 400; // Bad Request
-                        responseString = errorMessage.toJson();
-
-                    } else {
-                        errorMessage = server.prepareNewPlayer(remoteIp, lobbyName, playerID);
-
-                        if (errorMessage == null) {
-                            code = 200; // OK
-                            responseString = "";
-                        } else {
-                            // Error with joining lobby
-                            code = 400; // Bad Request
-                            responseString = errorMessage.toJson();
-
-                            server.closeLobby(lobbyName);
-                        }
-
-                    }
-                } else {
-                    code = 400; // Bad Request
-                    responseString = new ErrorMessage("JSON message not recognized").toJson();
-                }
+                handlePost();
             } else {
-                code = 405; // Method Not Allowed
-                responseString = new ErrorMessage("Method Not Allowed").toJson();
+                sendResponse(405, new ErrorMessage("Method Not Allowed").toJson());
+            }
+        }
+
+        private void handlePost() throws IOException {
+            BufferedReader reqBody = new BufferedReader(new InputStreamReader(httpExchange.getRequestBody()));
+
+            Message msg = Message.fromJson(reqBody.readLine());
+
+            if (msg.type.equals(Message.JOIN_LOBBY_TYPE)) {
+                JoinLobby joinLobby = (JoinLobby) msg;
+                handleJoin(joinLobby);
+
+            } else if (msg.type.equals(Message.CREATE_LOBBY_TYPE)) {
+                CreateLobby createLobby = (CreateLobby) msg;
+                handleCreate(createLobby);
+
+            } else {
+                sendResponse(400, new ErrorMessage("JSON message not recognized").toJson());
+            }
+        }
+
+        private void handleJoin(JoinLobby joinLobby) throws IOException {
+            String lobbyName = joinLobby.lobbyName;
+            String playerID = joinLobby.playerID;
+
+            String remoteIp = httpExchange.getRequestHeaders().getFirst("X-FORWARDED-FOR");
+            if (remoteIp == null) {
+                remoteIp = httpExchange.getRemoteAddress().getAddress().getHostAddress();
             }
 
+            ErrorMessage errorMessage = server.prepareNewPlayer(remoteIp, lobbyName, playerID);
+
+            if (errorMessage == null) {
+                sendResponse(200, ""); // OK
+            } else {
+                sendResponse(400, errorMessage.toJson()); // Bad Request
+            }
+        }
+
+        private void handleCreate(CreateLobby createLobby) throws IOException {
+            String lobbyName = createLobby.lobbyName;
+            String playerID = createLobby.playerID;
+
+            String remoteIp = httpExchange.getRequestHeaders().getFirst("X-FORWARDED-FOR");
+            if (remoteIp == null) {
+                remoteIp = httpExchange.getRemoteAddress().getAddress().getHostAddress();
+            }
+
+            ErrorMessage errorMessage = server.createLobby(lobbyName);
+
+            if (errorMessage != null) {
+                // Error with creating lobby
+                sendResponse(400, errorMessage.toJson()); // Bad Request
+
+            } else {
+                errorMessage = server.prepareNewPlayer(remoteIp, lobbyName, playerID);
+
+                if (errorMessage == null) {
+                    sendResponse(200, ""); // OK
+                } else {
+                    // Error with joining lobby
+                    sendResponse(400, errorMessage.toJson());
+
+                    server.closeLobby(lobbyName);
+                }
+
+            }
+        }
+
+        private void sendResponse(int code, String responseString) throws IOException {
             byte[] response = responseString.getBytes();
             httpExchange.sendResponseHeaders(code, response.length);
 
             OutputStream os = httpExchange.getResponseBody();
             os.write(response);
             os.close();
-
         }
     }
 }
