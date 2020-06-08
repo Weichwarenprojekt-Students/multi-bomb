@@ -62,7 +62,7 @@ public class Server implements Runnable {
      * Constructor
      *
      * @param name           name of the server
-     * @param ticksPerSecond tick rate of the server
+     * @param ticksPerSecond tick rate of the server (should be 64 or 128)
      * @param maxLobbies     maximum number of lobbies
      */
     public Server(String name, int ticksPerSecond, int maxLobbies) {
@@ -83,7 +83,7 @@ public class Server implements Runnable {
      * @param name of the server
      */
     public Server(String name) {
-        this(name, 60, 16);
+        this(name, 64, 16);
     }
 
     /**
