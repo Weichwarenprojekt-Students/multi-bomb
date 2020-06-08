@@ -54,7 +54,7 @@ public class LobbyInfo extends Message {
          */
         public SingleLobbyInfo(Lobby lobby) {
             name = lobby.name;
-            players = lobby.players.size();
+            players = lobby.getPlayerColors().size();
             gameMode = lobby.gameMode;
             status = (lobby.state == Lobby.WAITING) ? IN_LOBBY : IN_GAME;
         }

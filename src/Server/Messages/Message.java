@@ -13,7 +13,8 @@ public abstract class Message {
             LOBBY_STATE_TYPE = "lobbyState", PLAYER_STATE_TYPE = "playerState",
             SERVER_INFO_TYPE = "serverInfo", LOBBY_INFO_TYPE = "lobbyInfo",
             JOIN_LOBBY_TYPE = "joinLobby", CREATE_LOBBY_TYPE = "createLobby",
-            INVALID_TYPE = "invalidMessage", ERROR_MESSAGE_TYPE = "errorMessage";
+            INVALID_TYPE = "invalidMessage", ERROR_MESSAGE_TYPE = "errorMessage",
+            CLOSE_CONNECTION_TYPE = "closeConnection";
 
     /**
      * Gson object with deserializer for Message.class

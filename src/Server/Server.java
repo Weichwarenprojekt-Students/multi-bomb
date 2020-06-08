@@ -1,7 +1,12 @@
 package Server;
 
+import Server.Messages.CloseConnection;
 import Server.Messages.ErrorMessage;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +22,14 @@ public class Server implements Runnable {
      */
     public static final int HTTP_PORT = 42421;
     /**
+     * Port for the server game socket
+     */
+    public static final int GAME_PORT = 42422;
+    /**
+     * Map of lobby names to their lobby objects
+     */
+    public final Map<String, Lobby> lobbies;
+    /**
      * HTTP server thread which provides information about this server
      */
     private final HttpThread httpThread;
@@ -24,10 +37,6 @@ public class Server implements Runnable {
      * UDP Broadcast discovery thread
      */
     private final Thread discoveryThread;
-    /**
-     * Map of lobby names to their lobby objects
-     */
-    private final Map<String, Lobby> lobbies;
     /**
      * Map of ip addresses to players that requested to join a lobby
      */
@@ -44,6 +53,10 @@ public class Server implements Runnable {
      * Maximum number of lobbies
      */
     public int maxLobbies;
+    /**
+     * Indicate if server is running
+     */
+    private boolean running;
 
     /**
      * Constructor
@@ -83,6 +96,85 @@ public class Server implements Runnable {
 
         // start HTTP server thread
         httpThread.start();
+
+        try {
+            ServerSocket serverSocket = new ServerSocket(GAME_PORT);
+            clientSocketLoop(serverSocket);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Listen for new socket connections and handle them
+     *
+     * @param serverSocket server socket which listens for new connections
+     */
+    public void clientSocketLoop(ServerSocket serverSocket) {
+        running = true;
+        while (running) {
+            Socket clientSocket;
+            try {
+                clientSocket = serverSocket.accept();
+            } catch (IOException e) {
+                continue;
+            }
+
+            PrintWriter out;
+            try {
+                // set up output stream for error output
+                out = new PrintWriter(clientSocket.getOutputStream(), true);
+            } catch (IOException e) {
+                try {
+                    clientSocket.close();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+                // something with the socket went wrong, listen for the next socket connection
+                continue;
+            }
+
+            String remoteIp = clientSocket.getRemoteSocketAddress().toString();
+
+            LobbyTimestamp lobbyTimestamp;
+            if (preparedPlayers.containsKey(remoteIp) && !(lobbyTimestamp = preparedPlayers.get(remoteIp)).isExpired()) {
+                String lobbyName = lobbyTimestamp.lobbyName;
+
+                Lobby lobby;
+                if (lobbies.containsKey(lobbyName) && (lobby = lobbies.get(lobbyName)).isOpen()) {
+                    if (!lobby.isFull()) {
+                        try {
+                            new PlayerConnection(clientSocket, lobby, lobbyTimestamp.playerID).start();
+                            preparedPlayers.remove(remoteIp);
+
+                            // success, listen for next socket connection
+                            continue;
+
+                        } catch (IOException e) {
+                            // catch exception from PlayerConnection constructor
+                            out.println(new ErrorMessage("Could not connect to lobby!"));
+                        }
+                    } else {
+                        out.println(new ErrorMessage("Lobby is full!").toJson());
+                    }
+                } else {
+                    out.println(new ErrorMessage("Lobby does not exist!").toJson());
+                }
+            } else {
+                out.println(new ErrorMessage("Player could not be assigned to lobby").toJson());
+            }
+            preparedPlayers.remove(remoteIp);
+
+            out.println(new CloseConnection().toJson());
+
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     /**

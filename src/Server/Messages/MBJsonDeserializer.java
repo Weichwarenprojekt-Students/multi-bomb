@@ -60,6 +60,10 @@ public class MBJsonDeserializer implements JsonDeserializer<Message> {
                 break;
             case Message.ERROR_MESSAGE_TYPE:
                 typeModel = context.deserialize(json, ErrorMessage.class);
+                break;
+            case Message.CLOSE_CONNECTION_TYPE:
+                typeModel = context.deserialize(json, CloseConnection.class);
+                break;
             default:
                 typeModel = new Message(Message.INVALID_TYPE) {};
         }
