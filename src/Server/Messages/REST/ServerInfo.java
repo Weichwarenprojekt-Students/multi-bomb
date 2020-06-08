@@ -1,5 +1,6 @@
-package Server.Messages;
+package Server.Messages.REST;
 
+import Server.Messages.Message;
 import Server.Server;
 
 public class ServerInfo extends Message {

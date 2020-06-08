@@ -2,7 +2,7 @@ package Game.Models;
 
 import Game.Items.Item;
 import Server.Messages.Message;
-import Server.Messages.Position;
+import Server.Messages.Socket.Position;
 
 /**
  * The model for a map

@@ -6,7 +6,7 @@ import Game.Items.Bomb;
 import Game.Items.Item;
 import General.Shared.MBImage;
 import General.Shared.MBPanel;
-import Server.Messages.Position;
+import Server.Messages.Socket.Position;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

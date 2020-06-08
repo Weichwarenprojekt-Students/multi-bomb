@@ -1,6 +1,7 @@
-package Server.Messages;
+package Server.Messages.Socket;
 
 import Game.Models.Direction;
+import Server.Messages.Message;
 
 /**
  * Basic position model

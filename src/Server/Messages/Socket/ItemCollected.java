@@ -1,6 +1,7 @@
-package Server.Messages;
+package Server.Messages.Socket;
 
 import Game.Models.Field;
+import Server.Messages.Message;
 
 public class ItemCollected extends Message {
     /**
