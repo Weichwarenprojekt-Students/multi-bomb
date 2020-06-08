@@ -18,7 +18,9 @@ public class MultiBomb {
                     int tickRate = Integer.parseInt(args[2]);
                     int maxLobbies = Integer.parseInt(args[3]);
 
-                    if (tickRate == 64 || tickRate == 128) {
+                    if (serverName.equals("")) {
+                        System.out.println("Server name cannot be empty");
+                    } else if (tickRate == 64 || tickRate == 128) {
                         new Server(serverName, tickRate, maxLobbies).run();
                     } else {
                         System.out.println("TickRate must be 64 or 128");
