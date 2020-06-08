@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" content="width=device-width, initial-scale=1" name="viewport">
+    <title> Multi Bomb </title>
+
+    <!-- Load the roboto font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+
+    <!-- Define the global styles -->
+    <style>
+        /* Variables */
+        :root {
+            /* The padding of the content area */
+            --content_padding: 24px;
+            /* The width of the content area */
+            --content_width: 550px;
+            /* The height of the content area */
+            --content_height: 320px;
+            /* The used blue */
+            --blue: rgb(17, 108, 192);
+        }
+
+        /* Remove the body's paddings and margins */
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+        }
+
+        /* The header */
+        .header {
+            position: absolute;
+            top: 0;
+            margin: 0;
+            text-align: center;
+            display: table;
+            height: 50vh;
+            background-color: var(--blue);
+            width: 100vw;
+            -moz-box-shadow: 3px 3px 5px 6px #ccc;
+            -webkit-box-shadow: 3px 3px 5px 6px #ccc;
+            box-shadow: 3px 3px 5px 6px #ccc;
+        }
+
+        /* The title */
+        .title {
+            color: white;
+            font-size: 48px;
+        }
+
+        /* The description */
+        .description {
+            color: white;
+            font-size: 32px;
+        }
+
+        /* The content area */
+        .content {
+            position: absolute;
+            top: calc(50vh - var(--content_height) / 2);
+            left: calc(50vw - var(--content_width) / 2);
+            width: calc(var(--content_width) - 2 * var(--content_padding));
+            height: calc(var(--content_height));
+            padding: 0 var(--content_padding);
+            z-index: 100;
+        }
+
+        /* Alternative header*/
+        .alternative-header {
+            background-color: var(--blue);
+            color: white;
+            width: 100vw;
+            margin: 0;
+            padding: var(--content_padding);
+            font-size: 32px;
+            display: none;
+            -moz-box-shadow: 3px 3px 5px 6px #ccc;
+            -webkit-box-shadow: 3px 3px 5px 6px #ccc;
+            box-shadow: 3px 3px 5px 6px #ccc;
+        }
+
+        /* Switch content if site is too small */
+        @media (max-width: 650px) {
+            .content {
+                overflow-y: scroll;
+                position: relative;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: calc(100vh - 91px);
+            }
+
+            /* Hide the normal header*/
+            .header {
+                display: none;
+            }
+
+            /* Show the alternative header */
+            .alternative-header {
+                display: block;
+            }
+
+            /* Hide the background */
+            .upper-box {
+                display: none;
+            }
+            .lower-box {
+                display: none;
+            }
+        }
+
+        /* The upper half of the background box */
+        .upper-box {
+            position: absolute;
+            top: calc(50vh - var(--content_height) / 2);
+            left: calc(50vw - var(--content_width) / 2);
+            width: var(--content_width);
+            height: calc(var(--content_height) / 2);
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+            background: white;
+            z-index: 10;
+        }
+
+        /* The lower half of the background box */
+        .lower-box {
+            position: absolute;
+            top: calc(50vh);
+            left: calc(50vw - var(--content_width) / 2);
+            width: var(--content_width);
+            height: calc(var(--content_height) / 2);
+            border-bottom-left-radius: 3px;
+            border-bottom-right-radius: 3px;
+            background: white;
+            -moz-box-shadow: 2px 3px 5px 4px #ccc;
+            -webkit-box-shadow: 2px 3px 5px 4px #ccc;
+            box-shadow: 0 6px 5px 3px #ccc;
+        }
+
+        /* The titles */
+        .titles {
+            margin: var(--content_padding) 0 0 0;
+            font-weight: 400;
+        }
+
+        /* Remove the underline from links */
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- The header -->
+    <div class="header">
+        <h1 class="title"> Multi Bomb </h1>
+        <h1 class="description"> A multiplayer version of the popular game Bomberman. </h1>
+    </div>
+
+    <!-- The background -->
+    <div class="upper-box"></div>
+    <div class="lower-box"></div>
+
+    <!-- The alternative header -->
+    <h1 class="alternative-header"> Multi Bomb </h1>
+
+    <!-- The content area -->
+    <div class="content">
+        <h1 class="titles"> Game </h1>
+        <div class="divider"></div>
+        <a href="https://github.com/Timbogen/Multi-Bomb/releases/download/v0.0.1/Multi-Bomb.jar"> Download the JAR </a>
+
+        <h1 class="titles"> Source Code </h1>
+        <div class="divider"></div>
+        <a href="https://github.com/Timbogen/Multi-Bomb/tree/master"> GitHub Repository</a>
+
+        <h1 class="titles"> Documentation </h1>
+        <div class="divider"></div>
+        <a href="https://github.com/Timbogen/Multi-Bomb/wiki"> Wiki </a>
+    </div>
+</body>
+
+</html>
