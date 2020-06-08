@@ -51,7 +51,7 @@ public class LobbyInfo extends Message {
         /**
          * Constructor
          *
-         * @param lobby o
+         * @param lobby lobby from which the info is parsed
          */
         public SingleLobbyInfo(Lobby lobby) {
             name = lobby.name;
