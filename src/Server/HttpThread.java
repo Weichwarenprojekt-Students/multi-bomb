@@ -66,7 +66,7 @@ public class HttpThread extends Thread {
                 code = 200; // OK
 
                 // generate response from Message object
-                responseString = getMessage().toJson();
+                responseString = new ServerInfo(server).toJson();
 
             } else {
                 code = 405; // Method Not Allowed
@@ -80,16 +80,6 @@ public class HttpThread extends Thread {
             os.write(response);
             os.close();
         }
-
-        /**
-         * Generate Message object for the response
-         *
-         * @return new Message object
-         */
-        public Message getMessage() {
-            return new ServerInfo(server);
-        }
-
     }
 
     public class LobbyRequestHandler implements HttpHandler {
@@ -101,7 +91,7 @@ public class HttpThread extends Thread {
             if (httpExchange.getRequestMethod().equals("GET")) {
                 code = 200; // OK
                 // generate response from Message object
-                responseString = getMessage().toJson();
+                responseString = new LobbyInfo(server).toJson();
 
             } else if (httpExchange.getRequestMethod().equals("POST")) {
                 BufferedReader reqBody = new BufferedReader(new InputStreamReader(httpExchange.getRequestBody()));
@@ -176,15 +166,6 @@ public class HttpThread extends Thread {
             os.write(response);
             os.close();
 
-        }
-
-        /**
-         * Generate Message object for the response
-         *
-         * @return new Message object
-         */
-        public Message getMessage() {
-            return new LobbyInfo(server);
         }
     }
 }
