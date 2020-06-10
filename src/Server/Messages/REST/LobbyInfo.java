@@ -1,6 +1,7 @@
-package Server.Messages;
+package Server.Messages.REST;
 
 import Server.Lobby;
+import Server.Messages.Message;
 import Server.Server;
 
 public class LobbyInfo extends Message {
@@ -19,7 +20,7 @@ public class LobbyInfo extends Message {
         super(Message.LOBBY_INFO_TYPE);
 
         // transform all lobbies from server into SingleLobbyInfo objects
-        lobbies = server.lobbies.stream().map(SingleLobbyInfo::new).toArray(SingleLobbyInfo[]::new);
+        lobbies = server.getLobbies().stream().map(SingleLobbyInfo::new).toArray(SingleLobbyInfo[]::new);
     }
 
     /**
@@ -50,11 +51,11 @@ public class LobbyInfo extends Message {
         /**
          * Constructor
          *
-         * @param lobby o
+         * @param lobby lobby from which the info is parsed
          */
         public SingleLobbyInfo(Lobby lobby) {
             name = lobby.name;
-            players = lobby.players.size();
+            players = lobby.getPlayerColors().size();
             gameMode = lobby.gameMode;
             status = (lobby.state == Lobby.WAITING) ? IN_LOBBY : IN_GAME;
         }

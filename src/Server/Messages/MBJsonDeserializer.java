@@ -1,6 +1,11 @@
 package Server.Messages;
 
 import Game.Models.Map;
+import Server.Messages.REST.CreateLobby;
+import Server.Messages.REST.JoinLobby;
+import Server.Messages.REST.LobbyInfo;
+import Server.Messages.REST.ServerInfo;
+import Server.Messages.Socket.*;
 import com.google.gson.*;
 
 import java.lang.reflect.Type;
@@ -52,8 +57,20 @@ public class MBJsonDeserializer implements JsonDeserializer<Message> {
             case Message.LOBBY_INFO_TYPE:
                 typeModel = context.deserialize(json, LobbyInfo.class);
                 break;
+            case Message.JOIN_LOBBY_TYPE:
+                typeModel = context.deserialize(json, JoinLobby.class);
+                break;
+            case Message.CREATE_LOBBY_TYPE:
+                typeModel = context.deserialize(json, CreateLobby.class);
+                break;
+            case Message.ERROR_MESSAGE_TYPE:
+                typeModel = context.deserialize(json, ErrorMessage.class);
+                break;
+            case Message.CLOSE_CONNECTION_TYPE:
+                typeModel = context.deserialize(json, CloseConnection.class);
+                break;
             default:
-                typeModel = new Message(type) {};
+                typeModel = new Message(Message.INVALID_TYPE) {};
         }
 
         return typeModel;

@@ -11,7 +11,10 @@ public abstract class Message {
             MAP_TYPE = "map", FIELD_DESTROYED_TYPE = "fieldDestroyed",
             GAME_STATE_TYPE = "gameState", ITEM_COLLECTED_TYPE = "itemCollected",
             LOBBY_STATE_TYPE = "lobbyState", PLAYER_STATE_TYPE = "playerState",
-            SERVER_INFO_TYPE = "serverInfo", LOBBY_INFO_TYPE = "lobbyInfo";
+            SERVER_INFO_TYPE = "serverInfo", LOBBY_INFO_TYPE = "lobbyInfo",
+            JOIN_LOBBY_TYPE = "joinLobby", CREATE_LOBBY_TYPE = "createLobby",
+            INVALID_TYPE = "invalidMessage", ERROR_MESSAGE_TYPE = "errorMessage",
+            CLOSE_CONNECTION_TYPE = "closeConnection";
 
     /**
      * Gson object with deserializer for Message.class
@@ -39,7 +42,12 @@ public abstract class Message {
      * @return a new Message object
      */
     public static Message fromJson(String json) {
-        return gson.fromJson(json, Message.class);
+        try {
+            return gson.fromJson(json, Message.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message(INVALID_TYPE) {};
+        }
     }
 
     /**
