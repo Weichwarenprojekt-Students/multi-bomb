@@ -5,7 +5,7 @@ import General.SettingsOverview;
 import General.Shared.MBButton;
 import General.Shared.MBLabel;
 import General.Shared.MBPanel;
-import Server.LobbyView;
+import Menu.LobbyView;
 
 import javax.swing.*;
 import java.awt.*;
