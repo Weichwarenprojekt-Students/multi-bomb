@@ -7,7 +7,6 @@ import Menu.Dialogs.HostPromotion;
 import Menu.Dialogs.MapSelection;
 import Menu.Dialogs.ModeSelection;
 import Menu.Models.Lobby;
-import Server.LobbyView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,11 +19,11 @@ public class DetailedLobbyView extends MBPanel {
     /**
      * Distance between buttons and player list
      */
-    private static final int MARGIN = 32;
+    public static final int MARGIN = 32;
     /**
      * Measurements of the buttons
      */
-    private static final int BUTTON_WIDTH = 200, BUTTON_HEIGHT = 40;
+    public static final int BUTTON_WIDTH = 200, BUTTON_HEIGHT = 40;
     /**
      * The player corresponding to the client
      */
@@ -53,13 +52,18 @@ public class DetailedLobbyView extends MBPanel {
      * The crown images
      */
     private MBImage crown, crownChange;
+    /**
+     * The address of the server
+     */
+    private String serverAddress;
 
     /**
      * Constructor
      */
-    public DetailedLobbyView(String player, Lobby lobby) {
+    public DetailedLobbyView(String player, Lobby lobby, String serverAddress) {
         this.player = player;
         this.lobby = lobby;
+        this.serverAddress = serverAddress;
         setupLayout();
     }
 
@@ -140,7 +144,7 @@ public class DetailedLobbyView extends MBPanel {
         
         // The leave button
         leave = new MBButton("Leave");
-        leave.addActionListener(e -> MB.show(new LobbyView(), false));
+        leave.addActionListener(e -> MB.show(new LobbyView(serverAddress), false));
         addComponent(leave, () -> leave.setBounds(
                 scroll.getX() + scroll.getWidth() + MARGIN,
                 scroll.getY() + scroll.getHeight() - BUTTON_HEIGHT + 4,
