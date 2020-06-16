@@ -11,6 +11,8 @@ import Server.Messages.Socket.Position;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
+import static Game.Models.Animation.*;
+
 /**
  * The basic player model
  */
@@ -19,10 +21,6 @@ public class Player {
      * The speed of a player
      */
     public static float SPEED = 45f;
-    /**
-     * The size of the player sprite
-     */
-    public static int SPRITE_SIZE = 64;
     /**
      * The sprite of the player
      */
@@ -38,7 +36,7 @@ public class Player {
     /**
      * The theme of the player
      */
-    public String theme = "Philipp";
+    public int theme = 0;
     /**
      * The players item
      */
@@ -50,8 +48,12 @@ public class Player {
     public Player() {
         // Load the sprite
         sprite = new MBImage("Characters/" + theme + ".png", () -> {
-            sprite.width = (int) (sprite.original.getWidth(null) * Battleground.ratio);
-            sprite.height = (int) (sprite.original.getHeight(null) * Battleground.ratio);
+            // Update the ratio
+            spriteRatio = (float) Battleground.fieldSize / PLAYER_WIDTH;
+
+            // Update the measurements
+            sprite.width = (int) (spriteRatio * SCALE * 3 * PLAYER_WIDTH);
+            sprite.height = (int) (spriteRatio * SCALE * 4 * PLAYER_HEIGHT);
         });
     }
 
@@ -208,21 +210,18 @@ public class Player {
      */
     public void draw(Graphics g) {
         // Calculate the destination position
-        int dx = (int) ((position.x - 32) * Battleground.ratio) + Battleground.offset;
-        int dy = (int) ((position.y - 55) * Battleground.ratio) + Battleground.offset;
+        int dx = (int) ((position.x - 18) * Battleground.ratio) + Battleground.offset;
+        int dy = (int) ((position.y - 32) * Battleground.ratio) + Battleground.offset;
 
         // Calculate the position of the sprite
         int[] spritePosition = position.direction.getSpritePosition();
-        int sx = (int) (spritePosition[1] * SPRITE_SIZE * Battleground.ratio);
-        int sy = (int) (spritePosition[0] * SPRITE_SIZE * Battleground.ratio);
-
         // Draw the image
         g.drawImage(
                 sprite.getSub(
-                        sx,
-                        sy,
-                        (int) (SPRITE_SIZE * Battleground.ratio),
-                        (int) (SPRITE_SIZE * Battleground.ratio)
+                        (int) (spriteRatio * SCALE * spritePosition[1] * PLAYER_WIDTH),
+                        (int) (spriteRatio * SCALE * spritePosition[0] * PLAYER_HEIGHT),
+                        (int) (spriteRatio * SCALE * PLAYER_WIDTH),
+                        (int) (spriteRatio * SCALE * PLAYER_HEIGHT)
                 ),
                 dx,
                 dy,

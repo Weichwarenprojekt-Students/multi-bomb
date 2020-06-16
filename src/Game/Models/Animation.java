@@ -7,15 +7,23 @@ import Game.Game;
  */
 public enum Animation {
 
-    WALK_NORTH(0.8f, 8, 9),
-    WALK_EAST(0.8f, 11, 9),
-    WALK_SOUTH(0.8f, 10, 9),
-    WALK_WEST(0.8f, 9, 9);
+    WALK_NORTH(2),
+    WALK_EAST(1),
+    WALK_SOUTH( 0),
+    WALK_WEST( 3);
 
+    /**
+     * The measurements of the sprite
+     */
+    public static final float PLAYER_WIDTH = 320, PLAYER_HEIGHT = 360, SCALE = 1.15f;
+    /**
+     * The ratio of the measurements
+     */
+    public static float spriteRatio = 1f;
     /**
      * The time for one animation run
      */
-    public float maxTime;
+    public static final float MAX_TIME = 0.8f;
     /**
      * The current time counter for the animation
      */
@@ -25,17 +33,15 @@ public enum Animation {
      */
     public int m;
     /**
-     * Amount of pictures in the sprite
+     * Order of animation
      */
-    public int amount;
+    private final int[] ORDER = {1, 0, 1, 2};
 
     /**
      * Constructor
      */
-    Animation(float maxTime, int m, int amount) {
-        this.maxTime = maxTime;
+    Animation(int m) {
         this.m = m;
-        this.amount = amount;
     }
 
     /**
@@ -45,11 +51,11 @@ public enum Animation {
      */
     public int getN(Direction direction) {
         currentTime += Game.deltaTime;
-        if (currentTime > maxTime || !direction.moving) {
+        if (currentTime > MAX_TIME || !direction.moving) {
             currentTime = 0;
         } else {
-            return (int) (currentTime / maxTime * amount);
+            return ORDER[(int) (currentTime / MAX_TIME * ORDER.length)];
         }
-        return 0;
+        return ORDER[0];
     }
 }
