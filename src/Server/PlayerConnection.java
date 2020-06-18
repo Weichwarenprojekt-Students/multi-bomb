@@ -1,8 +1,12 @@
 package Server;
 
-import Server.Messages.Socket.CloseConnection;
+import Game.Models.Map;
 import Server.Messages.ErrorMessage;
 import Server.Messages.Message;
+import Server.Messages.Socket.CloseConnection;
+import Server.Messages.Socket.GameState;
+import Server.Messages.Socket.LobbyState;
+import Server.Messages.Socket.Position;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,6 +39,14 @@ public class PlayerConnection extends Thread {
      * Color of the player
      */
     public int color;
+    /**
+     * The last position update the server received
+     */
+    public Position lastPosition;
+    /**
+     * If the client is prepared and ready to start the game
+     */
+    public boolean preparationReady = false;
     /**
      * Indicate if PlayerConnection is still alive
      */
@@ -102,7 +114,51 @@ public class PlayerConnection extends Thread {
      *
      * @param msg message to handle
      */
-    private synchronized void handleMessage(Message msg) {
+    private void handleMessage(Message msg) {
+        switch (msg.type) {
+            case Message.LOBBY_STATE_TYPE:
+                synchronized (lobby) {
+                    if (lobby.state == Lobby.WAITING) {
+                        if (this == lobby.host) {
+                            // Change host or game mode of lobby
+                            lobby.updateLobbyState((LobbyState) msg);
+                        } else {
+                            this.send(new ErrorMessage("You must be host to perform this action!"));
+                        }
+                    }
+                }
+                break;
+            case Message.MAP_TYPE:
+                synchronized (lobby) {
+                    if (lobby.state == Lobby.WAITING) {
+                        if (this == lobby.host) {
+                            // Start game by sending game map
+                            lobby.prepareGame((Map) msg);
+                        } else {
+                            this.send(new ErrorMessage("You must be host to perform this action!"));
+                        }
+                    }
+                }
+                break;
+            case Message.GAME_STATE_TYPE:
+                GameState gameState = (GameState) msg;
+                synchronized (lobby) {
+                    if (lobby.state == Lobby.GAME_STARTING && gameState.state == GameState.PREPARING) {
+                        // Client is displaying game and is ready to start
+                        preparationReady = true;
+                        // Start game if all other players are ready as well
+                        lobby.startGame();
+                    }
+                }
+                break;
+            case Message.POSITION_TYPE:
+                if (lobby.state == Lobby.IN_GAME) {
+                    // update last position
+                    lastPosition = (Position) msg;
+                    lastPosition.playerId = name;
+                }
+                break;
+        }
     }
 
     /**
@@ -110,7 +166,16 @@ public class PlayerConnection extends Thread {
      *
      * @param message message to send
      */
-    public synchronized void send(Message message) {
-        out.println(message.toJson());
+    public void send(Message message) {
+        synchronized (out) {
+            out.println(message.toJson());
+        }
+    }
+
+    /**
+     * Close socket connection to client
+     */
+    public void close() {
+        alive = false;
     }
 }

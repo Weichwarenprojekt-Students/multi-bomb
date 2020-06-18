@@ -1,6 +1,7 @@
 package Server.Messages.Socket;
 
 import Server.Messages.Message;
+import Server.Models.Player;
 
 public class PlayerState extends Message {
     /**
@@ -18,9 +19,14 @@ public class PlayerState extends Message {
 
     /**
      * Constructor
+     *
+     * @param player the player the state is from
      */
-    public PlayerState() {
+    public PlayerState(Player player) {
         // Initialize message with type
         super(Message.PLAYER_STATE_TYPE);
+
+        health = player.health;
+        kills = player.kills;
     }
 }

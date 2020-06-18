@@ -1,7 +1,7 @@
 package Server;
 
-import Server.Messages.Socket.CloseConnection;
 import Server.Messages.ErrorMessage;
+import Server.Messages.Socket.CloseConnection;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,6 +26,14 @@ public class Server implements Runnable {
      */
     public static final int GAME_PORT = 42422;
     /**
+     * Tick rate of the server
+     */
+    public static int ticksPerSecond;
+    /**
+     * Maximum number of lobbies
+     */
+    public static int maxLobbies;
+    /**
      * Map of lobby names to their lobby objects
      */
     public final Map<String, Lobby> lobbies;
@@ -46,14 +54,6 @@ public class Server implements Runnable {
      */
     public String name;
     /**
-     * Tick rate of the server
-     */
-    public int ticksPerSecond;
-    /**
-     * Maximum number of lobbies
-     */
-    public int maxLobbies;
-    /**
      * Indicate if server is running
      */
     private boolean running;
@@ -67,8 +67,8 @@ public class Server implements Runnable {
      */
     public Server(String name, int ticksPerSecond, int maxLobbies) {
         this.name = name;
-        this.ticksPerSecond = ticksPerSecond;
-        this.maxLobbies = maxLobbies;
+        Server.ticksPerSecond = ticksPerSecond;
+        Server.maxLobbies = maxLobbies;
 
         discoveryThread = new Thread(new DiscoveryThread());
         httpThread = new HttpThread(this);
@@ -187,6 +187,15 @@ public class Server implements Runnable {
     }
 
     /**
+     * Remove lobby from list
+     *
+     * @param lobbyName name of the lobby to remove
+     */
+    public synchronized void removeLobby(String lobbyName) {
+        lobbies.remove(lobbyName);
+    }
+
+    /**
      * Prepare a new socket connection for a player that requested to join a lobby
      *
      * @param ipAddress remote ip address of the player
@@ -223,8 +232,10 @@ public class Server implements Runnable {
     public synchronized ErrorMessage createLobby(String lobbyName) {
         if (lobbies.containsKey(lobbyName) && lobbies.get(lobbyName).isOpen()) {
             return new ErrorMessage("Lobby already exists");
+        } else if (getLobbies().size() >= maxLobbies) {
+            return new ErrorMessage("Maximum number of lobbies reached!");
         } else {
-            lobbies.put(lobbyName, new Lobby(lobbyName));
+            lobbies.put(lobbyName, new Lobby(lobbyName, this));
             return null;
         }
     }

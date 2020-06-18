@@ -1,8 +1,10 @@
 package Server;
 
+import Game.Game;
 import Game.GameModes.GameMode;
-import Server.Messages.Socket.LobbyState;
 import Server.Messages.Message;
+import Server.Messages.Socket.GameState;
+import Server.Messages.Socket.LobbyState;
 
 import java.util.*;
 
@@ -14,11 +16,15 @@ public class Lobby {
     /**
      * List of all players inside the lobby
      */
-    private final Map<String, PlayerConnection> players;
+    public final Map<String, PlayerConnection> players;
     /**
      * Colors that are not used
      */
     private final Set<Integer> freeColors;
+    /**
+     * Server object of the lobby
+     */
+    private final Server server;
     /**
      * Name of the Lobby
      */
@@ -39,16 +45,26 @@ public class Lobby {
      * Indicates if lobby is closed or if players can join
      */
     private boolean closed = false;
+    /**
+     * Map chosen by the host
+     */
+    private Game.Models.Map map;
+    /**
+     * GameWorld object that manages the game loop
+     */
+    private GameWorld gameWorld;
 
     /**
      * Constructor
      *
      * @param name name of the lobby
      */
-    public Lobby(String name) {
+    public Lobby(String name, Server server) {
         this.name = name;
         this.gameMode = GameMode.BATTLE_ROYALE;
         this.state = WAITING;
+
+        this.server = server;
 
         players = new HashMap<>();
         freeColors = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7));
@@ -63,7 +79,7 @@ public class Lobby {
     public synchronized boolean addPlayer(PlayerConnection playerConnection) {
         // this.isFull() does not need to be checked, because it can't have changed since the check in Server.java
         // this.isOpen() on the other hand might have changed because the last player has left
-        if (isOpen()) {
+        if (isOpen() && state == WAITING) {
             if (players.isEmpty()) {
                 // first player
                 host = playerConnection;
@@ -88,11 +104,25 @@ public class Lobby {
      */
     public synchronized void removePlayer(PlayerConnection playerConnection) {
         players.remove(playerConnection.name);
+        setFreeColor(playerConnection.color);
 
         if (players.isEmpty()) {
-            closed = true;
-        } else if (playerConnection == host) {
+            if (state == IN_GAME) {
+                // stop game loop
+                gameWorld.isRunning = false;
+            }
+
+            // close lobby
+            close();
+
+        } else {
             host = players.values().iterator().next();
+
+            if (state == IN_GAME) {
+                gameWorld.removePlayer(playerConnection.name);
+            }
+
+            sendToAllPlayers(new LobbyState(this));
         }
     }
 
@@ -138,13 +168,66 @@ public class Lobby {
         return colors;
     }
 
-    ;
+    /**
+     * Update lobby with new lobby state
+     *
+     * @param lobbyState lobby state message
+     */
+    public synchronized void updateLobbyState(LobbyState lobbyState) {
+        host = players.get(lobbyState.hostId);
+        gameMode = lobbyState.gameMode;
+        sendToAllPlayers(new LobbyState(this));
+    }
+
+    /**
+     * Prepare game when host uploads game map
+     *
+     * @param map game map
+     */
+    public synchronized void prepareGame(Game.Models.Map map) {
+        state = GAME_STARTING;
+        players.values().forEach(p -> p.preparationReady = false);
+        sendToAllPlayers(map);
+        this.map = map;
+    }
+
+    /**
+     * Start game if all players are ready
+     */
+    public synchronized void startGame() {
+        // If all players are ready to start
+        if (players.values().stream().allMatch(p -> p.preparationReady)) {
+            // Send game start message with timestamp to start countdown
+            long timestamp = System.currentTimeMillis();
+            sendToAllPlayers(GameState.running(timestamp));
+            this.gameWorld = new GameWorld(this, map, timestamp + 3000);
+        }
+    }
+
+    /**
+     * End game
+     *
+     * @param winner winner of the game
+     */
+    public synchronized void endGame(String winner) {
+        // Send message that game finished with name of winner to all players
+        sendToAllPlayers(GameState.finished(winner));
+
+        // set lobby into waiting state again, so next game can begin
+        state = WAITING;
+    }
 
     /**
      * Close lobby
      */
     public synchronized void close() {
         closed = true;
+
+        // close all remaining sockets
+        players.values().forEach(p -> p.close());
+
+        // remove lobby from the lobby list of the server
+        server.removeLobby(name);
     }
 
     /**
