@@ -1,6 +1,5 @@
 package Server;
 
-import Game.Game;
 import Game.GameModes.GameMode;
 import Server.Messages.Message;
 import Server.Messages.Socket.GameState;
