@@ -135,7 +135,7 @@ public class Server implements Runnable {
                 continue;
             }
 
-            String remoteIp = clientSocket.getRemoteSocketAddress().toString();
+            String remoteIp = clientSocket.getInetAddress().getHostAddress();
 
             LobbyTimestamp lobbyTimestamp;
             if (preparedPlayers.containsKey(remoteIp) && !(lobbyTimestamp = preparedPlayers.get(remoteIp)).isExpired()) {
