@@ -26,6 +26,7 @@ public class PlayerState extends Message {
         // Initialize message with type
         super(Message.PLAYER_STATE_TYPE);
 
+        playerId = player.name;
         health = player.health;
         kills = player.kills;
     }
