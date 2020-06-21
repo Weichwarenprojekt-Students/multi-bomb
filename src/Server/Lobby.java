@@ -203,10 +203,12 @@ public class Lobby {
     public synchronized void startGame() {
         // If all players are ready to start
         if (players.values().stream().allMatch(p -> p.preparationReady)) {
+            state = IN_GAME;
             // Send game start message with timestamp to start countdown
             long timestamp = System.currentTimeMillis();
             sendToAllPlayers(GameState.running(timestamp));
             this.gameWorld = new GameWorld(this, map, timestamp + 3000);
+            this.gameWorld.start();
         }
     }
 
