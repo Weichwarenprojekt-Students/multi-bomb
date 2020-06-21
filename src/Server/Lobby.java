@@ -25,6 +25,10 @@ public class Lobby {
      */
     private final Server server;
     /**
+     * Random number generator for random selection of colors
+     */
+    private final Random random = new Random();
+    /**
      * Name of the Lobby
      */
     public String name;
@@ -140,9 +144,11 @@ public class Lobby {
      * @return integer representing the color
      */
     public synchronized int getFreeColor() {
-        int i = freeColors.iterator().next();
-        freeColors.remove(i);
-        return i;
+        int i = random.nextInt(freeColors.size());
+
+        int color = freeColors.toArray(Integer[]::new)[i];
+        freeColors.remove(color);
+        return color;
     }
 
     /**
