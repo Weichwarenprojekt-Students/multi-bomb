@@ -72,7 +72,9 @@ public class GameWorld extends Thread {
                 players.values().forEach(p -> {
                     if (p.isAlive()) {
                         // send the position of every alive player to all connected players
-                        lobby.sendToAllPlayers(p.position);
+                        if (p.position != null) {
+                            lobby.sendToAllPlayers(p.position);
+                        }
                     }
                 });
             }

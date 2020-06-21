@@ -10,7 +10,7 @@ public class Player {
     /**
      * Postition of the player
      */
-    public Position position = new Position();
+    public Position position;
     /**
      * Health of the player
      */
