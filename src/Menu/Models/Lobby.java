@@ -1,12 +1,18 @@
 package Menu.Models;
 
+import Game.Game;
 import Game.GameModes.BattleRoyale;
 import Game.GameModes.GameMode;
-import Game.Models.Map;
 import Game.Models.Player;
+import General.MB;
+import Menu.DetailedLobbyView;
 import Server.Messages.Message;
+import Server.Messages.Socket.GameState;
 import Server.Messages.Socket.LobbyState;
+import Server.Messages.Socket.Map;
+import Server.Messages.Socket.Position;
 import Server.Server;
+import Server.ServerView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,6 +36,10 @@ public class Lobby {
      */
     public static String name = "";
     /**
+     * The ip address of the current connection
+     */
+    public static String ipAddress = "";
+    /**
      * The selected mode
      */
     public static GameMode mode = new BattleRoyale();
@@ -37,6 +47,14 @@ public class Lobby {
      * The selected mode
      */
     public static Map map = new Map();
+    /**
+     * The tick rate of the server
+     */
+    public static int tickRate;
+    /**
+     * The tick rate of the server
+     */
+    public static String player;
     /**
      * Reader for receiving server messages
      */
@@ -61,19 +79,32 @@ public class Lobby {
      * True if the player left on purpose
      */
     private static boolean leave = false;
+    /**
+     * The state of the current game
+     */
+    private static GameState gameState;
+    /**
+     * The game class
+     */
+    private static Game game;
 
     /**
      * Try to start a socket connection
      *
-     * @param name name of the lobby
-     * @param ip   address
+     * @param name      name of the lobby
+     * @param ipAddress address
+     * @param tickRate  of the server
+     * @param player    name of the client
      * @throws IOException if the socket fails to connect
      */
-    public static void connect(String name, String ip) throws IOException {
+    public static void connect(String name, String ipAddress, int tickRate, String player) throws IOException {
         Lobby.name = name;
+        Lobby.tickRate = tickRate;
+        Lobby.player = player;
+        Lobby.ipAddress = ipAddress;
 
         // Try to build up the connection
-        socket = new Socket(ip, Server.GAME_PORT);
+        socket = new Socket(ipAddress, Server.GAME_PORT);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
 
@@ -176,6 +207,18 @@ public class Lobby {
             case Message.LOBBY_STATE_TYPE:
                 detectLobbyChanges((LobbyState) message);
                 break;
+
+            case Message.MAP_TYPE:
+                startGame((Map) message);
+                break;
+
+            case Message.GAME_STATE_TYPE:
+                changeGameState((GameState) message);
+                break;
+
+            case Message.POSITION_TYPE:
+                updatePosition((Position) message);
+                break;
         }
     }
 
@@ -217,6 +260,110 @@ public class Lobby {
             host = lobby.hostId;
             lobbyChangeEvent.hostChanged(host);
         }
+    }
+
+    /**
+     * Start the game as soon as the server broadcasts the map
+     *
+     * @param map to play on
+     */
+    private static synchronized void startGame(Map map) {
+        Lobby.map = map;
+        game = new Game(player);
+        new Thread(() -> MB.show(game, false)).start();
+        out.println(GameState.preparing().toJson());
+    }
+
+    /**
+     * Start the game by sending the selected map
+     */
+    public static void startGame() {
+        out.println(map.toJson());
+    }
+
+    /**
+     * React to game state changes
+     *
+     * @param gameState of the game
+     */
+    private static void changeGameState(GameState gameState) {
+        Lobby.gameState = gameState;
+        switch (gameState.state) {
+            case GameState.RUNNING:
+                new Thread(() -> startCountdown(gameState.timestamp + 3000)).start();
+                break;
+
+            case GameState.FINISHED:
+                leaveGame(gameState.winner);
+                break;
+        }
+    }
+
+    /**
+     * Start the game countdown and enable controls when finished
+     */
+    private static void startCountdown(long timestamp) {
+        try {
+            // wait until the game loop can start
+            long timeDifference = timestamp - System.currentTimeMillis();
+            while (timeDifference > 0) {
+                MB.activePanel.toastSuccess(
+                        "Game starts in " + ((timestamp - System.currentTimeMillis()) / 1000 + 1) + "s!"
+                );
+                Thread.sleep(timeDifference % 1000 + 1);
+                timeDifference = timestamp - System.currentTimeMillis();
+            }
+            MB.activePanel.toastSuccess("GO!");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Start game in new thread
+        new Thread(game::startGame).start();
+
+        int waitTime = 1000 / tickRate;
+        while (gameState.state == GameState.RUNNING) {
+            long startTime = System.currentTimeMillis();
+
+            // Send the players position
+            out.println(players.get(player).position.toJson());
+
+            // calculate sleep time for target tick rate
+            long delta = System.currentTimeMillis() - startTime;
+            if (delta < waitTime) {
+                try {
+                    Thread.sleep(waitTime - delta);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * Update a player's position
+     *
+     * @param position of the player
+     */
+    private static void updatePosition(Position position) {
+        if (!position.playerId.equals(player)) {
+            players.get(position.playerId).position = position;
+        }
+    }
+
+    /**
+     * Leave the game
+     */
+    private static void leaveGame(String winner) {
+        new Thread(() -> {
+            try {
+                MB.show(new DetailedLobbyView(player, name, ipAddress, tickRate), false);
+            } catch (IOException e) {
+                MB.show(new ServerView(), false);
+                MB.activePanel.toastError("Lost connection to game session!");
+            }
+            MB.activePanel.toastSuccess(winner + " won the game!");
+        });
     }
 
     /**

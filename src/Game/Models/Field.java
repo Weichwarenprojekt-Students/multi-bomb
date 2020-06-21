@@ -2,6 +2,7 @@ package Game.Models;
 
 import Game.Battleground;
 import General.Shared.MBImage;
+import Server.Messages.Socket.Map;
 
 /**
  * This class contains the information about the items (blocks and consumables)

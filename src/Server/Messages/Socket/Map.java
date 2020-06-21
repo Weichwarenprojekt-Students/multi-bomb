@@ -1,6 +1,7 @@
-package Game.Models;
+package Server.Messages.Socket;
 
 import Game.Items.Item;
+import Game.Models.Field;
 import Server.Messages.Message;
 import Server.Messages.Socket.Position;
 
@@ -61,8 +62,13 @@ public class Map extends Message {
         }
 
         // Initialize the spawn points
-        for (int i = 0; i < spawns.length; i++) {
-            spawns[i] = new Position();
-        }
+        spawns[0] = new Position(1, 1);
+        spawns[1] = new Position(SIZE - 2, 1);
+        spawns[2] = new Position(1, SIZE - 2);
+        spawns[3] = new Position(SIZE - 2, SIZE - 2);
+        spawns[4] = new Position(4, 4);
+        spawns[5] = new Position(SIZE - 5, 4);
+        spawns[6] = new Position(4, SIZE - 5);
+        spawns[7] = new Position(SIZE - 5, SIZE - 5);
     }
 }

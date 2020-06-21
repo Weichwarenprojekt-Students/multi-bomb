@@ -4,6 +4,7 @@ import Game.GameModes.GameMode;
 import Server.Messages.Message;
 import Server.Messages.Socket.GameState;
 import Server.Messages.Socket.LobbyState;
+import Server.Messages.Socket.Map;
 
 import java.util.*;
 
@@ -15,7 +16,7 @@ public class Lobby {
     /**
      * List of all players inside the lobby
      */
-    public final Map<String, PlayerConnection> players;
+    public final java.util.Map<String, PlayerConnection> players;
     /**
      * Colors that are not used
      */
@@ -51,7 +52,7 @@ public class Lobby {
     /**
      * Map chosen by the host
      */
-    private Game.Models.Map map;
+    private Map map;
     /**
      * GameWorld object that manages the game loop
      */
@@ -189,7 +190,7 @@ public class Lobby {
      *
      * @param map game map
      */
-    public synchronized void prepareGame(Game.Models.Map map) {
+    public synchronized void prepareGame(Map map) {
         state = GAME_STARTING;
         players.values().forEach(p -> p.preparationReady = false);
         sendToAllPlayers(map);

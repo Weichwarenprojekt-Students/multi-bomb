@@ -3,7 +3,7 @@ package Game.Items;
 import Game.Battleground;
 import Game.Game;
 import Game.Models.Field;
-import Game.Models.Map;
+import Server.Messages.Socket.Map;
 import Game.Models.Upgrades;
 import General.Shared.MBImage;
 import Menu.Models.Lobby;

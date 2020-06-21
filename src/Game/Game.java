@@ -3,6 +3,7 @@ package Game;
 import Game.Models.Player;
 import General.MB;
 import General.Shared.MBPanel;
+import Menu.DetailedLobbyView;
 import Menu.Models.Lobby;
 
 import java.awt.event.KeyEvent;
@@ -76,6 +77,26 @@ public class Game extends MBPanel {
                 (int) (0.5 * getHeight()),
                 getHeight()
         ));
+
+        // React to lobby changes
+        Lobby.setLobbyChangeEvent(new Lobby.LobbyChangeEvent() {
+            @Override
+            public void playerJoined(String name, int color) {
+            }
+
+            @Override
+            public void playerLeft(String name) {
+                toastError(name + " left the lobby!");
+            }
+
+            @Override
+            public void hostChanged(String name) {
+            }
+
+            @Override
+            public void gameModeChanged(String gameMode) {
+            }
+        });
     }
 
     /**
@@ -95,9 +116,6 @@ public class Game extends MBPanel {
         // Call the after visible methods
         sidebar.afterVisible();
         battleground.afterVisible();
-
-        // Start game in new thread
-        new Thread(this::startGame).start();
     }
 
     /**
@@ -106,7 +124,7 @@ public class Game extends MBPanel {
     public void startGame() {
         // Initialize the player
         for (java.util.Map.Entry<String, Player> player : Lobby.players.entrySet()) {
-            player.getValue().initialize(this, Lobby.isHost(this.player));
+            player.getValue().initialize(this, this.player.equals(player.getKey()));
         }
 
         // Start the game loop

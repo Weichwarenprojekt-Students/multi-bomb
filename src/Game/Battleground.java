@@ -1,7 +1,7 @@
 package Game;
 
 import Game.Models.Field;
-import Game.Models.Map;
+import Server.Messages.Socket.Map;
 import Game.Models.Player;
 import General.MB;
 import General.Shared.MBPanel;

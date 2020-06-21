@@ -7,6 +7,7 @@ import Game.Items.Item;
 import General.Shared.MBImage;
 import General.Shared.MBPanel;
 import Menu.Models.Lobby;
+import Server.Messages.Socket.Map;
 import Server.Messages.Socket.Position;
 
 import java.awt.*;
@@ -80,6 +81,7 @@ public class Player {
             sprite.width = (int) (spriteRatio * SCALE * 3 * PLAYER_WIDTH);
             sprite.height = (int) (spriteRatio * SCALE * 4 * PLAYER_HEIGHT);
         });
+        sprite.refresh();
 
         // Setup the players controls
         if (controllable) {
@@ -105,7 +107,7 @@ public class Player {
         panel.addKeybinding(
                 true,
                 "STOP UP",
-                (e) -> Direction.NORTH.moving = false,
+                (e) -> {if (position.direction == Direction.NORTH) position.moving = false;},
                 KeyEvent.VK_UP,
                 KeyEvent.VK_W
         );
@@ -123,7 +125,7 @@ public class Player {
         panel.addKeybinding(
                 true,
                 "STOP RIGHT",
-                (e) -> Direction.EAST.moving = false,
+                (e) -> {if (position.direction == Direction.EAST) position.moving = false;},
                 KeyEvent.VK_RIGHT,
                 KeyEvent.VK_D
         );
@@ -141,7 +143,7 @@ public class Player {
         panel.addKeybinding(
                 true,
                 "STOP DOWN",
-                (e) -> Direction.SOUTH.moving = false,
+                (e) -> {if (position.direction == Direction.SOUTH) position.moving = false;},
                 KeyEvent.VK_DOWN,
                 KeyEvent.VK_S
         );
@@ -159,7 +161,7 @@ public class Player {
         panel.addKeybinding(
                 true,
                 "STOP LEFT",
-                (e) -> Direction.WEST.moving = false,
+                (e) -> {if (position.direction == Direction.WEST) position.moving = false;},
                 KeyEvent.VK_LEFT,
                 KeyEvent.VK_A
         );
@@ -180,7 +182,7 @@ public class Player {
      */
     private void startMoving(Direction direction) {
         position.direction = direction;
-        direction.moving = true;
+        position.moving = true;
     }
 
     /**
@@ -203,7 +205,7 @@ public class Player {
         int n = (int) (newX + position.direction.x * 10) / Map.FIELD_SIZE;
 
         // Check if character should move
-        if (position.direction.moving && Field.getItem(Lobby.map.fields[m][n]).isPassable()) {
+        if (position.moving && Field.getItem(Lobby.map.fields[m][n]).isPassable()) {
             position.x = newX;
             position.y = newY;
         }
@@ -233,12 +235,14 @@ public class Player {
      * @param g the corresponding graphics object
      */
     public void draw(Graphics g) {
+        if (sprite == null) {
+            return;
+        }
         // Calculate the destination position
         int dx = (int) ((position.x - 18) * Battleground.ratio) + Battleground.offset;
         int dy = (int) ((position.y - 32) * Battleground.ratio) + Battleground.offset;
-
         // Calculate the position of the sprite
-        int[] spritePosition = position.direction.getSpritePosition();
+        int[] spritePosition = Animation.getSpritePosition(position, color);
         // Draw the image
         g.drawImage(
                 sprite.getSub(

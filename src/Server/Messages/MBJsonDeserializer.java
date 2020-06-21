@@ -1,6 +1,6 @@
 package Server.Messages;
 
-import Game.Models.Map;
+import Server.Messages.Socket.Map;
 import Server.Messages.REST.CreateLobby;
 import Server.Messages.REST.JoinLobby;
 import Server.Messages.REST.LobbyInfo;

@@ -1,6 +1,6 @@
 package Server;
 
-import Game.Models.Map;
+import Server.Messages.Socket.Map;
 import Server.Messages.Socket.PlayerState;
 import Server.Models.Player;
 

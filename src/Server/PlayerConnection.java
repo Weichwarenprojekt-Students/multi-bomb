@@ -1,6 +1,6 @@
 package Server;
 
-import Game.Models.Map;
+import Server.Messages.Socket.Map;
 import Server.Messages.ErrorMessage;
 import Server.Messages.Message;
 import Server.Messages.Socket.CloseConnection;

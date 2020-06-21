@@ -65,7 +65,7 @@ public class MB {
                 urlConn.getOutputStream().write(query.getBytes(StandardCharsets.UTF_8));
             }
             if (urlConn.getResponseCode() == 200) {
-                show(new DetailedLobbyView(name, lobbyName, ip), false);
+                show(new DetailedLobbyView(name, lobbyName, ip, 128), false);
             } else {
                 throw new IOException();
             }

@@ -1,6 +1,10 @@
 package Game.Models;
 
 import Game.Game;
+import Server.Messages.Socket.Position;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * This enum contains all the required information for the animations
@@ -9,33 +13,33 @@ public enum Animation {
 
     WALK_NORTH(2),
     WALK_EAST(1),
-    WALK_SOUTH( 0),
-    WALK_WEST( 3);
+    WALK_SOUTH(0),
+    WALK_WEST(3);
 
     /**
      * The measurements of the sprite
      */
     public static final float PLAYER_WIDTH = 320, PLAYER_HEIGHT = 360, SCALE = 1.15f;
     /**
-     * The ratio of the measurements
-     */
-    public static float spriteRatio = 1f;
-    /**
      * The time for one animation run
      */
     public static final float MAX_TIME = 0.8f;
     /**
-     * The current time counter for the animation
+     * The ratio of the measurements
      */
-    public float currentTime = 0;
-    /**
-     * The row in which the corresponding sprite is in
-     */
-    public int m;
+    public static float spriteRatio = 1f;
     /**
      * Order of animation
      */
     private final int[] ORDER = {1, 0, 1, 2};
+    /**
+     * The current time counter for the animation
+     */
+    public float[] currentTimes = new float[]{0, 0, 0, 0, 0, 0, 0, 0};
+    /**
+     * The row in which the corresponding sprite is in
+     */
+    public int m;
 
     /**
      * Constructor
@@ -44,17 +48,52 @@ public enum Animation {
         this.m = m;
     }
 
+
+    /**
+     * Calculate the right sprite position for the walking direction
+     *
+     * @param position of the player
+     * @param index    of the player
+     * @return the positions [m, n]
+     */
+    public static int[] getSpritePosition(Position position, int index) {
+        int[] positions = new int[2];
+        switch (position.direction) {
+            case NORTH:
+                positions[0] = Animation.WALK_NORTH.m;
+                positions[1] = Animation.WALK_NORTH.getN(position, index);
+                break;
+
+            case EAST:
+                positions[0] = Animation.WALK_EAST.m;
+                positions[1] = Animation.WALK_EAST.getN(position, index);
+                break;
+
+            case SOUTH:
+                positions[0] = Animation.WALK_SOUTH.m;
+                positions[1] = Animation.WALK_SOUTH.getN(position, index);
+                break;
+
+            case WEST:
+                positions[0] = Animation.WALK_WEST.m;
+                positions[1] = Animation.WALK_WEST.getN(position, index);
+                break;
+        }
+        return positions;
+    }
+
     /**
      * Find the right sprite position for the walking animation
      *
-     * @param direction of the movement
+     * @param position of the player
+     * @param index    of the player
      */
-    public int getN(Direction direction) {
-        currentTime += Game.deltaTime;
-        if (currentTime > MAX_TIME || !direction.moving) {
-            currentTime = 0;
+    private int getN(Position position, int index) {
+        currentTimes[index] += Game.deltaTime;
+        if (currentTimes[index] > MAX_TIME || !position.moving) {
+            currentTimes[index] = 0f;
         } else {
-            return ORDER[(int) (currentTime / MAX_TIME * ORDER.length)];
+            return ORDER[(int) (currentTimes[index] / MAX_TIME * ORDER.length)];
         }
         return ORDER[0];
     }

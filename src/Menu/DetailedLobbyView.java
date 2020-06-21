@@ -65,11 +65,12 @@ public class DetailedLobbyView extends MBPanel {
      *
      * @param lobbyName of the lobby
      * @param ip        address
+     * @param tickRate  of the server
      */
-    public DetailedLobbyView(String player, String lobbyName, String ip) throws IOException {
+    public DetailedLobbyView(String player, String lobbyName, String ip, int tickRate) throws IOException {
         this.player = player;
         setupLayout();
-        setupLobby(lobbyName, ip);
+        setupLobby(lobbyName, ip, tickRate);
     }
 
     /**
@@ -77,8 +78,9 @@ public class DetailedLobbyView extends MBPanel {
      *
      * @param lobbyName of the lobby
      * @param ip        address
+     * @param tickRate  of the server
      */
-    public void setupLobby(String lobbyName, String ip) throws IOException {
+    public void setupLobby(String lobbyName, String ip, int tickRate) throws IOException {
         // React to a disconnect event
         Lobby.setDisconnectEvent((String message) -> {
             MB.show(new ServerView(), false);
@@ -122,7 +124,7 @@ public class DetailedLobbyView extends MBPanel {
         });
 
         // Start the connection
-        Lobby.connect(lobbyName, ip);
+        Lobby.connect(lobbyName, ip, tickRate, player);
     }
 
     /**
@@ -156,7 +158,7 @@ public class DetailedLobbyView extends MBPanel {
         start = new MBButton("Start");
         start.addActionListener(e -> {
             if (start.enabled) {
-                MB.show(new Game(player), false);
+                Lobby.startGame();
             } else {
                 toastError("Only the host can", "start the game!");
             }
@@ -169,7 +171,7 @@ public class DetailedLobbyView extends MBPanel {
         ));
 
         // The change map button
-        map = new MBButton("Map");
+        map = new MBButton("Map: Default");
         map.addActionListener(e -> {
             if (map.enabled) {
                 showDialog(new MapSelection(map), () -> {
@@ -349,7 +351,9 @@ public class DetailedLobbyView extends MBPanel {
             MB.settings.enableAntiAliasing(g);
             g.setColor(Color.black);
             g.drawRect(4, 4, getWidth() - 8, getHeight() - 8);
-            g.drawImage(playerSprites.get(color).getSub(32, 0, 32, 36), 8, 8, null);
+            if (playerSprites.size() > color) {
+                g.drawImage(playerSprites.get(color).getSub(32, 0, 32, 36), 8, 8, null);
+            }
 
             // Draw the crown if player is host
             if (Lobby.isHost(name)) {
