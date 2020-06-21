@@ -5,14 +5,11 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 public class MBListView<T extends MBListView.Item> extends JPanel {
 
-    /**
-     * The last width of the view
-     */
-    private int lastWidth = 0;
     /**
      * The list that contains the content
      */
@@ -21,6 +18,10 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
      * The comparator that describes how the list view should be sorted
      */
     private final Comparator<T> comparator;
+    /**
+     * The last width of the view
+     */
+    private int lastWidth = 0;
 
     /**
      * Constructor
@@ -72,16 +73,20 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
             }
+
             @Override
             public void mousePressed(MouseEvent e) {
                 item.onSelected(items.indexOf(item));
             }
+
             @Override
             public void mouseReleased(MouseEvent e) {
             }
+
             @Override
             public void mouseEntered(MouseEvent e) {
             }
+
             @Override
             public void mouseExited(MouseEvent e) {
             }
@@ -97,6 +102,33 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
      * @param index of the item
      */
     public void removeItem(int index) {
+        // Remove the item
+        remove(items.get(index));
+        items.remove(index);
+
+        // Rebuild the list
+        resizeList();
+    }
+
+    /**
+     * Remove item from the list
+     *
+     * @param name of the item
+     */
+    public void removeItem(String name) {
+        // Find the item
+        int index = -1;
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).name.equals(name)) {
+                index = i;
+            }
+        }
+
+        // Check if the item was found
+        if (index == -1) {
+            return;
+        }
+
         // Remove the item
         remove(items.get(index));
         items.remove(index);
@@ -124,7 +156,7 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
         /**
          * Handle resize events
          *
-         * @param y position
+         * @param y     position
          * @param width of the list view
          */
         public abstract void onResize(int y, int width);

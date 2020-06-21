@@ -5,6 +5,7 @@ import Game.Models.Map;
 import Game.Models.Player;
 import General.MB;
 import General.Shared.MBPanel;
+import Menu.Models.Lobby;
 
 import java.awt.*;
 
@@ -26,9 +27,9 @@ public class Battleground extends MBPanel {
      */
     private final Map map;
     /**
-     * The player to be drawn
+     * True if the players shall be drawn
      */
-    private final Player player;
+    private final boolean drawPlayers;
     /**
      * True if the panel should start drawing the battleground
      */
@@ -37,11 +38,12 @@ public class Battleground extends MBPanel {
     /**
      * Constructor
      *
-     * @param map to be drawn
+     * @param map         to be drawn
+     * @param drawPlayers true if the player should be drawn
      */
-    public Battleground(Map map, Player player) {
+    public Battleground(Map map, boolean drawPlayers) {
         this.map = map;
-        this.player = player;
+        this.drawPlayers = drawPlayers;
 
         // Listen for resize events
         MB.activePanel.addComponentEvent(this::calculateSize);
@@ -117,8 +119,12 @@ public class Battleground extends MBPanel {
                 }
 
                 // Check if it should draw the player
-                if (player != null && player.isOnField(m, n)) {
-                    player.draw(g);
+                if (drawPlayers) {
+                    for (java.util.Map.Entry<String, Player> player : Lobby.players.entrySet()) {
+                        if (player.getValue() != null && player.getValue().isOnField(m, n)) {
+                            player.getValue().draw(g);
+                        }
+                    }
                 }
 
                 // Draw item above player

@@ -8,7 +8,11 @@ public class MultiBomb {
      * @param args command line arguments
      */
     public static void main(String[] args) {
-        if (args.length > 0) {
+        if (args.length > 0 && args[0].equals("--c")) {
+            MB.startGame(true, args[1]);
+        } else if (args.length > 0 && args[0].equals("--j")) {
+            MB.startGame(false, args[1]);
+        } else if (args.length > 0) {
             if (!"-s".equals(args[0]) || args.length < 4) {
                 System.out.println("To start only the server use the following syntax:");
                 System.out.println("-s <serverName> <tickRate> <maxLobbies>");
@@ -30,7 +34,7 @@ public class MultiBomb {
                 }
             }
         } else {
-            MB.startGame();
+            MB.startGame(false, "");
         }
     }
 }

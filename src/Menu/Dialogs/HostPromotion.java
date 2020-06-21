@@ -21,7 +21,7 @@ public class HostPromotion extends JPanel {
     /**
      * Constructor
      */
-    public HostPromotion(String player, Lobby lobby) {
+    public HostPromotion(String player) {
         setLayout(null);
         setBackground(Color.white);
         setBounds(0, 0, 3 * MARGIN + 2 * BUTTON_WIDTH, 50 + BUTTON_HEIGHT + MARGIN);
@@ -41,7 +41,7 @@ public class HostPromotion extends JPanel {
         MBButton confirm = new MBButton("Confirm");
         confirm.setBounds(2 * MARGIN + BUTTON_WIDTH, 50, BUTTON_WIDTH, BUTTON_HEIGHT);
         confirm.addActionListener(e -> {
-            lobby.promoteHost(player);
+            Lobby.promoteHost(player);
             MB.activePanel.closeDialog();
         });
         add(confirm);

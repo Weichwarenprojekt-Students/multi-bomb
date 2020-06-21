@@ -31,4 +31,17 @@ public class LobbyState extends Message {
         players = lobby.getPlayerColors();
         gameMode = lobby.gameMode;
     }
+
+    /**
+     * Constructor
+     *
+     * @param hostId   name of the host
+     * @param gameMode name of the mode
+     */
+    public LobbyState(String hostId, String gameMode) {
+        // Initialize message with type
+        super(Message.LOBBY_STATE_TYPE);
+        this.hostId = hostId;
+        this.gameMode = gameMode;
+    }
 }

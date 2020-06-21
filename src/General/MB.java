@@ -1,12 +1,23 @@
 package General;
 
 
+import Menu.DetailedLobbyView;
 import General.Shared.MBPanel;
+import Menu.Models.Lobby;
+import Server.LobbyView;
+import Server.Messages.Message;
+import Server.Messages.REST.CreateLobby;
+import Server.Messages.REST.JoinLobby;
+import Server.Server;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class MB {
 
@@ -26,10 +37,42 @@ public class MB {
     /**
      * Setup the JFrame and show the menu
      */
-    public static void startGame() {
+    public static void startGame(boolean create, String name) {
         MB.settings.loadSettings();
         setupFrame();
-        show(new Intro(), false);
+
+        try {
+            HttpURLConnection urlConn;
+            String ip = "92.60.38.195";
+            URL mUrl = new URL("http://" + ip + ":" + Server.HTTP_PORT + "/lobby");
+            urlConn = (HttpURLConnection) mUrl.openConnection();
+            urlConn.addRequestProperty("Content-Type", "application/" + "GET");
+            urlConn.setDoOutput(true);
+            String lobbyName = "TestLobby";
+            if (create) {
+                CreateLobby message = new CreateLobby();
+                message.playerID = name;
+                message.lobbyName = lobbyName;
+                String query = message.toJson();
+                urlConn.setRequestProperty("Content-Length", Integer.toString(query.length()));
+                urlConn.getOutputStream().write(query.getBytes(StandardCharsets.UTF_8));
+            } else {
+                JoinLobby message = new JoinLobby();
+                message.playerID = name;
+                message.lobbyName = lobbyName;
+                String query = message.toJson();
+                urlConn.setRequestProperty("Content-Length", Integer.toString(query.length()));
+                urlConn.getOutputStream().write(query.getBytes(StandardCharsets.UTF_8));
+            }
+            if (urlConn.getResponseCode() == 200) {
+                show(new DetailedLobbyView(name, lobbyName, ip), false);
+            } else {
+                throw new IOException();
+            }
+        } catch (IOException e) {
+            show(new LobbyView(), false);
+            e.printStackTrace();
+        }
 
         // Set fullscreen if necessary
         if (settings.fullscreen) {

@@ -1,10 +1,9 @@
 package Game;
 
-import Game.Items.Bomb;
-import Game.Models.Map;
 import Game.Models.Player;
 import General.MB;
 import General.Shared.MBPanel;
+import Menu.Models.Lobby;
 
 import java.awt.event.KeyEvent;
 
@@ -34,13 +33,9 @@ public class Game extends MBPanel {
      */
     public static Overlay overlay;
     /**
-     * The map
+     * The name of the user
      */
-    public static Map map;
-    /**
-     * The player that the client is controlling
-     */
-    public static Player player;
+    private final String player;
     /**
      * The sidebar
      */
@@ -53,7 +48,8 @@ public class Game extends MBPanel {
     /**
      * Constructor
      */
-    public Game() {
+    public Game(String player) {
+        this.player = player;
         setupLayout();
     }
 
@@ -88,9 +84,7 @@ public class Game extends MBPanel {
     @Override
     public void afterVisible() {
         // Add the battleground
-        map = new Map();
-        player = new Player();
-        battleground = new Battleground(map, player);
+        battleground = new Battleground(Lobby.map, true);
         addComponent(battleground, () -> battleground.setBounds(
                 (int) (getWidth() / 2 - 0.25 * getHeight()),
                 0,
@@ -110,10 +104,10 @@ public class Game extends MBPanel {
      * Start the game
      */
     public void startGame() {
-        // Reset the bomb upgrades
-        Bomb.reset();
         // Initialize the player
-        player.initialize(this, map);
+        for (java.util.Map.Entry<String, Player> player : Lobby.players.entrySet()) {
+            player.getValue().initialize(this, Lobby.isHost(this.player));
+        }
 
         // Start the game loop
         gameOver = false;
@@ -126,7 +120,7 @@ public class Game extends MBPanel {
             long start = System.currentTimeMillis();
 
             // Update the player and repaint
-            player.update();
+            Lobby.players.get(this.player).update();
             MB.frame.revalidate();
             MB.frame.repaint();
 

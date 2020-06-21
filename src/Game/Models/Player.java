@@ -6,6 +6,7 @@ import Game.Items.Bomb;
 import Game.Items.Item;
 import General.Shared.MBImage;
 import General.Shared.MBPanel;
+import Menu.Models.Lobby;
 import Server.Messages.Socket.Position;
 
 import java.awt.*;
@@ -22,10 +23,6 @@ public class Player {
      */
     public static float SPEED = 45f;
     /**
-     * The sprite of the player
-     */
-    private MBImage sprite;
-    /**
      * The name of the player
      */
     public String name;
@@ -36,18 +33,46 @@ public class Player {
     /**
      * The theme of the player
      */
-    public int theme = 0;
+    public int color;
     /**
-     * The players item
+     * The sprite of the player
      */
-    private Item item = new Bomb();
+    private MBImage sprite;
+    /**
+     * The player's item
+     */
+    private Item item;
+    /**
+     * The player's upgrades
+     */
+    private Upgrades upgrades;
 
     /**
      * Constructor
      */
-    public Player() {
+    public Player(String name, int color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    /**
+     * Initialize the players position and controls
+     *
+     * @param panel        the game panel
+     * @param controllable true if the player should be controllable
+     */
+    public void initialize(MBPanel panel, boolean controllable) {
+        // Set the players position
+        position.x = Lobby.map.spawns[color].x * Map.FIELD_SIZE + (float) Map.FIELD_SIZE / 2;
+        position.y = Lobby.map.spawns[color].y * Map.FIELD_SIZE + (float) Map.FIELD_SIZE / 2;
+        position.direction = Lobby.map.spawns[color].direction;
+
+        // Initialize the item and the upgrades
+        item = new Bomb();
+        upgrades = new Upgrades();
+
         // Load the sprite
-        sprite = new MBImage("Characters/" + theme + ".png", () -> {
+        sprite = new MBImage("Characters/" + color + ".png", () -> {
             // Update the ratio
             spriteRatio = (float) Battleground.fieldSize / PLAYER_WIDTH;
 
@@ -55,20 +80,19 @@ public class Player {
             sprite.width = (int) (spriteRatio * SCALE * 3 * PLAYER_WIDTH);
             sprite.height = (int) (spriteRatio * SCALE * 4 * PLAYER_HEIGHT);
         });
+
+        // Setup the players controls
+        if (controllable) {
+            setupControls(panel);
+        }
     }
 
     /**
-     * Initialize the players position and controls
+     * Setup the players controls
      *
-     * @param panel the game panel
-     * @param map   the player is on
+     * @param panel that is active
      */
-    public void initialize(MBPanel panel, Map map) {
-        // Set the players position
-        position.x = map.spawns[0].x * Map.FIELD_SIZE + (float) Map.FIELD_SIZE / 2;
-        position.y = map.spawns[0].y * Map.FIELD_SIZE + (float) Map.FIELD_SIZE / 2;
-        position.direction = map.spawns[0].direction;
-
+    private void setupControls(MBPanel panel) {
         // Move upwards
         panel.addKeybinding(
                 false,
@@ -163,7 +187,7 @@ public class Player {
      * Use the players current item
      */
     private void useItem() {
-        item = item.use(position);
+        item = item.use(position, upgrades);
     }
 
     /**
@@ -179,7 +203,7 @@ public class Player {
         int n = (int) (newX + position.direction.x * 10) / Map.FIELD_SIZE;
 
         // Check if character should move
-        if (position.direction.moving && Field.getItem(Game.map.fields[m][n]).isPassable()) {
+        if (position.direction.moving && Field.getItem(Lobby.map.fields[m][n]).isPassable()) {
             position.x = newX;
             position.y = newY;
         }

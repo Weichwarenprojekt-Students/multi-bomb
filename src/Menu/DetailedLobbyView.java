@@ -8,12 +8,14 @@ import Menu.Dialogs.MapSelection;
 import Menu.Dialogs.ModeSelection;
 import Menu.Models.Lobby;
 import Server.LobbyView;
+import Server.ServerView;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Map;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class DetailedLobbyView extends MBPanel {
 
@@ -30,9 +32,9 @@ public class DetailedLobbyView extends MBPanel {
      */
     private final String player;
     /**
-     * The lobby
+     * The player sprites
      */
-    private final Lobby lobby;
+    private final ArrayList<MBImage> playerSprites = new ArrayList<>();
     /**
      * The label showing the title
      */
@@ -52,15 +54,75 @@ public class DetailedLobbyView extends MBPanel {
     /**
      * The crown images
      */
-    private MBImage crown, crownChange;
+    private MBImage crown, crownChange, playerSprite;
+    /**
+     * Prevents the view from showing the toasts when joining a lobby
+     */
+    private boolean firstStart = true;
 
     /**
      * Constructor
+     *
+     * @param lobbyName of the lobby
+     * @param ip        address
      */
-    public DetailedLobbyView(String player, Lobby lobby) {
+    public DetailedLobbyView(String player, String lobbyName, String ip) throws IOException {
         this.player = player;
-        this.lobby = lobby;
         setupLayout();
+        setupLobby(lobbyName, ip);
+    }
+
+    /**
+     * Setup the listeners for the lobby
+     *
+     * @param lobbyName of the lobby
+     * @param ip        address
+     */
+    public void setupLobby(String lobbyName, String ip) throws IOException {
+        // React to a disconnect event
+        Lobby.setDisconnectEvent((String message) -> {
+            MB.show(new ServerView(), false);
+            MB.activePanel.toastError(message);
+        });
+
+        // React to lobby changes
+        Lobby.setLobbyChangeEvent(new Lobby.LobbyChangeEvent() {
+            @Override
+            public void playerJoined(String name, int color) {
+                list.addItem(new PlayerItem(name, color));
+                if (!firstStart) {
+                    toastSuccess(name + " joined the lobby!");
+                }
+            }
+
+            @Override
+            public void playerLeft(String name) {
+                list.removeItem(name);
+                if (!firstStart) {
+                    toastError(name + " left the lobby!");
+                }
+            }
+
+            @Override
+            public void hostChanged(String name) {
+                changeButtonActivity();
+                if (!firstStart) {
+                    toastSuccess(name + " is host now!");
+                }
+                firstStart = false;
+            }
+
+            @Override
+            public void gameModeChanged(String gameMode) {
+                mode.setText("Mode: " + gameMode);
+                if (!firstStart) {
+                    toastSuccess("Game mode was", "changed to " + gameMode + "!");
+                }
+            }
+        });
+
+        // Start the connection
+        Lobby.connect(lobbyName, ip);
     }
 
     /**
@@ -84,17 +146,17 @@ public class DetailedLobbyView extends MBPanel {
         // The background
         MBBackground background = new MBBackground(Color.LIGHT_GRAY);
         addComponent(background, () -> background.setBounds(
-                    scroll.getX() - 4,
-                    scroll.getY() - 4,
-                    scroll.getWidth() + 8,
-                    scroll.getHeight() + 8
+                scroll.getX() - 4,
+                scroll.getY() - 4,
+                scroll.getWidth() + 8,
+                scroll.getHeight() + 8
         ));
 
         // The start button
         start = new MBButton("Start");
         start.addActionListener(e -> {
             if (start.enabled) {
-                MB.show(new Game(), false);
+                MB.show(new Game(player), false);
             } else {
                 toastError("Only the host can", "start the game!");
             }
@@ -105,12 +167,13 @@ public class DetailedLobbyView extends MBPanel {
                 BUTTON_WIDTH,
                 BUTTON_HEIGHT
         ));
-        
+
         // The change map button
         map = new MBButton("Map");
         map.addActionListener(e -> {
             if (map.enabled) {
-                showDialog(new MapSelection(lobby, map), () -> {});
+                showDialog(new MapSelection(map), () -> {
+                });
             } else {
                 toastError("Only the host can", "change the map!");
             }
@@ -121,12 +184,13 @@ public class DetailedLobbyView extends MBPanel {
                 BUTTON_WIDTH,
                 BUTTON_HEIGHT
         ));
-        
+
         // The change mode button
         mode = new MBButton("Mode");
         mode.addActionListener(e -> {
             if (mode.enabled) {
-                showDialog(new ModeSelection(lobby, mode), () -> {});
+                showDialog(new ModeSelection(), () -> {
+                });
             } else {
                 toastError("Only the host can", "change the mode!");
             }
@@ -137,10 +201,13 @@ public class DetailedLobbyView extends MBPanel {
                 BUTTON_WIDTH,
                 BUTTON_HEIGHT
         ));
-        
+
         // The leave button
         leave = new MBButton("Leave");
-        leave.addActionListener(e -> MB.show(new LobbyView(), false));
+        leave.addActionListener(e -> {
+            Lobby.leave();
+            MB.show(new LobbyView(), false);
+        });
         addComponent(leave, () -> leave.setBounds(
                 scroll.getX() + scroll.getWidth() + MARGIN,
                 scroll.getY() + scroll.getHeight() - BUTTON_HEIGHT + 4,
@@ -165,17 +232,24 @@ public class DetailedLobbyView extends MBPanel {
             crownChange.height = 35;
         });
 
+        // Load the player sprites
+        synchronized (playerSprites) {
+            for (int i = 0; i < 8; i++) {
+                playerSprite = new MBImage("Characters/" + i + ".png", () -> {
+                    playerSprite.width = 96;
+                    playerSprite.height = 144;
+                });
+                playerSprite.refresh();
+                playerSprites.add(playerSprite);
+            }
+        }
+
         // Set the lobby name
-        title.setText(lobby.name);
+        title.setText(Lobby.name);
 
         // Set the button text
-        map.setText("Map: " + lobby.map.name);
-        mode.setText("Mode: " + lobby.mode.name);
-
-        // Fill the list with players
-        for (Map.Entry<String, Color> entry : lobby.players.entrySet()) {
-            list.addItem(new PlayerItem(entry.getKey(), entry.getValue()));
-        }
+        map.setText("Map: " + Lobby.map.name);
+        mode.setText("Mode: " + Lobby.mode.name);
     }
 
     /**
@@ -183,7 +257,7 @@ public class DetailedLobbyView extends MBPanel {
      */
     private void changeButtonActivity() {
         // Check if player is host
-        boolean enabled = lobby.isHost(player);
+        boolean enabled = Lobby.isHost(player);
         // Enable/Disable buttons
         start.enabled = enabled;
         map.enabled = enabled;
@@ -198,7 +272,7 @@ public class DetailedLobbyView extends MBPanel {
         /**
          * Color of the player
          */
-        private final Color color;
+        private final int color;
         /**
          * True if mouse is over label
          */
@@ -211,7 +285,7 @@ public class DetailedLobbyView extends MBPanel {
         /**
          * Constructor
          */
-        public PlayerItem(String name, Color color) {
+        public PlayerItem(String name, int color) {
             super(name);
             this.color = color;
             setLayout(null);
@@ -223,27 +297,31 @@ public class DetailedLobbyView extends MBPanel {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                 }
+
                 @Override
                 public void mousePressed(MouseEvent e) {
                     // Check if player is host
-                    if (player.equals(lobby.host) && !player.equals(name)) {
-                        showDialog(new HostPromotion(name, lobby), () -> {
+                    if (Lobby.isHost(player) && !player.equals(name)) {
+                        showDialog(new HostPromotion(name), () -> {
                             dialog = false;
                             changeButtonActivity();
                         });
                         dialog = true;
                     }
                 }
+
                 @Override
                 public void mouseReleased(MouseEvent e) {
                 }
+
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    if (player.equals(lobby.host)) {
+                    if (Lobby.isHost(player)) {
                         hovering = true;
                         repaint();
                     }
                 }
+
                 @Override
                 public void mouseExited(MouseEvent e) {
                     hovering = false;
@@ -269,13 +347,12 @@ public class DetailedLobbyView extends MBPanel {
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             MB.settings.enableAntiAliasing(g);
-            g.setColor(color);
-            g.fillOval(16, 16, 18, 18);
             g.setColor(Color.black);
             g.drawRect(4, 4, getWidth() - 8, getHeight() - 8);
+            g.drawImage(playerSprites.get(color).getSub(32, 0, 32, 36), 8, 8, null);
 
             // Draw the crown if player is host
-            if (lobby.host.equals(name)) {
+            if (Lobby.isHost(name)) {
                 g.drawImage(crown.image, getWidth() - crown.width - 16, (getHeight() - crown.height) / 2, null);
             } else if (hovering || dialog) {
                 g.drawImage(

@@ -1,12 +1,10 @@
 package Server;
 
 import Game.Game;
+import General.MB;
 import General.Shared.MBButton;
 import General.Shared.MBLabel;
-
 import General.Shared.MBPanel;
-import General.MB;
-import Menu.Menu;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -33,7 +31,7 @@ public class LobbyView extends MBPanel {
 
         // The button for opening a lobby overview
         MBButton play = new MBButton("Play");
-        play.addActionListener(e -> MB.show(new Game(), false));
+        play.addActionListener(e -> MB.show(new Game(""), false));
         addComponent(play, () -> play.setBounds(getWidth() / 2 - 70, 100, 140, 40));
 
         // The button for opening a lobby overview

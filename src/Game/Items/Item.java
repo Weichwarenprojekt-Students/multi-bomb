@@ -1,5 +1,6 @@
 package Game.Items;
 
+import Game.Models.Upgrades;
 import Server.Messages.Socket.Position;
 
 import java.awt.*;
@@ -24,7 +25,7 @@ public abstract class Item {
     /**
      * Handle the use of an item
      */
-    public abstract Item use(Position position);
+    public abstract Item use(Position position, Upgrades upgrades);
 
     /**
      * Draw a used item

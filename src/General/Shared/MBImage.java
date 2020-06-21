@@ -83,7 +83,7 @@ public class MBImage {
     /**
      * Resize and rescale the image
      */
-    private void refresh() {
+    public void refresh() {
         try {
             // Recalculate the measurements
             resize.resize();

@@ -9,10 +9,6 @@ import javax.swing.*;
 public class MapSelection extends JPanel {
 
     /**
-     * The lobby to be modified
-     */
-    private final Lobby lobby;
-    /**
      * The button to be modified
      */
     private final MBButton button;
@@ -20,8 +16,7 @@ public class MapSelection extends JPanel {
     /**
      * Constructor
      */
-    public MapSelection(Lobby lobby, MBButton button) {
-        this.lobby = lobby;
+    public MapSelection(MBButton button) {
         this.button = button;
         setLayout(null);
         setBounds(0, 0, 200, 200);

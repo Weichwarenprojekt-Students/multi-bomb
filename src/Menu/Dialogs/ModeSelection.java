@@ -2,7 +2,6 @@ package Menu.Dialogs;
 
 import Game.GameModes.GameMode;
 import General.MB;
-import General.Shared.MBButton;
 import General.Shared.MBLabel;
 import General.Shared.MBListView;
 import Menu.Models.Lobby;
@@ -13,20 +12,9 @@ import java.awt.*;
 public class ModeSelection extends JPanel {
 
     /**
-     * The lobby to be modified
-     */
-    private final Lobby lobby;
-    /**
-     * The button to be modified
-     */
-    private final MBButton button;
-
-    /**
      * Constructor
      */
-    public ModeSelection(Lobby lobby, MBButton button) {
-        this.lobby = lobby;
-        this.button = button;
+    public ModeSelection() {
         setLayout(null);
         setBounds(0, 0, 400, 300);
 
@@ -47,7 +35,7 @@ public class ModeSelection extends JPanel {
         setSize(getWidth(), list.getY() + list.getHeight() + 8);
     }
 
-    private class ModeItem extends MBListView.Item {
+    private static class ModeItem extends MBListView.Item {
         /**
          * Label to display the name of the mode
          */
@@ -83,8 +71,7 @@ public class ModeSelection extends JPanel {
 
         @Override
         public void onSelected(int index) {
-            lobby.mode = mode;
-            button.setText("Mode: " + mode.name);
+            Lobby.changeMode(mode);
             MB.activePanel.closeDialog();
         }
 
