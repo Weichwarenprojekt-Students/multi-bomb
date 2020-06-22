@@ -20,6 +20,10 @@ import static Game.Models.Animation.*;
  */
 public class Player {
     /**
+     * The amount of time the player is protected after respawn
+     */
+    public static int SPAWN_PROTECTION = 3000;
+    /**
      * The speed of a player
      */
     public static float SPEED = 45f;

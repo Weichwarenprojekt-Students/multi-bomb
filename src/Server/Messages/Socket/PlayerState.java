@@ -1,7 +1,7 @@
 package Server.Messages.Socket;
 
+import Game.Models.Upgrades;
 import Server.Messages.Message;
-import Server.Models.Player;
 
 public class PlayerState extends Message {
     /**
@@ -16,18 +16,20 @@ public class PlayerState extends Message {
      * The player's number of kills
      */
     public int kills;
+    /**
+     * The player's upgrades
+     */
+    public Upgrades upgrades;
+    /**
+     * The player's item
+     */
+    public String item;
 
     /**
      * Constructor
-     *
-     * @param player the player the state is from
      */
-    public PlayerState(Player player) {
+    public PlayerState() {
         // Initialize message with type
         super(Message.PLAYER_STATE_TYPE);
-
-        playerId = player.name;
-        health = player.health;
-        kills = player.kills;
     }
 }

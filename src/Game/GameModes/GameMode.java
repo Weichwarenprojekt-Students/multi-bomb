@@ -1,9 +1,12 @@
 package Game.GameModes;
 
+import Server.Messages.Socket.PlayerState;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
-public class GameMode {
+public abstract class GameMode {
     /**
      * The available modes
      */
@@ -16,13 +19,22 @@ public class GameMode {
      * The description of the game mode
      */
     public final String description;
+    /**
+     * The items that are available for the game mode
+     */
+    public final byte[] items;
+    /**
+     * The player's match statistics
+     */
+    public HashMap<String, PlayerState> players;
 
     /**
      * Constructor
      */
-    public GameMode(String name, String description) {
+    public GameMode(String name, String description, byte... items) {
         this.name = name;
         this.description = description;
+        this.items = items;
     }
 
     /**
@@ -48,4 +60,14 @@ public class GameMode {
     public static ArrayList<GameMode> getModes() {
         return new ArrayList<>(Arrays.asList(new BattleRoyale(), new Classic(), new KillHunt()));
     }
+
+    /**
+     * React to game state changes (client side)
+     */
+    public abstract void updateClientState();
+
+    /**
+     * Evaluate game state changes
+     */
+    public abstract void updateServerState();
 }

@@ -1,5 +1,7 @@
 package Game.GameModes;
 
+import Game.Models.Field;
+
 public class KillHunt extends GameMode {
     /**
      * The description of the mode
@@ -10,6 +12,16 @@ public class KillHunt extends GameMode {
      * Constructor
      */
     public KillHunt() {
-        super(GameMode.KILL_HUNT, DESCRIPTION);
+        super(GameMode.KILL_HUNT, DESCRIPTION, Field.getAllItems());
+    }
+
+    @Override
+    public void updateClientState() {
+
+    }
+
+    @Override
+    public void updateServerState() {
+
     }
 }

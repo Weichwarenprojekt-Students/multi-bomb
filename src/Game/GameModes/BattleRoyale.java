@@ -1,5 +1,7 @@
 package Game.GameModes;
 
+import Game.Models.Field;
+
 public class BattleRoyale extends GameMode {
     /**
      * The description of the mode
@@ -10,6 +12,16 @@ public class BattleRoyale extends GameMode {
      * Constructor
      */
     public BattleRoyale() {
-        super(GameMode.BATTLE_ROYALE, DESCRIPTION);
+        super(GameMode.BATTLE_ROYALE, DESCRIPTION, Field.getAllItems());
+    }
+
+    @Override
+    public void updateClientState() {
+
+    }
+
+    @Override
+    public void updateServerState() {
+
     }
 }

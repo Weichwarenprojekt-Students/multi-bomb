@@ -111,4 +111,16 @@ public enum Field {
     public boolean isPassable() {
         return id <= 0;
     }
+
+    /**
+     * @return all consumable items
+     */
+    public static byte[] getAllItems() {
+        return new byte[] {
+                BOMB.id,
+                HEART.id,
+                SPEED.id,
+                EXPLOSION.id
+        };
+    }
 }
