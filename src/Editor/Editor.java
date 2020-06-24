@@ -19,6 +19,7 @@ public class Editor extends MBPanel {
      * Constructor
      */
     public Editor() {
+        super(true);
         setupLayout();
     }
 

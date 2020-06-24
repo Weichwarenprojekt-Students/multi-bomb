@@ -36,6 +36,7 @@ public class SettingsOverview extends MBPanel {
      * @param last panel that was visible
      */
     public SettingsOverview(MBPanel last) {
+        super(true);
         this.last = last;
         setupLayout();
     }

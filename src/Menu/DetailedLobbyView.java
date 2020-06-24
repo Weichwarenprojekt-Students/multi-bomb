@@ -68,6 +68,7 @@ public class DetailedLobbyView extends MBPanel {
      * @param tickRate  of the server
      */
     public DetailedLobbyView(String player, String lobbyName, String ip, int tickRate) throws IOException {
+        super(true);
         this.player = player;
         setupLayout();
         setupLobby(lobbyName, ip, tickRate);

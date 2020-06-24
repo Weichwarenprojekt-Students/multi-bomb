@@ -16,6 +16,7 @@ public class Overlay extends MBPanel {
      * Constructor
      */
     public Overlay() {
+        super(false);
         setupLayout();
     }
 

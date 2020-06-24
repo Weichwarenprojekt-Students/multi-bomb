@@ -29,12 +29,19 @@ public abstract class MBPanel extends JPanel {
      * The buttons for the group
      */
     private MBButton[] buttons;
+    /**
+     * True if the panel shall contain the background
+     */
+    private final boolean background;
 
     /**
      * This class provides a general setup for a panel
+     *
+     * @param background true if
      */
-    public MBPanel() {
+    public MBPanel(boolean background) {
         // General stuff
+        this.background = background;
         setLayout(null);
         setBackground(Color.white);
 
@@ -159,6 +166,19 @@ public abstract class MBPanel extends JPanel {
                 action.actionPerformed(evt);
             }
         });
+    }
+
+    /**
+     * Draw the background
+     */
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (background) {
+            if (MB.background != null) {
+                g.drawImage(MB.background.image, getWidth() / 2 - MB.background.width / 2, 0, null);
+            }
+        }
     }
 
     /**

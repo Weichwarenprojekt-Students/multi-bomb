@@ -19,6 +19,7 @@ public class Menu extends MBPanel {
      * Constructor
      */
     public Menu() {
+        super(true);
         setupLayout();
     }
 

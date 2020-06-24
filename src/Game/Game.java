@@ -50,6 +50,7 @@ public class Game extends MBPanel {
      * Constructor
      */
     public Game(String player) {
+        super(true);
         this.player = player;
         setupLayout();
     }

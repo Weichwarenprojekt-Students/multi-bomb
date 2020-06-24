@@ -6,6 +6,8 @@ import General.MB;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -32,6 +34,20 @@ public class MBImage {
     public Image original;
 
     /**
+     * Constructor for global images that are used all over the project.
+     * That's why the resize event is registered to the frame instead of the active panel.
+     *
+     * @param relativePath to the picture
+     */
+    public MBImage(String relativePath) {
+        this.resize = () -> {
+            this.height = MB.frame.getHeight();
+            this.width = (int) (21f / 9 * MB.frame.getHeight());
+        };
+        initialize(relativePath, true);
+    }
+
+    /**
      * Constructor
      *
      * @param relativePath to the image
@@ -49,7 +65,7 @@ public class MBImage {
                 height = (int) ((Field.HEIGHT) * Battleground.ratio);
             };
         }
-        initialize(relativePath);
+        initialize(relativePath, false);
     }
 
     /**
@@ -60,13 +76,13 @@ public class MBImage {
      */
     public MBImage(String relativePath, MBPanel.ComponentResize resize) {
         this.resize = resize;
-        initialize(relativePath);
+        initialize(relativePath, false);
     }
 
     /**
      * Initialize the image
      */
-    private void initialize(String relativePath) {
+    private void initialize(String relativePath, boolean onFrame) {
         // Load the image
         try {
             this.original = ImageIO.read(MBImage.class.getResource("/Resources/" + relativePath));
@@ -76,7 +92,16 @@ public class MBImage {
         this.image = this.original;
 
         // Listen for resize events
-        MB.activePanel.addResizeEvent(this::refresh);
+        if (onFrame) {
+            MB.frame.addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    refresh();
+                }
+            });
+        } else {
+            MB.activePanel.addResizeEvent(this::refresh);
+        }
         refresh();
     }
 

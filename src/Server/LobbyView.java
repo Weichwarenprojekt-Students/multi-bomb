@@ -18,6 +18,7 @@ public class LobbyView extends MBPanel {
      * Constructor
      */
     public LobbyView() {
+        super(true);
         setupLayout();
     }
 

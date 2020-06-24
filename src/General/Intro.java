@@ -15,6 +15,7 @@ public class Intro extends MBPanel {
      * Constructor
      */
     public Intro() {
+        super(true);
         setupLayout();
     }
 

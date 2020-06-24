@@ -1,11 +1,10 @@
 package General;
 
 
+import General.Shared.MBImage;
 import Menu.DetailedLobbyView;
 import General.Shared.MBPanel;
-import Menu.Models.Lobby;
 import Server.LobbyView;
-import Server.Messages.Message;
 import Server.Messages.REST.CreateLobby;
 import Server.Messages.REST.JoinLobby;
 import Server.Server;
@@ -33,12 +32,17 @@ public class MB {
      * The shown panel
      */
     public static MBPanel activePanel;
+    /**
+     * The game background
+     */
+    public static MBImage background;
 
     /**
      * Setup the JFrame and show the menu
      */
     public static void startGame(boolean create, String name) {
         MB.settings.loadSettings();
+        background = new MBImage("General/background.png");
         setupFrame();
 
         try {
@@ -126,5 +130,7 @@ public class MB {
         if (!known) {
             panel.afterVisible();
         }
+        // Make sure the background is drawn
+        panel.repaint();
     }
 }

@@ -14,6 +14,7 @@ public class Sidebar extends MBPanel {
      * Constructor
      */
     public Sidebar() {
+        super(false);
         setupLayout();
     }
 

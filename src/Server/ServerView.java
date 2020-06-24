@@ -19,6 +19,7 @@ public class ServerView extends MBPanel {
      * Constructor
      */
     public ServerView() {
+        super(true);
         setupLayout();
     }
 

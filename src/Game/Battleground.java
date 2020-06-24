@@ -42,6 +42,7 @@ public class Battleground extends MBPanel {
      * @param drawPlayers true if the player should be drawn
      */
     public Battleground(Map map, boolean drawPlayers) {
+        super(false);
         this.map = map;
         this.drawPlayers = drawPlayers;
 
