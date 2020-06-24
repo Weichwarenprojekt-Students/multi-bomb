@@ -108,6 +108,6 @@ public class GameWorld extends Thread {
         players.get(name).kill();
 
         // send update about dead player to all players
-        lobby.sendToAllPlayers(new PlayerState(players.get(name)));
+        lobby.sendToAllPlayers(new PlayerState());
     }
 }
