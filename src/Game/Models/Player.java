@@ -4,10 +4,11 @@ import Game.Battleground;
 import Game.Game;
 import Game.Items.Bomb;
 import Game.Items.Item;
+import Game.Lobby;
 import General.Shared.MBImage;
 import General.Shared.MBPanel;
-import Game.Lobby;
 import Server.Messages.Socket.Map;
+import Server.Messages.Socket.PlayerState;
 import Server.Messages.Socket.Position;
 
 import java.awt.*;
@@ -40,17 +41,17 @@ public class Player {
      */
     public int color;
     /**
-     * The sprite of the player
+     * The player state
      */
-    private MBImage sprite;
+    public PlayerState state = new PlayerState();
     /**
      * The player's item
      */
-    private Item item;
+    public Item item;
     /**
-     * The player's upgrades
+     * The sprite of the player
      */
-    private Upgrades upgrades;
+    private MBImage sprite;
 
     /**
      * Constructor
@@ -74,7 +75,7 @@ public class Player {
 
         // Initialize the item and the upgrades
         item = new Bomb();
-        upgrades = new Upgrades();
+        state = new PlayerState();
 
         // Load the sprite
         sprite = new MBImage("Characters/" + color + ".png", () -> {
@@ -111,7 +112,9 @@ public class Player {
         panel.addKeybinding(
                 true,
                 "STOP UP",
-                (e) -> {if (position.direction == Direction.NORTH) position.moving = false;},
+                (e) -> {
+                    if (position.direction == Direction.NORTH) position.moving = false;
+                },
                 KeyEvent.VK_UP,
                 KeyEvent.VK_W
         );
@@ -129,7 +132,9 @@ public class Player {
         panel.addKeybinding(
                 true,
                 "STOP RIGHT",
-                (e) -> {if (position.direction == Direction.EAST) position.moving = false;},
+                (e) -> {
+                    if (position.direction == Direction.EAST) position.moving = false;
+                },
                 KeyEvent.VK_RIGHT,
                 KeyEvent.VK_D
         );
@@ -147,7 +152,9 @@ public class Player {
         panel.addKeybinding(
                 true,
                 "STOP DOWN",
-                (e) -> {if (position.direction == Direction.SOUTH) position.moving = false;},
+                (e) -> {
+                    if (position.direction == Direction.SOUTH) position.moving = false;
+                },
                 KeyEvent.VK_DOWN,
                 KeyEvent.VK_S
         );
@@ -165,7 +172,9 @@ public class Player {
         panel.addKeybinding(
                 true,
                 "STOP LEFT",
-                (e) -> {if (position.direction == Direction.WEST) position.moving = false;},
+                (e) -> {
+                    if (position.direction == Direction.WEST) position.moving = false;
+                },
                 KeyEvent.VK_LEFT,
                 KeyEvent.VK_A
         );
@@ -193,7 +202,7 @@ public class Player {
      * Use the players current item
      */
     private void useItem() {
-        item = item.use(position, upgrades);
+        item = item.use(position, state.upgrades);
     }
 
     /**

@@ -33,7 +33,7 @@ public class DetailedLobbyView extends MBPanel {
     /**
      * The player sprites
      */
-    private final ArrayList<MBImage> playerSprites = new ArrayList<>();
+    private ArrayList<MBImage> playerSprites = new ArrayList<>();
     /**
      * The label showing the title
      */
@@ -53,7 +53,7 @@ public class DetailedLobbyView extends MBPanel {
     /**
      * The crown images
      */
-    private MBImage crown, crownChange, playerSprite;
+    private MBImage crown, crownChange;
     /**
      * Prevents the view from showing the toasts when joining a lobby
      */
@@ -235,16 +235,7 @@ public class DetailedLobbyView extends MBPanel {
         });
 
         // Load the player sprites
-        synchronized (playerSprites) {
-            for (int i = 0; i < 8; i++) {
-                playerSprite = new MBImage("Characters/" + i + ".png", () -> {
-                    playerSprite.width = 96;
-                    playerSprite.height = 144;
-                });
-                playerSprite.refresh();
-                playerSprites.add(playerSprite);
-            }
-        }
+        playerSprites = MB.getPlayerSprites();
 
         // Set the lobby name
         title.setText(Lobby.name);

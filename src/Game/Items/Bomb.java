@@ -85,7 +85,7 @@ public class Bomb extends Item {
      * Constructor
      */
     public Bomb() {
-        super(NAME);
+        super(NAME, Field.BOMB);
 
         // Initialize the bomb sprite
         bombImage = new MBImage("Items/Bomb/bomb.png", () -> {

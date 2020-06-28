@@ -1,6 +1,7 @@
 package General;
 
 
+import Game.Game;
 import General.Shared.MBImage;
 import Menu.DetailedLobbyView;
 import General.Shared.MBPanel;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 public class MB {
 
@@ -32,6 +34,10 @@ public class MB {
      * The shown panel
      */
     public static MBPanel activePanel;
+    /**
+     * A players sprite
+     */
+    private static MBImage playerSprite;
     /**
      * The game background
      */
@@ -93,6 +99,7 @@ public class MB {
         frame.setLayout(null);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setMinimumSize(new Dimension(1060, 720));
 
         // Listen for window measurement changes and save them
         frame.addComponentListener(new ComponentAdapter() {
@@ -132,5 +139,21 @@ public class MB {
         }
         // Make sure the background is drawn
         panel.repaint();
+    }
+
+    /**
+     * @return all player sprites
+     */
+    public static ArrayList<MBImage> getPlayerSprites() {
+        ArrayList<MBImage> playerSprites = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            playerSprite = new MBImage("Characters/" + i + ".png", () -> {
+                playerSprite.width = 96;
+                playerSprite.height = 144;
+            });
+            playerSprite.refresh();
+            playerSprites.add(playerSprite);
+        }
+        return playerSprites;
     }
 }

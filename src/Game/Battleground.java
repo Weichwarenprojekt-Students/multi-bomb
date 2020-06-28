@@ -1,6 +1,8 @@
 package Game;
 
 import Game.Models.Field;
+import General.Shared.MBBackground;
+import General.Shared.MBButton;
 import Server.Messages.Socket.Map;
 import Game.Models.Player;
 import General.MB;
@@ -42,6 +44,7 @@ public class Battleground extends MBPanel {
      */
     public Battleground(Map map, boolean drawPlayers) {
         super(false);
+        setOpaque(false);
         this.map = map;
         this.drawPlayers = drawPlayers;
 
@@ -133,5 +136,13 @@ public class Battleground extends MBPanel {
                 }
             }
         }
+
+        // Draw the picture frame
+        g.setColor(MBButton.GREY);
+        int size = 16;
+        g.fillRoundRect(0, 0, size, getHeight(), MBBackground.CORNER_RADIUS, MBBackground.CORNER_RADIUS);
+        g.fillRoundRect(0, 0, getWidth(), size, MBBackground.CORNER_RADIUS, MBBackground.CORNER_RADIUS);
+        g.fillRoundRect(getWidth() - size, 0, size, getHeight(), MBBackground.CORNER_RADIUS, MBBackground.CORNER_RADIUS);
+        g.fillRoundRect(0, getHeight() - size, getWidth(), size, MBBackground.CORNER_RADIUS, MBBackground.CORNER_RADIUS);
     }
 }

@@ -19,7 +19,7 @@ public class PlayerState extends Message {
     /**
      * The player's upgrades
      */
-    public Upgrades upgrades;
+    public Upgrades upgrades = new Upgrades();
     /**
      * The player's item
      */

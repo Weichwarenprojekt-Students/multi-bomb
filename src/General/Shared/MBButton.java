@@ -19,7 +19,7 @@ public class MBButton extends JButton {
     /**
      * The background color
      */
-    private static final Color BACKGROUND_COLOR = new Color(0, 0, 0, TRANSPARENCY);
+    public static final Color BACKGROUND_COLOR = new Color(0, 0, 0, TRANSPARENCY);
     /**
      * True if the button is enabled
      */

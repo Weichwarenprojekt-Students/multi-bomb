@@ -12,6 +12,10 @@ import java.awt.event.KeyEvent;
 public class Game extends MBPanel {
 
     /**
+     * The margin of the sidebar
+     */
+    public static int MARGIN = 16;
+    /**
      * The wait time for the targeted refresh rate
      */
     public static long WAIT_TIME = 1000 / MB.settings.refreshRate;
@@ -27,10 +31,6 @@ public class Game extends MBPanel {
      * True if the game is over
      */
     public static boolean gameOver = true;
-    /**
-     * The overlay
-     */
-    public static Overlay overlay;
     /**
      * The name of the user
      */
@@ -57,25 +57,6 @@ public class Game extends MBPanel {
      * Setup the layout
      */
     public void setupLayout() {
-        // The button for opening a lobby overview
-        overlay = new Overlay();
-        overlay.setVisible(false);
-        addComponent(overlay, () -> overlay.setBounds(0, 0, getWidth(), getHeight()));
-        addKeybinding(
-                false,
-                "Open Overlay",
-                (e) -> overlay.setVisible(!overlay.isVisible()),
-                KeyEvent.VK_ESCAPE
-        );
-
-        // Add the sidebar
-        sidebar = new Sidebar();
-        addComponent(sidebar, () -> sidebar.setBounds(
-                (int) (getWidth() / 2 - 0.75 * getHeight()),
-                0,
-                (int) (0.5 * getHeight()),
-                getHeight()
-        ));
 
         // React to lobby changes
         Lobby.setLobbyChangeEvent(new Lobby.LobbyChangeEvent() {
@@ -86,6 +67,7 @@ public class Game extends MBPanel {
             @Override
             public void playerLeft(String name) {
                 toastError(name + " left the lobby!");
+                sidebar.removePlayer(name);
             }
 
             @Override
@@ -106,10 +88,18 @@ public class Game extends MBPanel {
         // Add the battleground
         battleground = new Battleground(Lobby.map, true);
         addComponent(battleground, () -> battleground.setBounds(
-                (int) (getWidth() / 2 - 0.25 * getHeight()),
-                0,
-                getHeight(),
-                getHeight()
+                (int) (getWidth() / 2 - 0.25 * getHeight()) + 2 * MARGIN,
+                2 * MARGIN,
+                getHeight() - 4 * MARGIN,
+                getHeight() - 4 * MARGIN
+        ));
+        // Add the sidebar
+        sidebar = new Sidebar();
+        addComponent(sidebar, () -> sidebar.setBounds(
+                (int) (getWidth() / 2 - 0.75 * getHeight()) + MARGIN,
+                MARGIN,
+                (int) (1.5 * getHeight()) - 2 * MARGIN,
+                getHeight() - 2 * MARGIN
         ));
 
         // Call the after visible methods

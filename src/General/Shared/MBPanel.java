@@ -53,7 +53,7 @@ public abstract class MBPanel extends JPanel {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                synchronized (this) {
+                synchronized (components) {
                     for (ComponentResize component : components) {
                         component.resize();
                     }
