@@ -12,7 +12,11 @@ public class MBLabel extends JLabel {
     /**
      * Fontsize for H1 text
      */
-    public static final int H1 = 20;
+    public static final int TITLE = 64;
+    /**
+     * Fontsize for H1 text
+     */
+    public static final int H1 = 32;
     /**
      * Fontsize for H2 text
      */
@@ -77,6 +81,7 @@ public class MBLabel extends JLabel {
      * @param fontSize of the text
      */
     private void setupLabel(int fontSize) {
+        setFontColor(Color.WHITE);
         setFont(new Font(FONT_NAME, Font.PLAIN, fontSize));
     }
 

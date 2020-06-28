@@ -5,7 +5,6 @@ import Server.Messages.Socket.Map;
 import Game.Models.Player;
 import General.MB;
 import General.Shared.MBPanel;
-import Menu.Models.Lobby;
 
 import java.awt.*;
 

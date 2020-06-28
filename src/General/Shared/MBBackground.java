@@ -12,7 +12,7 @@ public class MBBackground extends JLabel {
     /**
      * The corner radius
      */
-    private static final int CORNER_RADIUS = 6;
+    public static final int CORNER_RADIUS = 6;
     /**
      * The color of the background
      */

@@ -6,7 +6,7 @@ import Game.Models.Field;
 import Server.Messages.Socket.Map;
 import Game.Models.Upgrades;
 import General.Shared.MBImage;
-import Menu.Models.Lobby;
+import Game.Lobby;
 import Server.Messages.Socket.Position;
 
 import java.awt.*;

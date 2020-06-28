@@ -3,8 +3,6 @@ package Game;
 import Game.Models.Player;
 import General.MB;
 import General.Shared.MBPanel;
-import Menu.DetailedLobbyView;
-import Menu.Models.Lobby;
 
 import java.awt.event.KeyEvent;
 

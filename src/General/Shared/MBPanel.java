@@ -187,7 +187,7 @@ public abstract class MBPanel extends JPanel {
      * @param text of the toast
      */
     public void toastSuccess(String... text) {
-        new Thread(() -> toastManager.show(Color.green, text)).start();
+        new Thread(() -> toastManager.show(MBToastManager.GREEN, text)).start();
     }
 
     /**
@@ -196,7 +196,7 @@ public abstract class MBPanel extends JPanel {
      * @param text of the toast
      */
     public void toastError(String... text) {
-        new Thread(() -> toastManager.show(Color.red, text)).start();
+        new Thread(() -> toastManager.show(MBToastManager.RED, text)).start();
     }
 
     /**
@@ -225,6 +225,10 @@ public abstract class MBPanel extends JPanel {
 
     private static class MBToastManager extends JPanel {
 
+        /**
+         * The colors for the toasts
+         */
+        private static final Color GREEN = new Color(141, 211, 95), RED = new Color(255, 47, 0);
         /**
          * Duration of the toast
          */
@@ -284,7 +288,6 @@ public abstract class MBPanel extends JPanel {
             int width = 0, height = 0;
             for (String message : text) {
                 MBLabel label = new MBLabel(message);
-                label.setFontColor(Color.WHITE);
                 label.setBold();
                 label.alignTextTop();
 

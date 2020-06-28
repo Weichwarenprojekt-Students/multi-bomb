@@ -1,12 +1,11 @@
 package Menu;
 
-import Game.Game;
 import General.MB;
 import General.Shared.*;
 import Menu.Dialogs.HostPromotion;
 import Menu.Dialogs.MapSelection;
 import Menu.Dialogs.ModeSelection;
-import Menu.Models.Lobby;
+import Game.Lobby;
 import Server.LobbyView;
 import Server.ServerView;
 
@@ -147,7 +146,7 @@ public class DetailedLobbyView extends MBPanel {
         ));
 
         // The background
-        MBBackground background = new MBBackground(Color.LIGHT_GRAY);
+        MBBackground background = new MBBackground(new Color(0, 0, 0, 0.2f));
         addComponent(background, () -> background.setBounds(
                 scroll.getX() - 4,
                 scroll.getY() - 4,
@@ -293,6 +292,7 @@ public class DetailedLobbyView extends MBPanel {
             this.color = color;
             setLayout(null);
             nameLabel = new MBLabel(name);
+            nameLabel.setBold();
             add(nameLabel);
 
             // Make the label clickable
@@ -321,6 +321,7 @@ public class DetailedLobbyView extends MBPanel {
                 public void mouseEntered(MouseEvent e) {
                     if (Lobby.isHost(player)) {
                         hovering = true;
+                        nameLabel.setFontColor(Color.WHITE);
                         repaint();
                     }
                 }
@@ -328,6 +329,7 @@ public class DetailedLobbyView extends MBPanel {
                 @Override
                 public void mouseExited(MouseEvent e) {
                     hovering = false;
+                    nameLabel.setFontColor(MBButton.GREY);
                     repaint();
                 }
             });
@@ -350,8 +352,6 @@ public class DetailedLobbyView extends MBPanel {
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             MB.settings.enableAntiAliasing(g);
-            g.setColor(Color.black);
-            g.drawRect(4, 4, getWidth() - 8, getHeight() - 8);
             if (playerSprites.size() > color) {
                 g.drawImage(playerSprites.get(color).getSub(32, 0, 32, 36), 8, 8, null);
             }

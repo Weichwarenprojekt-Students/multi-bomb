@@ -1,7 +1,7 @@
 package Game;
 
 import General.MB;
-import General.SettingsOverview;
+import Menu.SettingsOverview;
 import General.Shared.MBButton;
 import General.Shared.MBLabel;
 import General.Shared.MBPanel;

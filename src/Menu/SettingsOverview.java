@@ -1,13 +1,17 @@
-package General;
+package Menu;
 
+import General.MB;
 import General.Shared.MBButton;
 import General.Shared.MBLabel;
 import General.Shared.MBPanel;
 import Game.Game;
+import General.Shared.MBTitle;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+
+import static Menu.Menu.MARGIN;
+import static Menu.Menu.START_Y;
 
 /**
  * This class provides some settings like sound and graphics
@@ -46,40 +50,81 @@ public class SettingsOverview extends MBPanel {
      */
     public void setupLayout() {
         // The title
-        MBLabel title = new MBLabel("Settings", SwingConstants.CENTER, MBLabel.H1);
-        addComponent(title, () -> title.setBounds(getWidth() / 2 - 100, 50, 200, 40));
+        MBTitle title = new MBTitle("Settings");
+        addComponent(title, () -> title.setBounds(
+                (getWidth() - title.getWidth()) / 2,
+                MARGIN,
+                title.getWidth(),
+                title.getHeight())
+        );
 
         // The label for window mode
+        int width = 200, height = 30, margin = 16;
         MBLabel fullscreenLabel = new MBLabel("Window Mode:");
-        addComponent(fullscreenLabel, () -> fullscreenLabel.setBounds(getWidth() / 2 - 156, 100, 140, 30));
+        addComponent(fullscreenLabel, () -> fullscreenLabel.setBounds(
+                getWidth() / 2 - width - margin,
+                START_Y,
+                width,
+                height
+        ));
 
         // The button for leaving or entering fullscreen
         fullscreen = new MBButton(MB.settings.fullscreen ? "Fullscreen" : "Window");
         fullscreen.addActionListener(e -> changeScreen());
-        addComponent(fullscreen, () -> fullscreen.setBounds(getWidth() / 2 + 16, 100, 140, 30));
+        addComponent(fullscreen, () -> fullscreen.setBounds(
+                getWidth() / 2 + margin,
+                START_Y,
+                width,
+                height
+        ));
 
         // The label for anti aliasing
         MBLabel antiAliasingLabel = new MBLabel("Anti Aliasing:");
-        addComponent(antiAliasingLabel, () -> antiAliasingLabel.setBounds(getWidth() / 2 - 156, 140, 140, 30));
+        addComponent(antiAliasingLabel, () -> antiAliasingLabel.setBounds(
+                getWidth() / 2 - width - margin,
+                START_Y + height + margin,
+                width,
+                height
+        ));
 
         // The button for activating or deactivating anti aliasing
         antiAliasing = new MBButton(MB.settings.antiAliasing ? "Activated" : "Deactivated");
         antiAliasing.addActionListener(e -> changeAntiAliasing());
-        addComponent(antiAliasing, () -> antiAliasing.setBounds(getWidth() / 2 + 16, 140, 140, 30));
+        addComponent(antiAliasing, () -> antiAliasing.setBounds(
+                getWidth() / 2 + margin,
+                START_Y + height + margin,
+                width,
+                height
+        ));
 
         // The label for anti aliasing
         MBLabel refreshRateLabel = new MBLabel("Refresh Rate:");
-        addComponent(refreshRateLabel, () -> refreshRateLabel.setBounds(getWidth() / 2 - 156, 180, 140, 30));
+        addComponent(refreshRateLabel, () -> refreshRateLabel.setBounds(
+                getWidth() / 2 - width - margin,
+                START_Y + 2 * (height + margin),
+                width,
+                height
+        ));
 
         // The button for activating or deactivating anti aliasing
         refreshRate = new MBButton(Integer.toString(MB.settings.refreshRate));
         refreshRate.addActionListener(e -> changeRefreshRate());
-        addComponent(refreshRate, () -> refreshRate.setBounds(getWidth() / 2 + 16, 180, 140, 30));
+        addComponent(refreshRate, () -> refreshRate.setBounds(
+                getWidth() / 2 + margin,
+                START_Y + 2 * (height + margin),
+                width,
+                height
+        ));
 
         // The button for opening a lobby overview
         MBButton back = new MBButton("Back");
         back.addActionListener(e -> MB.show(last, true));
-        addComponent(back, () -> back.setBounds(getWidth() / 2 - 70, 220, 140, 30));
+        addComponent(back, () -> back.setBounds(
+                (getWidth() - width) / 2,
+                START_Y + 3 * (height + margin),
+                width,
+                height
+        ));
         addKeybinding(
                 false,
                 "Close Settings",

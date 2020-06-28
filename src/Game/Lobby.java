@@ -1,6 +1,5 @@
-package Menu.Models;
+package Game;
 
-import Game.Game;
 import Game.GameModes.BattleRoyale;
 import Game.GameModes.GameMode;
 import Game.Models.Player;

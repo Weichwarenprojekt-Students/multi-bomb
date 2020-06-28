@@ -3,7 +3,7 @@ package Menu.Dialogs;
 import General.MB;
 import General.Shared.MBButton;
 import General.Shared.MBLabel;
-import Menu.Models.Lobby;
+import Game.Lobby;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,6 +28,7 @@ public class HostPromotion extends JPanel {
 
         // The title
         MBLabel title = new MBLabel(MBLabel.H2, "Make " + player + " host?");
+        title.setFontColor(Color.BLACK);
         title.setBounds(MARGIN, MARGIN, getWidth() - 2 * MARGIN, 20);
         add(title);
         

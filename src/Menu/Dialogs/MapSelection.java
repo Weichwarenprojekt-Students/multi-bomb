@@ -2,7 +2,6 @@ package Menu.Dialogs;
 
 import General.Shared.MBButton;
 import General.Shared.MBLabel;
-import Menu.Models.Lobby;
 
 import javax.swing.*;
 

@@ -6,7 +6,7 @@ import Game.Items.Bomb;
 import Game.Items.Item;
 import General.Shared.MBImage;
 import General.Shared.MBPanel;
-import Menu.Models.Lobby;
+import Game.Lobby;
 import Server.Messages.Socket.Map;
 import Server.Messages.Socket.Position;
 
