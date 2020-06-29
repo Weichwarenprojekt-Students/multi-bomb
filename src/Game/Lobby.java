@@ -189,7 +189,9 @@ public class Lobby {
      * Leave the lobby
      */
     public static void leave() {
-        gameState.state = GameState.FINISHED;
+        if (gameState != null) {
+            gameState.state = GameState.FINISHED;
+        }
         players.clear();
         leave = true;
         try {
