@@ -189,8 +189,9 @@ public class Lobby {
      * Leave the lobby
      */
     public static void leave() {
-        leave = true;
+        gameState.state = GameState.FINISHED;
         players.clear();
+        leave = true;
         try {
             socket.close();
         } catch (IOException e) {

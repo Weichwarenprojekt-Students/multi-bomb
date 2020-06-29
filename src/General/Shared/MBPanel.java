@@ -223,7 +223,7 @@ public abstract class MBPanel extends JPanel {
         void resize();
     }
 
-    private static class MBToastManager extends JPanel {
+    public static class MBToastManager extends JPanel {
 
         /**
          * The colors for the toasts
@@ -332,7 +332,7 @@ public abstract class MBPanel extends JPanel {
          * @param toast to be moved
          * @param fade  describes the fade progress
          */
-        private void slide(JPanel toast, FadeEvent fade) {
+        public static void slide(JComponent toast, FadeEvent fade) {
             // Initialize the animation
             final int duration = 500;
             final int delay = 10;
@@ -343,7 +343,8 @@ public abstract class MBPanel extends JPanel {
             for (int time = 0; time <= duration; time += delay) {
                 // Move the toast
                 toast.setLocation(startX + fade.fade((float) time / duration, distance), toast.getY());
-                revalidate();
+                MB.activePanel.revalidate();
+                MB.activePanel.repaint();
 
                 // Wait
                 try {
@@ -353,7 +354,7 @@ public abstract class MBPanel extends JPanel {
                 }
             }
             toast.setLocation(startX + fade.fade(1, distance), toast.getY());
-            revalidate();
+            MB.activePanel.revalidate();
         }
 
         /**
@@ -382,7 +383,7 @@ public abstract class MBPanel extends JPanel {
         /**
          * Interface that describes the fade behavior
          */
-        private interface FadeEvent {
+        public interface FadeEvent {
             int fade(float progress, int distance);
         }
     }

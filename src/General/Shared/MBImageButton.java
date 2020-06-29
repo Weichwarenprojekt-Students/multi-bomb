@@ -10,6 +10,10 @@ import java.awt.event.MouseListener;
 public class MBImageButton extends JLabel {
 
     /**
+     * True if the button shall be enabled
+     */
+    public boolean enabled = true;
+    /**
      * The Button image
      */
     private MBImage image;
@@ -35,7 +39,9 @@ public class MBImageButton extends JLabel {
             }
             @Override
             public void mousePressed(MouseEvent e) {
-                listener.onPressed();
+                if (enabled) {
+                    listener.onPressed();
+                }
             }
             @Override
             public void mouseReleased(MouseEvent e) {
