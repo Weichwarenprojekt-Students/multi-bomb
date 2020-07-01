@@ -388,7 +388,7 @@ public abstract class MBPanel extends JPanel {
         }
     }
 
-    private static class MBDialogManager extends JPanel {
+    public static class MBDialogManager extends JPanel {
 
         /**
          * The content of the dialog

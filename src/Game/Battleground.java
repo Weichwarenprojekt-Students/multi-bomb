@@ -7,6 +7,7 @@ import Server.Messages.Socket.Map;
 import Game.Models.Player;
 import General.MB;
 import General.Shared.MBPanel;
+import Server.Messages.Socket.Position;
 
 import java.awt.*;
 
@@ -26,11 +27,15 @@ public class Battleground extends MBPanel {
     /**
      * The map to be drawn
      */
-    private final Map map;
+    public static Map map;
     /**
      * True if the players shall be drawn
      */
     private final boolean drawPlayers;
+    /**
+     * True if the spawns shall be drawn
+     */
+    private final boolean drawSpawns;
     /**
      * True if the panel should start drawing the battleground
      */
@@ -42,11 +47,12 @@ public class Battleground extends MBPanel {
      * @param map         to be drawn
      * @param drawPlayers true if the player should be drawn
      */
-    public Battleground(Map map, boolean drawPlayers) {
+    public Battleground(Map map, boolean drawPlayers, boolean drawSpawns) {
         super(false);
         setOpaque(false);
-        this.map = map;
+        Battleground.map = map;
         this.drawPlayers = drawPlayers;
+        this.drawSpawns = drawSpawns;
 
         // Listen for resize events
         MB.activePanel.addComponentEvent(this::calculateSize);
@@ -104,6 +110,20 @@ public class Battleground extends MBPanel {
             }
         }
 
+        // Draw the spawns
+        if (drawSpawns) {
+            for (Position spawn : map.spawns) {
+                if (spawn != null) {
+                    g.drawImage(
+                            Field.SPAWN.image.image,
+                            (int) (spawn.x * fieldSize + offset + Field.offset_x),
+                            (int) (spawn.y * fieldSize + offset + Field.offset_y),
+                            null
+                    );
+                }
+            }
+        }
+
         // Draw the map
         for (int m = 0; m < Map.SIZE; m++) {
             for (int n = 0; n < Map.SIZE; n++) {
@@ -131,8 +151,8 @@ public class Battleground extends MBPanel {
                 }
 
                 // Draw item above player
-                if (map.items[m][n] != null) {
-                    map.items[m][n] = map.items[m][n].draw((Graphics2D) g, m, n);
+                if (Map.items[m][n] != null) {
+                    Map.items[m][n] = Map.items[m][n].draw((Graphics2D) g, m, n);
                 }
             }
         }

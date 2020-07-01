@@ -4,8 +4,6 @@ import Game.Models.Player;
 import General.MB;
 import General.Shared.MBPanel;
 
-import java.awt.event.KeyEvent;
-
 /**
  * This class displays and handles the game
  */
@@ -86,7 +84,7 @@ public class Game extends MBPanel {
     @Override
     public void afterVisible() {
         // Add the battleground
-        battleground = new Battleground(Lobby.map, true);
+        battleground = new Battleground(Lobby.map, true, false);
         addComponent(battleground, () -> battleground.setBounds(
                 (int) (getWidth() / 2 - 0.25 * getHeight()) + 2 * MARGIN,
                 2 * MARGIN,

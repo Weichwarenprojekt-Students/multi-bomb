@@ -10,10 +10,11 @@ import Server.Messages.Socket.Map;
 public enum Field {
 
     GROUND(0, "Ground", false, false),
-    SOLID_0(1, "First Solid", false, false),
-    SOLID_1(2, "Second Solid", false, false),
-    BREAKABLE_0(3, "First Breakable", true, false),
-    BREAKABLE_1(4, "Second Breakable", true, false),
+    SOLID_0(1, "Tree", false, false),
+    SOLID_1(2, "Fir", false, false),
+    BREAKABLE_0(3, "Mushroom", true, false),
+    BREAKABLE_1(4, "Wood Stack", true, false),
+    SPAWN(5, "Spawn", true, false),
     BOMB(-1, "Bomb", false, true),
     SPEED(-2, "Speed", false, true),
     HEART(-3, "Heart", false, true),
@@ -74,6 +75,7 @@ public enum Field {
     public static void loadTextures(String theme) {
         // The ground block
         GROUND.image = new MBImage("Maps/" + theme + "/ground.png", false);
+        SPAWN.image = new MBImage("Maps/" + theme + "/spawn.png", false);
 
         // The other blocks
         SOLID_0.image = new MBImage("Maps/" + theme + "/solid_0.png", false);

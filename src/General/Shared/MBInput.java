@@ -15,7 +15,6 @@ public class MBInput extends JTextField {
      */
     public MBInput() {
         setFont(new Font(MBLabel.FONT_NAME, Font.PLAIN, MBLabel.NORMAL));
-        setBackground(MBScrollView.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING));
     }
 
@@ -27,9 +26,14 @@ public class MBInput extends JTextField {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(Color.black);
-        g.drawRect(0, getHeight() - 1, getWidth(), 0);
-        g.drawRect(0, getHeight() - 10, 0, 10);
-        g.drawRect(getWidth() - 1, getHeight() - 10, 0, 10);
+        g.setColor(MBButton.BACKGROUND_COLOR);
+        g.fillRoundRect(
+                0,
+                0,
+                getWidth() - 1,
+                getHeight() - 1,
+                MBBackground.CORNER_RADIUS,
+                MBBackground.CORNER_RADIUS
+        );
     }
 }

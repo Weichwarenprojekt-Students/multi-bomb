@@ -152,8 +152,8 @@ public class Sidebar extends MBPanel {
                         menuOpen ? (int) (Math.sin(Math.PI / 2 * progress) * distance) : 0);
 
                 // Ensure right position
-                settings.setLocation(menuOpen ? PADDING : -getHeight() / 2 - PADDING, settings.getY());
-                leave.setLocation(menuOpen ? PADDING : -getHeight() / 2 - PADDING, leave.getY());
+                settings.setLocation(PADDING, settings.getY());
+                leave.setLocation(PADDING, leave.getY());
                 menu.enabled = true;
             }).start();
         } else {

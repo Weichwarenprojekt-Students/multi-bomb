@@ -19,6 +19,10 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
      */
     private final Comparator<T> comparator;
     /**
+     * True if the list shall be sorted
+     */
+    public boolean sort = true;
+    /**
      * The last width of the view
      */
     private int lastWidth = 0;
@@ -65,7 +69,9 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
     public void addItem(T item) {
         // Add the item and sort the list
         items.add(item);
-        items.sort(comparator);
+        if (sort) {
+            items.sort(comparator);
+        }
         add(item);
 
         // Add a mouse listener to catch selections

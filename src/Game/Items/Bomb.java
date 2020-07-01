@@ -111,10 +111,10 @@ public class Bomb extends Item {
         int n = (int) (position.x / Map.FIELD_SIZE);
 
         // Check if the player is able to place a bomb
-        if (upgrades.bombCount > 0 && Lobby.map.items[m][n] == null) {
+        if (upgrades.bombCount > 0 && Map.items[m][n] == null) {
 
             // Add the item to the map so that the battleground can draw it
-            Lobby.map.items[m][n] = this;
+            Map.items[m][n] = this;
 
             // Decrease the bomb count
             upgrades.bombCount--;

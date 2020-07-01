@@ -1,6 +1,6 @@
 package Menu;
 
-import Editor.Editor;
+import Editor.MapSelection;
 import General.MB;
 import General.Shared.MBButton;
 import General.Shared.MBPanel;
@@ -50,7 +50,7 @@ public class Menu extends MBPanel {
 
         // The button for opening the map editor
         MBButton editor = new MBButton("Editor");
-        editor.addActionListener(e -> MB.show(new Editor(), false));
+        editor.addActionListener(e -> MB.show(new MapSelection(), false));
         addComponent(editor, () -> editor.setBounds(
                 (getWidth() - width) / 2,
                 START_Y + height + margin,
