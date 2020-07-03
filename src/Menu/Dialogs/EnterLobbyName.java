@@ -14,14 +14,14 @@ import static Menu.Dialogs.HostPromotion.MARGIN;
 import static Menu.Dialogs.HostPromotion.BUTTON_HEIGHT;
 import static Menu.Dialogs.HostPromotion.BUTTON_WIDTH;
 
-public class EnterPlayerName extends JPanel {
-    public EnterPlayerName(LobbyView lobbyView) {
+public class EnterLobbyName extends JPanel {
+    public EnterLobbyName(LobbyView lobbyView) {
         setLayout(null);
         setBackground(Color.white);
         setBounds(0, 0, 3 * MARGIN + 2 * BUTTON_WIDTH, 100 + BUTTON_HEIGHT + MARGIN);
 
         //The title
-        MBLabel title = new MBLabel(MBLabel.H2, "Enter player name");
+        MBLabel title = new MBLabel(MBLabel.H2, "Enter lobby name");
         title.setBounds(MARGIN, MARGIN, getWidth() - 2 * MARGIN, 20);
         add(title);
 
@@ -40,12 +40,8 @@ public class EnterPlayerName extends JPanel {
         MBButton confirm = new MBButton("Confirm");
         confirm.setBounds(2 * MARGIN + BUTTON_WIDTH, 100, BUTTON_WIDTH, BUTTON_HEIGHT);
         confirm.addActionListener(e -> {
-            if (!input.getText().isEmpty()) {
-            lobbyView.setPlayerName(input.getText());
-            }
+            lobbyView.setCreateLobbyName(input.getText());
             MB.activePanel.closeDialog();
-
-
         });
         add(confirm);
     }

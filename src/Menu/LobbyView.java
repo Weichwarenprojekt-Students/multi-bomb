@@ -3,14 +3,25 @@ package Menu;
 import General.Shared.*;
 
 import General.MB;
+import Menu.Dialogs.EnterLobbyName;
 import Menu.Dialogs.EnterPlayerName;
-import Menu.Models.Lobby;
 import Server.DetectLobby;
-import Server.Messages.LobbyInfo;
+
+import Server.Messages.ErrorMessage;
+import Server.Messages.Message;
+import Server.Messages.REST.CreateLobby;
+import Server.Messages.REST.JoinLobby;
+import Server.Messages.REST.LobbyInfo;
+import Server.Server;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.ArrayList;
 
 import static Menu.DetailedLobbyView.BUTTON_WIDTH;
 import static Menu.DetailedLobbyView.MARGIN;
@@ -31,7 +42,7 @@ public class LobbyView extends MBPanel {
     /**
      * Listview for lobbies
      */
-    MBListView<LobbyListItem> list;
+    MBListView<LobbyListItem> list = new MBListView<>();
     /**
      * Spinner
      */
@@ -52,7 +63,12 @@ public class LobbyView extends MBPanel {
     /**
      * Player name
      */
-    String playerName;
+    String playerName = "";
+
+    /**
+     * Created Lobby name
+     */
+    String createLobbyName = "";
 
 
     public LobbyView() {
@@ -61,6 +77,9 @@ public class LobbyView extends MBPanel {
     public LobbyView (String address) {
         setupLayout();
         serverAddress = address;
+        if (!MB.settings.playerName.isEmpty()) {
+            playerName = MB.settings.playerName;
+        }
     }
 
     /**
@@ -107,10 +126,19 @@ public class LobbyView extends MBPanel {
         join = new MBButton("Join");
         join.addActionListener( e -> {
             if (selected) {
-                Lobby lobby = new Lobby(lobbyInfo.lobbies[selectedLobby].name, "player 1");
-                MB.show(new DetailedLobbyView("player 1", lobby, serverAddress), false);
+                if (playerName.isEmpty()) {
+                    showDialog(new EnterPlayerName(this), () -> {});
+                }
+                if (joinLobby() == 200) {
+                    /**
+                     * Call DetailedLobbyView
+                     */
+                } else {
+                    toastError("Lobby konnte nicht", "beigetreten werden");
+                }
             } else {
                 toastError("Keine Lobby", "ausgewählt!");
+
             }
             selected = false;
         });
@@ -126,10 +154,24 @@ public class LobbyView extends MBPanel {
         create = new MBButton("Create");
         create.addActionListener( e -> {
             //set player name
-            showDialog(new EnterPlayerName(this), () -> {
+                    showDialog(new EnterLobbyName(this), () -> {
+                        if (!createLobbyName.isEmpty()) {
+                            /**
+                             *
+                             * Call detailedLobbyView
+                             * playerName
+                             * createLobbyName
+                             *
+                             */
+                             CreateLobby msg = new CreateLobby();
+                             //msg.playerID = playerName;
+                             msg.playerID = "TestSpieler";
+                             msg.lobbyName = createLobbyName;
+                             createLobby(msg);
+                        }
+                    });
             });
 
-        });
         addComponent(create, () -> create.setBounds(
                 scroll.getX() + scroll.getWidth() + MARGIN,
                 scroll.getY() + 46,
@@ -160,25 +202,103 @@ public class LobbyView extends MBPanel {
      */
     @Override
     public void afterVisible() {
+        ArrayList<LobbyListItem> lobbyCache = new ArrayList<>();
         //Thread to detect lobbies on server
         new Thread(() -> {
-            lobbyInfo = DetectLobby.getLobbyInfo(serverAddress);
-            LobbyInfo.SingleLobbyInfo[] lobbies = lobbyInfo.lobbies;
-
-            //Create LobbyListItem for every lobby in LobbyInfo
-            for (LobbyInfo.SingleLobbyInfo lobby : lobbies) {
-                LobbyListItem listItem = new LobbyListItem(lobby.name, lobby.players, lobby.gameMode, lobby.status);
-                list.addItem(listItem);
+            while (true) {
+                //get lobby infos from server
+                lobbyInfo = DetectLobby.getLobbyInfo(serverAddress);
+                if (lobbyInfo == null) {
+                    toastError("Server nicht" , "erreichbar");
+                    MB.show(new ServerView(), false);
+                }
+                LobbyInfo.SingleLobbyInfo[] lobbies = lobbyInfo.lobbies;
+                //Create LobbyListItem for every lobby in LobbyInfo
+                for (LobbyInfo.SingleLobbyInfo lobby : lobbies) {
+                    LobbyListItem listItem = new LobbyListItem(lobby.name, lobby.players, lobby.gameMode, lobby.status);
+                    lobbyCache.add(listItem);
+                }
+                //clear ListView and show new lobbies
+                list.removeAllItems();
+                lobbyCache.forEach(lobby -> list.addItem(lobby));
+                lobbyCache.clear();
+                //Set button visibility
+                spinner.setVisible(false);
+                back.setVisible(true);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-            //Set button visibility
-            spinner.setVisible(false);
-            back.setVisible(true);
         }).start();
     }
 
     public void setPlayerName (String name) {
         this.playerName = name;
+        MB.settings.playerName = name;
+        MB.settings.saveSettings();
     }
+    public void setCreateLobbyName (String name) {
+        this.createLobbyName = name;
+    }
+
+    /**
+     * JoinLobby Method
+     */
+    public int joinLobby () {
+        //create JoinLobby message
+        JoinLobby msg = new JoinLobby();
+        msg.playerID = playerName;
+        msg.lobbyName = lobbyInfo.lobbies[selectedLobby].name;
+
+
+        HttpClient httpClient = HttpClient.newBuilder().build();
+        HttpRequest request = HttpRequest.newBuilder().POST(
+                HttpRequest.BodyPublishers.ofByteArray(msg.toJson().getBytes()))
+                .uri(URI.create("http://" + serverAddress + ":" + Server.HTTP_PORT +"/lobby"))
+                .build();
+
+        int statusCode = 1;
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                ErrorMessage error = (ErrorMessage) Message.fromJson(response.body());
+                toastError(error.error, Integer.toString(response.statusCode()));
+            }
+            statusCode = response.statusCode();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            toastError("Nachricht konnte nicht", "an Server gesendet werden");
+        }
+        return statusCode;
+    }
+
+    public int createLobby(CreateLobby msg) {
+
+        HttpClient httpClient = HttpClient.newBuilder().build();
+        HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofByteArray(msg.toJson().getBytes())).uri(URI.create("http://" + serverAddress + ":" + Server.HTTP_PORT + "/lobby")).build();
+        HttpResponse<String> response = null;
+
+        try {
+            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                ErrorMessage error = (ErrorMessage) Message.fromJson(response.body());
+                toastError(error.error, Integer.toString(response.statusCode()));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            toastError("Nachricht konnte nicht", "an Server gesendet werden");
+
+        }
+        return response.statusCode();
+    }
+
+
+
 
     private static class LobbyListItem extends MBListView.Item{
         /**

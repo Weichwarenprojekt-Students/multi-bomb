@@ -1,9 +1,8 @@
 package Server;
 
-import Server.Messages.LobbyInfo;
+import Server.Messages.REST.LobbyInfo;
 import Server.Messages.Message;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -15,8 +14,8 @@ public class DetectLobby {
 
         //Create HttpClient and HttpRequest
         HttpClient httpClient = HttpClient.newBuilder().build();
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://" + serverAddress + ":" + Server.HTTP_PORT +"/lobby")).build();
-        LobbyInfo lobbyInfo = null;
+        HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://" + serverAddress + ":" + Server.HTTP_PORT +"/lobby")).build();
+        LobbyInfo lobbyInfo;
 
 
         //Send HttpRequest and return Lobbyinfo message
@@ -27,6 +26,7 @@ public class DetectLobby {
 
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
         return lobbyInfo;
     }
