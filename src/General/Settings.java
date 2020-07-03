@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import java.awt.*;
 import java.io.*;
+import java.util.ArrayList;
 
 public class Settings {
 
@@ -28,6 +29,14 @@ public class Settings {
      * The refresh rate the game should target
      */
     public int refreshRate = 60;
+    /**
+     * Player name
+     */
+    public String playerName ="";
+    /**
+     * Remote server
+     */
+    public ArrayList<String> remoteServer = new ArrayList<>();
 
     /**
      * Load the settings
