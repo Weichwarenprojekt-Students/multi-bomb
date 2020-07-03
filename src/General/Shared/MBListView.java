@@ -1,6 +1,7 @@
 package General.Shared;
 
 import javax.swing.*;
+import javax.swing.text.html.ListView;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
@@ -8,7 +9,6 @@ import java.awt.event.MouseListener;
 import java.util.*;
 
 public class MBListView<T extends MBListView.Item> extends JPanel {
-
     /**
      * The last width of the view
      */
@@ -102,6 +102,12 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
         items.remove(index);
 
         // Rebuild the list
+        resizeList();
+    }
+
+    public void removeAllItems() {
+        items.clear();
+        removeAll();
         resizeList();
     }
 

@@ -2,7 +2,7 @@ package Server;
 
 import Menu.ServerView;
 import Server.Messages.Message;
-import Server.Messages.ServerInfo;
+import Server.Messages.REST.ServerInfo;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -16,23 +16,28 @@ public class ScanServerThread implements  Runnable{
      */
     public String serverAddress;
     /**
+     * Type of server
+     */
+    public String type;
+    /**
      * ArrayList for detected servers
      */
-    public ArrayList<ServerView.ServerListItem> serverList;
+    final public ArrayList<ServerView.ServerListItem> serverList;
     /**
      * httpClient for request
      */
     public final HttpClient httpClient = HttpClient.newBuilder().build();
 
-    public ScanServerThread(String address, ArrayList<ServerView.ServerListItem> serverList) {
+    public ScanServerThread(String address, ArrayList<ServerView.ServerListItem> serverList, String type) {
         this.serverAddress = address;
         this.serverList = serverList;
+        this.type = type;
     }
 
     @Override
     public void run() {
         //Create http Request for Serverinfo
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://" + serverAddress + ":" + Server.HTTP_PORT +"/server")).build();
+        HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://" + serverAddress + ":" + Server.HTTP_PORT +"/server")).build();
 
         try {
             //send request
@@ -46,13 +51,13 @@ public class ScanServerThread implements  Runnable{
             ServerInfo serverInfo = (ServerInfo) responseMessage;
 
 
-            String description = "Tickrate " + serverInfo.ticksPerSecond + " - Lobbies " + serverInfo.lobbyCount + "/" + serverInfo.maxLobbies + " - Type Local";
+            String description = "Tickrate " + serverInfo.ticksPerSecond + " - Lobbies " + serverInfo.lobbyCount + "/" + serverInfo.maxLobbies + " - Type " + type;
             ServerView.ServerListItem server = new ServerView.ServerListItem(serverInfo.name, description, serverAddress);
 
             //add detected server to serverlist
-            serverList.add(server);
-
-
+            synchronized (serverList) {
+                serverList.add(server);
+            }
         } catch (Exception e) {
             e.printStackTrace();
 

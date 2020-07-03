@@ -1,26 +1,19 @@
 package Server;
 
 import Menu.ServerView;
-import Server.Messages.Message;
-import Server.Messages.ServerInfo;
+
 
 import java.io.IOException;
 import java.net.*;
-import java.net.http.HttpClient;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 
 public class DetectServer {
 
-    public static ArrayList<ServerView.ServerListItem> serverList = new ArrayList<>();
 
-
-    public static void search() {
-        serverList.clear();
+    public void search(ArrayList<ServerView.ServerListItem> serverList) {
         try {
             // Open socket
-
             DatagramSocket c = new DatagramSocket();
             c.setBroadcast(true);
             c.setSoTimeout(1000);
@@ -74,12 +67,10 @@ public class DetectServer {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-
                 String serverAddress = receivePacket.getAddress().getHostAddress();
 
                 //start thread to get Serverinfo
-                new Thread(new ScanServerThread(serverAddress,serverList)).start();
+                new Thread(new ScanServerThread(serverAddress,serverList, "local")).start();
 
             }
 
