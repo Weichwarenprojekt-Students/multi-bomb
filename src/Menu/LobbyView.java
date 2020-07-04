@@ -134,10 +134,10 @@ public class LobbyView extends MBPanel {
                      * Call DetailedLobbyView
                      */
                 } else {
-                    toastError("Lobby konnte nicht", "beigetreten werden");
+                    toastError("Lobby join failed");
                 }
             } else {
-                toastError("Keine Lobby", "ausgewählt!");
+                toastError("No lobby", "selected!");
 
             }
             selected = false;
@@ -194,6 +194,8 @@ public class LobbyView extends MBPanel {
         ));
         addButtonGroup(back, join, create);
 
+
+
     }
 
 
@@ -209,7 +211,7 @@ public class LobbyView extends MBPanel {
                 //get lobby infos from server
                 lobbyInfo = DetectLobby.getLobbyInfo(serverAddress);
                 if (lobbyInfo == null) {
-                    toastError("Server nicht" , "erreichbar");
+                    toastError("Server not" , "available");
                     MB.show(new ServerView(), false);
                 }
                 LobbyInfo.SingleLobbyInfo[] lobbies = lobbyInfo.lobbies;
@@ -271,7 +273,7 @@ public class LobbyView extends MBPanel {
 
         } catch (Exception e) {
             e.printStackTrace();
-            toastError("Nachricht konnte nicht", "an Server gesendet werden");
+            toastError("Server not", "available");
         }
         return statusCode;
     }
@@ -291,7 +293,7 @@ public class LobbyView extends MBPanel {
 
         } catch (Exception e) {
             e.printStackTrace();
-            toastError("Nachricht konnte nicht", "an Server gesendet werden");
+            toastError("Server not", "available");
 
         }
         return response.statusCode();
