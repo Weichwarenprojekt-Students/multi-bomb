@@ -39,7 +39,7 @@ public class ServerView extends MBPanel {
     /**
      * Selected Server
      */
-    static int selectedServer;
+    static String selectedServerAddress;
     /**
      * True if server is selected
      */
@@ -140,7 +140,7 @@ public class ServerView extends MBPanel {
         join.addActionListener(e -> {
             if (selected) {
                 try {
-                    MB.show(new LobbyView(serverList.allServerList.get(selectedServer).serverAddress), false);
+                    MB.show(new LobbyView(selectedServerAddress), false);
                 } catch (IndexOutOfBoundsException x) {
                     x.printStackTrace();
                     toastError("Server not", "available");
@@ -191,8 +191,6 @@ public class ServerView extends MBPanel {
                 serverList.updateListView(listView);
                 spinner.setVisible(false);
                 back.setVisible(true);
-                MB.frame.revalidate();
-                MB.frame.repaint();
 
                 try {
                     Thread.sleep(2000);
@@ -250,7 +248,7 @@ public class ServerView extends MBPanel {
 
         @Override
         public void onSelected(int index) {
-            ServerView.selectedServer = index;
+            ServerView.selectedServerAddress = serverAddress;
             ServerView.selected = true;
         }
     }
