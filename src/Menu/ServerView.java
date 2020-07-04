@@ -122,9 +122,9 @@ public class ServerView extends MBPanel {
         host.addActionListener(e -> showDialog(new EnterServerName(this), () -> {
             if (!hostedServer.isEmpty()) {
                 new Thread(() -> new Server(hostedServer).run()).start();
-                toastSuccess("Server erstellt");
+                toastSuccess("Server started");
             } else {
-                toastError("Servername leer.", "Server wurde nicht", "erstellt");
+                toastError("Server name empty");
             }
 
         }));
@@ -143,14 +143,14 @@ public class ServerView extends MBPanel {
                     MB.show(new LobbyView(serverList.allServerList.get(selectedServer).serverAddress), false);
                 } catch (IndexOutOfBoundsException x) {
                     x.printStackTrace();
-                    toastError("Server nicht", "erreichbar");
+                    toastError("Server not", "available");
                     MB.show(new ServerView(), false);
                 }
                 finally {
                     selected = false;
                 }
             } else {
-                toastError("Kein Server", "ausgewählt!");
+                toastError("No server", "selected");
             }
         });
         addComponent(join, () -> join.setBounds(
@@ -191,6 +191,9 @@ public class ServerView extends MBPanel {
                 serverList.updateListView(listView);
                 spinner.setVisible(false);
                 back.setVisible(true);
+                MB.frame.revalidate();
+                MB.frame.repaint();
+
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
@@ -220,7 +223,7 @@ public class ServerView extends MBPanel {
         /**
          * Server address
          */
-        String serverAddress;
+        public String serverAddress;
 
 
         public ServerListItem(String name, String description, String serverAddress) {
