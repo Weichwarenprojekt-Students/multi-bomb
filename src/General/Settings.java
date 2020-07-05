@@ -38,8 +38,8 @@ public class Settings {
             MB.settings = gson.fromJson(new FileReader(PATH + "Settings.json"), Settings.class);
         } catch (FileNotFoundException e) {
             // Create the file and make the directories if necessary
-            File file = new File(PATH + "Settings.json");
-            if (file.getParentFile().mkdirs()) {
+            File file = new File(PATH + "Maps");
+            if (file.mkdirs()) {
                 saveSettings();
             } else {
                 System.out.println("ERROR! Couldn't setup the directory for the game data!");

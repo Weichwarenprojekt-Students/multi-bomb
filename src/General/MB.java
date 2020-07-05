@@ -48,6 +48,7 @@ public class MB {
      */
     public static void startGame(boolean create, String name) {
         MB.settings.loadSettings();
+        MapManager.loadMaps();
         background = new MBImage("General/background.png");
         setupFrame();
 

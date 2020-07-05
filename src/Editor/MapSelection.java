@@ -61,15 +61,6 @@ public class MapSelection extends MBPanel {
                 getHeight() - 160
         ));
 
-        // The background
-        MBBackground background = new MBBackground(new Color(0, 0, 0, 0.2f));
-        addComponent(background, () -> background.setBounds(
-                scroll.getX() - 4,
-                scroll.getY() - 4,
-                scroll.getWidth() + 8,
-                scroll.getHeight() + 8
-        ));
-
         // The new button
         newMap = new MBButton("New");
         newMap.addActionListener(e -> MB.show(new Editor(new Map()), false));
@@ -138,6 +129,15 @@ public class MapSelection extends MBPanel {
                 scroll.getY() + scroll.getHeight() - BUTTON_HEIGHT + 4,
                 BUTTON_WIDTH,
                 BUTTON_HEIGHT
+        ));
+
+        // The background
+        MBBackground background = new MBBackground(new Color(0, 0, 0, 0.2f));
+        addComponent(background, () -> background.setBounds(
+                scroll.getX() - 4,
+                scroll.getY() - 4,
+                scroll.getWidth() + 8,
+                scroll.getHeight() + 8
         ));
         
         addButtonGroup(newMap, edit, delete, leave);
