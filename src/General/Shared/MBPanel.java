@@ -176,7 +176,12 @@ public abstract class MBPanel extends JPanel {
         super.paintComponent(g);
         if (background) {
             if (MB.background != null) {
-                g.drawImage(MB.background.image, getWidth() / 2 - MB.background.width / 2, 0, null);
+                g.drawImage(
+                        MB.background.image,
+                        getWidth() / 2 - MB.background.width / 2,
+                        getHeight() / 2 - MB.background.height / 2,
+                        null
+                );
             }
         }
     }

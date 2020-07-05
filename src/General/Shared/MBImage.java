@@ -41,8 +41,13 @@ public class MBImage {
      */
     public MBImage(String relativePath) {
         this.resize = () -> {
-            this.height = MB.frame.getHeight();
-            this.width = (int) (21f / 9 * MB.frame.getHeight());
+            if ((float)MB.frame.getWidth() / MB.frame.getHeight() > 21f / 9) {
+                this.width = MB.frame.getWidth();
+                this.height = (int) (9f / 21 * MB.frame.getWidth());
+            } else {
+                this.height = MB.frame.getHeight();
+                this.width = (int) (21f / 9 * MB.frame.getHeight());
+            }
         };
         initialize(relativePath, true);
     }
