@@ -1,6 +1,7 @@
 package General;
 
 
+import Editor.MapManager;
 import Game.Game;
 import General.Shared.MBImage;
 import Menu.DetailedLobbyView;
