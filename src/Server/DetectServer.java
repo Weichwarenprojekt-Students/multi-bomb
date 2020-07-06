@@ -10,7 +10,9 @@ import java.util.Enumeration;
 
 public class DetectServer {
 
-
+    /**
+     * Scan local network for running servers
+     */
     public void search(ArrayList<ServerView.ServerListItem> serverList) {
         try {
             // Open socket
