@@ -43,7 +43,7 @@ public class ServerView extends MBPanel {
     /**
      * Server list Management
      */
-    private ServerList serverList = new ServerList();
+    private final ServerList serverList = new ServerList();
     /**
      * Indicate if Thread is running
      * True if running
