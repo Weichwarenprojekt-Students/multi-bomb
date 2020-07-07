@@ -1,5 +1,6 @@
 package Game;
 
+import Editor.MapManager;
 import Game.GameModes.BattleRoyale;
 import Game.GameModes.GameMode;
 import Game.Models.Player;
@@ -43,9 +44,9 @@ public class Lobby {
      */
     public static GameMode mode = new BattleRoyale();
     /**
-     * The selected mode
+     * The selected map
      */
-    public static Map map = new Map();
+    public static Map map = MapManager.maps.get("X-Factor");
     /**
      * The tick rate of the server
      */
