@@ -5,12 +5,10 @@ import General.Shared.*;
 import General.MB;
 import Menu.Dialogs.EnterLobbyName;
 import Menu.Dialogs.EnterPlayerName;
-import Menu.Models.Lobby;
 import Server.DetectLobby;
 
 import Server.Messages.ErrorMessage;
 import Server.Messages.Message;
-import Server.Messages.REST.CreateLobby;
 import Server.Messages.REST.JoinLobby;
 import Server.Messages.REST.LobbyInfo;
 import Server.Server;
@@ -72,7 +70,7 @@ public class LobbyView extends MBPanel {
     /**
      * Lobbies found in lobbyInfo
      */
-    private ArrayList<LobbyListItem> lobbyCache = new ArrayList<>();
+    private final ArrayList<LobbyListItem> lobbyCache = new ArrayList<>();
     /**
      * Boolean for running Thread
      * True if running
