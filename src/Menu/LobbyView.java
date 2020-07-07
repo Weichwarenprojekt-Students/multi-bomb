@@ -263,21 +263,19 @@ public class LobbyView extends MBPanel {
                 .uri(URI.create("http://" + serverAddress + ":" + Server.HTTP_PORT +"/lobby"))
                 .build();
 
-        int statusCode = 1;
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
+            //Request failed
             if (response.statusCode() != 200) {
                 ErrorMessage error = (ErrorMessage) Message.fromJson(response.body());
                 toastError(error.error, Integer.toString(response.statusCode()));
             }
-            statusCode = response.statusCode();
-
+            return response.statusCode();
         } catch (Exception e) {
             e.printStackTrace();
             toastError("Server not", "available");
         }
-        return statusCode;
+        return 1;
     }
 
 
