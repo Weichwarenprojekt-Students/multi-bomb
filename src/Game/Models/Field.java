@@ -2,6 +2,7 @@ package Game.Models;
 
 import Game.Battleground;
 import General.Shared.MBImage;
+import General.Shared.MBPanel;
 import Server.Messages.Socket.Map;
 
 /**
@@ -71,23 +72,24 @@ public enum Field {
      * Load the textures of the items
      *
      * @param theme name of the theme
+     * @param parent the image's size depends on
      */
-    public static void loadTextures(String theme) {
+    public static void loadTextures(String theme, MBPanel parent) {
         // The ground block
-        GROUND.image = new MBImage("Maps/" + theme + "/ground.png", false);
-        SPAWN.image = new MBImage("Maps/" + theme + "/spawn.png", false);
+        GROUND.image = new MBImage("Maps/" + theme + "/ground.png", false, parent);
+        SPAWN.image = new MBImage("Maps/" + theme + "/spawn.png", false, parent);
 
         // The other blocks
-        SOLID_0.image = new MBImage("Maps/" + theme + "/solid_0.png", false);
-        SOLID_1.image = new MBImage("Maps/" + theme + "/solid_1.png", false);
-        BREAKABLE_0.image = new MBImage("Maps/" + theme + "/breakable_0.png", false);
-        BREAKABLE_1.image = new MBImage("Maps/" + theme + "/breakable_1.png", false);
+        SOLID_0.image = new MBImage("Maps/" + theme + "/solid_0.png", false, parent);
+        SOLID_1.image = new MBImage("Maps/" + theme + "/solid_1.png", false, parent);
+        BREAKABLE_0.image = new MBImage("Maps/" + theme + "/breakable_0.png", false, parent);
+        BREAKABLE_1.image = new MBImage("Maps/" + theme + "/breakable_1.png", false, parent);
 
         // The consumables
-        BOMB.image = new MBImage("Items/Consumable/bubble_bomb.png", false);
-        SPEED.image = new MBImage("Items/Consumable/bubble_speed.png", false);
-        HEART.image = new MBImage("Items/Consumable/bubble_heart.png", false);
-        EXPLOSION.image = new MBImage("Items/Consumable/bubble_explosion.png", false);
+        BOMB.image = new MBImage("Items/Consumable/bubble_bomb.png", false, parent);
+        SPEED.image = new MBImage("Items/Consumable/bubble_speed.png", false, parent);
+        HEART.image = new MBImage("Items/Consumable/bubble_heart.png", false, parent);
+        EXPLOSION.image = new MBImage("Items/Consumable/bubble_explosion.png", false, parent);
     }
 
     /**

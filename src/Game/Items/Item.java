@@ -2,6 +2,7 @@ package Game.Items;
 
 import Game.Models.Field;
 import Game.Models.Upgrades;
+import General.Shared.MBPanel;
 
 import java.awt.*;
 
@@ -28,6 +29,15 @@ public abstract class Item {
     public Item(String name, Field field) {
         this.name = name;
         this.field = field;
+    }
+
+    /**
+     * Load the textures for all the items
+     *
+     * @param parent the image size depends on
+     */
+    public static void loadTextures(MBPanel parent) {
+        Bomb.loadTextures(parent);
     }
 
     /**

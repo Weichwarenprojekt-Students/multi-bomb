@@ -80,12 +80,15 @@ public class Game extends MBPanel {
     public void afterVisible() {
         // Add the battleground
         battleground = new Battleground(Lobby.map, true, false);
-        addComponent(battleground, () -> battleground.setBounds(
-                (int) (getWidth() / 2 - 0.25 * getHeight()) + 2 * MARGIN,
-                2 * MARGIN,
-                getHeight() - 4 * MARGIN,
-                getHeight() - 4 * MARGIN
-        ));
+        addComponent(battleground, () -> {
+            battleground.setBounds(
+                    (int) (getWidth() / 2 - 0.25 * getHeight()) + 2 * MARGIN,
+                    2 * MARGIN,
+                    getHeight() - 4 * MARGIN,
+                    getHeight() - 4 * MARGIN
+            );
+            battleground.calculateSize();
+        });
         // Add the sidebar
         sidebar = new Sidebar();
         addComponent(sidebar, () -> sidebar.setBounds(

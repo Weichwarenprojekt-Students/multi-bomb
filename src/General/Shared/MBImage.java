@@ -49,7 +49,7 @@ public class MBImage {
                 this.width = (int) (21f / 9 * MB.frame.getHeight());
             }
         };
-        initialize(relativePath, true);
+        initialize(relativePath, true, null);
     }
 
     /**
@@ -57,8 +57,9 @@ public class MBImage {
      *
      * @param relativePath to the image
      * @param square true if the image is a square
+     * @param parent the image's size depends on
      */
-    public MBImage(String relativePath, boolean square) {
+    public MBImage(String relativePath, boolean square, MBPanel parent) {
         if (square) {
             this.resize = () -> {
                 this.width = Battleground.fieldSize;
@@ -70,7 +71,7 @@ public class MBImage {
                 height = (int) ((Field.HEIGHT) * Battleground.ratio);
             };
         }
-        initialize(relativePath, false);
+        initialize(relativePath, false, parent);
     }
 
     /**
@@ -81,13 +82,13 @@ public class MBImage {
      */
     public MBImage(String relativePath, MBPanel.ComponentResize resize) {
         this.resize = resize;
-        initialize(relativePath, false);
+        initialize(relativePath, false, null);
     }
 
     /**
      * Initialize the image
      */
-    private void initialize(String relativePath, boolean onFrame) {
+    private void initialize(String relativePath, boolean onFrame, MBPanel parent) {
         // Load the image
         try {
             this.original = ImageIO.read(MBImage.class.getResource("/Resources/" + relativePath));
@@ -105,7 +106,11 @@ public class MBImage {
                 }
             });
         } else {
-            MB.activePanel.addResizeEvent(this::refresh);
+            if (parent != null) {
+                parent.addResizeEvent(this::refresh);
+            } else {
+                MB.activePanel.addResizeEvent(this::refresh);
+            }
         }
         refresh();
     }

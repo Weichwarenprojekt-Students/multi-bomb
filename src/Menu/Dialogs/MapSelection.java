@@ -44,6 +44,7 @@ public class MapSelection extends JPanel {
         int margin = 16;
         Battleground battleground = new Battleground(maps.get(selectedId), false, true);
         battleground.setBounds(margin, 54, 400 - 2 * margin, 400 - 2 * margin);
+        battleground.calculateSize();
         add(battleground);
         battleground.afterVisible();
 

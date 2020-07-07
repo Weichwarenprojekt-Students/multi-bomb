@@ -6,6 +6,7 @@ import Game.Lobby;
 import Game.Models.Field;
 import Game.Models.Upgrades;
 import General.Shared.MBImage;
+import General.Shared.MBPanel;
 import Server.Messages.Socket.Map;
 
 import java.awt.*;
@@ -14,27 +15,31 @@ public class Bomb extends Item {
     /**
      * The horizontal sprite
      */
-    private static final MBImage horizontalImage = new MBImage("Items/Bomb/side.png", true);
+    private static MBImage horizontalImage;
     /**
      * The left end sprite
      */
-    private static final MBImage leftEndImage = new MBImage("Items/Bomb/left_end.png", true);
+    private static MBImage leftEndImage;
     /**
      * The right end sprite
      */
-    private static final MBImage rightEndImage = new MBImage("Items/Bomb/right_end.png", true);
+    private static MBImage rightEndImage;
     /**
      * The top sprite
      */
-    private static final MBImage verticalImage = new MBImage("Items/Bomb/top.png", true);
+    private static MBImage verticalImage;
     /**
      * The top end sprite
      */
-    private static final MBImage topEndImage = new MBImage("Items/Bomb/top_end.png", true);
+    private static MBImage topEndImage;
     /**
      * The top end sprite
      */
-    private static final MBImage bottomEndImage = new MBImage("Items/Bomb/bottom_end.png", true);
+    private static MBImage bottomEndImage;
+    /**
+     * The core sprite
+     */
+    private static MBImage coreImage;
     /**
      * The time till the bomb detonates in seconds
      */
@@ -47,10 +52,6 @@ public class Bomb extends Item {
      * The bomb sprite
      */
     private static MBImage bombImage;
-    /**
-     * The core sprite
-     */
-    private final MBImage coreImage = new MBImage("Items/Bomb/core.png", true);
     /**
      * The counter for the detonation
      */
@@ -88,6 +89,21 @@ public class Bomb extends Item {
             bombImage.height = (int) (1.2 * Battleground.fieldSize);
         });
         bombImage.rescale((int) (1.2 * Battleground.fieldSize), (int) (1.2 * Battleground.fieldSize));
+    }
+
+    /**
+     * Load the textures for the bomb
+     * 
+     * @param parent the image size depends on
+     */
+    public static void loadTextures(MBPanel parent) {
+        coreImage = new MBImage("Items/Bomb/core.png", true, parent);
+        horizontalImage = new MBImage("Items/Bomb/side.png", true, parent);
+        leftEndImage = new MBImage("Items/Bomb/left_end.png", true, parent);
+        rightEndImage = new MBImage("Items/Bomb/right_end.png", true, parent);
+        verticalImage = new MBImage("Items/Bomb/top.png", true, parent);
+        topEndImage = new MBImage("Items/Bomb/top_end.png", true, parent);
+        bottomEndImage = new MBImage("Items/Bomb/bottom_end.png", true, parent);
     }
 
     /**

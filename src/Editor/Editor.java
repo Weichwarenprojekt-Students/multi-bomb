@@ -62,12 +62,15 @@ public class Editor extends MBPanel {
         setupEditor();
 
         // Add the battleground
-        addComponent(battleground, () -> battleground.setBounds(
-                (int) (getWidth() / 2 - 0.25 * getHeight()) + 2 * MARGIN,
-                2 * MARGIN,
-                getHeight() - 4 * MARGIN,
-                getHeight() - 4 * MARGIN
-        ));
+        addComponent(battleground, () -> {
+            battleground.setBounds(
+                    (int) (getWidth() / 2 - 0.25 * getHeight()) + 2 * MARGIN,
+                    2 * MARGIN,
+                    getHeight() - 4 * MARGIN,
+                    getHeight() - 4 * MARGIN
+            );
+            battleground.calculateSize();
+        });
 
         // Add the sidebar
         addComponent(sidebar, () -> sidebar.setBounds(

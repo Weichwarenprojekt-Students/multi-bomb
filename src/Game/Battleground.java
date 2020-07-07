@@ -1,5 +1,6 @@
 package Game;
 
+import Game.Items.Item;
 import Game.Models.Field;
 import General.Shared.MBBackground;
 import General.Shared.MBButton;
@@ -53,15 +54,12 @@ public class Battleground extends MBPanel {
         Battleground.map = map;
         this.drawPlayers = drawPlayers;
         this.drawSpawns = drawSpawns;
-
-        // Listen for resize events
-        MB.activePanel.addComponentEvent(this::calculateSize);
     }
 
     /**
      * Calculate the size and the offset for the fields
      */
-    private void calculateSize() {
+    public void calculateSize() {
         // Calculate the field size
         fieldSize = (int) ((float) getHeight() / Map.SIZE);
         // Calculate the ratio
@@ -83,7 +81,8 @@ public class Battleground extends MBPanel {
         calculateSize();
 
         // Load the item textures and repaint
-        Field.loadTextures(map.theme);
+        Field.loadTextures(map.theme, this);
+        Item.loadTextures(this);
         MB.activePanel.resize();
         startDrawing = true;
     }
