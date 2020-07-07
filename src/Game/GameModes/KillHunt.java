@@ -38,9 +38,8 @@ public class KillHunt extends GameMode {
     public synchronized List<Message> handleHit(Player player, Player from, Position spawnPoint) {
         List<Message> result = new ArrayList<>();
 
-        // player got hit and respawns
-        spawnPoint.playerId = player.name;
-        result.add(new Respawn(spawnPoint));
+        // player got hit and spawns again
+        result.add(new Respawn(player.name));
 
         if (!player.name.equals(from.name)) {
             // update kill for other player

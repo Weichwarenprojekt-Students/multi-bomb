@@ -3,21 +3,18 @@ package Server.Messages.Socket;
 import Server.Messages.Message;
 
 public class Respawn extends Message {
+
     /**
-     * Position of the respawn point
+     * The id of the player
      */
-    public Position position;
+    String playerId;
 
     /**
      * Constructor
-     *
-     * @param pos position of the respawn point
      */
-    public Respawn(Position pos) {
+    public Respawn(String playerId) {
         // Initialize message with type
         super(Message.RESPAWN_TYPE);
-
-        // set position of spawn
-        this.position = pos;
+        this.playerId = playerId;
     }
 }
