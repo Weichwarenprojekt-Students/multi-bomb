@@ -8,9 +8,7 @@ import General.Shared.MBPanel;
 import Server.Messages.Socket.Map;
 import com.google.gson.Gson;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Objects;
@@ -30,9 +28,9 @@ public class MapManager {
      */
     public static void loadMaps() {
         // Load the custom maps
-        loadAllMaps(new File(PATH));
+        loadAllCustomMaps(new File(PATH));
         // Load the standard maps
-        loadAllMaps(new File(MapManager.class.getResource("/Resources/StandardMaps").getFile()));
+        loadStandardMap("X-Factor");
     }
 
     /**
@@ -40,7 +38,7 @@ public class MapManager {
      *
      * @param folder to be loaded
      */
-    private static void loadAllMaps(File folder) {
+    private static void loadAllCustomMaps(File folder) {
         if (folder.listFiles() != null) {
             Gson gson = new Gson();
             for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
@@ -48,10 +46,31 @@ public class MapManager {
                 try {
                     map = gson.fromJson(Files.readString(fileEntry.toPath()), Map.class);
                 } catch (IOException e) {
+                    e.printStackTrace();
                     continue;
                 }
                 maps.put(map.name, map);
             }
+        }
+    }
+
+    /**
+     * Load a standard map by its name
+     *
+     * @param name of the standard map
+     */
+    private static void loadStandardMap(String name) {
+        Gson gson = new Gson();
+
+        // Create the input stream
+        InputStreamReader reader = new InputStreamReader(
+                MapManager.class.getResourceAsStream("/Resources/StandardMaps/map_" + name + ".json")
+        );
+
+        // Add the map
+        Map map = gson.fromJson(reader, Map.class);
+        if (map != null) {
+            maps.put(map.name, map);
         }
     }
 
