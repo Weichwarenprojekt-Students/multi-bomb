@@ -33,10 +33,6 @@ public class ServerView extends MBPanel {
      */
     private MBButton back, host, join, addRemote;
     /**
-     * True if the host server dialog is open
-     */
-    private boolean dialog = false;
-    /**
      * Selected Server
      */
     static String selectedServerAddress;
@@ -74,7 +70,7 @@ public class ServerView extends MBPanel {
                 40));
 
 
-        //Scrollable listview
+        //Scrollable listView
         listView = new MBListView<>();
         MBScrollView scroll = new MBScrollView(listView);
         addComponent(scroll, () -> scroll.setBounds(
