@@ -10,15 +10,15 @@ public class ServerList {
     /**
      * List for local found servers
      */
-    private ArrayList<ServerView.ServerListItem> localServerList = new ArrayList<>();
+    private final ArrayList<ServerView.ServerListItem> localServerList = new ArrayList<>();
     /**
      * List for remote added servers
      */
-    private ArrayList<ServerView.ServerListItem> remoteServerList = new ArrayList<>();
+    private final ArrayList<ServerView.ServerListItem> remoteServerList = new ArrayList<>();
     /**
      * List that contains all servers
      */
-    private ArrayList<ServerView.ServerListItem> allServerList = new ArrayList<>();
+    private final ArrayList<ServerView.ServerListItem> allServerList = new ArrayList<>();
     /**
      * Detectserver
      */
