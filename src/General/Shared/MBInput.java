@@ -1,5 +1,7 @@
 package General.Shared;
 
+import General.MB;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -26,6 +28,7 @@ public class MBInput extends JTextField {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        MB.settings.enableAntiAliasing(g);
         g.setColor(MBButton.BACKGROUND_COLOR);
         g.fillRoundRect(
                 0,

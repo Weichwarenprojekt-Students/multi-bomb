@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 
 import java.awt.*;
 import java.io.*;
-import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Settings {
 
@@ -44,7 +44,7 @@ public class Settings {
     /**
      * Remote server
      */
-    public ArrayList<String> remoteServer = new ArrayList<>();
+    public HashSet<String> remoteServers = new HashSet<>();
 
     /**
      * Load the settings

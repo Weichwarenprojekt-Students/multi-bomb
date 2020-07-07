@@ -2,7 +2,7 @@ package Menu;
 
 import General.MB;
 import General.Shared.*;
-import Menu.Dialogs.EnterServerAddress;
+import Menu.Dialogs.ServerManagement;
 import Server.Server;
 import Server.ServerList;
 
@@ -43,7 +43,7 @@ public class ServerView extends MBPanel {
     /**
      * Buttons for navigation
      */
-    private MBButton back, host, join, addRemote;
+    private MBButton back, host, join, manageRemotes;
     /**
      * Indicate if Thread is running
      * True if running
@@ -166,17 +166,17 @@ public class ServerView extends MBPanel {
         ));
 
         // Button to add remote server
-        addRemote = new MBButton("Add Remote");
-        addComponent(addRemote, () -> addRemote.setBounds(
+        manageRemotes = new MBButton("Manage Servers");
+        addComponent(manageRemotes, () -> manageRemotes.setBounds(
                 scroll.getX() + scroll.getWidth() + MARGIN,
                 scroll.getY() + 96,
                 DetailedLobbyView.BUTTON_WIDTH,
                 DetailedLobbyView.BUTTON_HEIGHT
         ));
-        addRemote.addActionListener(e -> showDialog(new EnterServerAddress(this), () -> {
+        manageRemotes.addActionListener(e -> showDialog(new ServerManagement(), () -> {
         }));
 
-        addButtonGroup(back, host, join, addRemote);
+        addButtonGroup(back, host, join, manageRemotes);
 
     }
 
@@ -208,25 +208,16 @@ public class ServerView extends MBPanel {
         }).start();
     }
 
-    /**
-     * Add a remote server
-     *
-     * @param serverAddress address of the server
-     */
-    public void addRemoteServer(String serverAddress) {
-
-    }
-
     public static class ServerListItem extends MBListView.Item {
 
         /**
          * Label for name
          */
-        MBLabel nameLabel;
+        private final MBLabel nameLabel;
         /**
          * Label for description of the server
          */
-        MBLabel descriptionLabel;
+        private final MBLabel descriptionLabel;
         /**
          * The name of the server
          */

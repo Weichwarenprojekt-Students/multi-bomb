@@ -26,7 +26,7 @@ public class ServerList {
         dS.search(serverList);
 
         // Add remote servers
-        MB.settings.remoteServer.forEach(server -> new ScanServerThread(server, serverList, "remote").run());
+        MB.settings.remoteServers.forEach(server -> new ScanServerThread(server, serverList, "remote").run());
     }
 
     /**
