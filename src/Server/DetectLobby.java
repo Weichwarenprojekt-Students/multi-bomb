@@ -10,6 +10,9 @@ import java.net.http.HttpResponse;
 
 public class DetectLobby {
 
+    /**
+     * Get LobbyInfo from server
+     */
     public static LobbyInfo getLobbyInfo (String serverAddress) {
 
         //Create HttpClient and HttpRequest
