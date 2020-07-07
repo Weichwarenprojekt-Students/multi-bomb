@@ -22,7 +22,7 @@ public class ServerList {
     /**
      * Detectserver
      */
-    private DetectServer ds = new DetectServer();
+    private final DetectServer dS = new DetectServer();
 
     public ServerList() {
         MB.settings.remoteServer.forEach(server -> new Thread(new ScanServerThread(server, remoteServerList, "remote")).start());
@@ -42,7 +42,7 @@ public class ServerList {
      */
     public void searchLocalServer () {
         localServerList.clear();
-        ds.search(localServerList);
+        dS.search(localServerList);
     }
 
     /**
