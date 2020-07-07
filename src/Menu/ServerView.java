@@ -22,7 +22,7 @@ public class ServerView extends MBPanel {
     /**
      * List for all shown server
      */
-    MBListView<ServerListItem> listView;
+    private MBListView<ServerListItem> listView;
 
     /**
      * Loading Spinner
@@ -31,7 +31,7 @@ public class ServerView extends MBPanel {
     /**
      * Buttons for navigation
      */
-    MBButton back, host, join, addRemote;
+    private MBButton back, host, join, addRemote;
     /**
      * True if the host server dialog is open
      */
@@ -45,13 +45,14 @@ public class ServerView extends MBPanel {
      */
     static boolean selected = false;
     /**
-     * Name for self hosted Server
-     */
-    String hostedServer = "";
-    /**
      * Server list Management
      */
-    ServerList serverList = new ServerList();
+    private ServerList serverList = new ServerList();
+    /**
+     * Indicate if Thread is running
+     * True if running
+     */
+    private boolean running = false;
     /**
      * Constructor
      */
@@ -106,9 +107,10 @@ public class ServerView extends MBPanel {
 
         // Back button
         back = new MBButton("Back");
-        back.addActionListener(e -> {MB.show(
-                new Menu(), false);
-                selected = false;
+        back.addActionListener(e -> {
+            running = false;
+            selected = false;
+            MB.show(new Menu(), false);
         });
         addComponent(back, () -> back.setBounds(
                 scroll.getX() + scroll.getWidth() + MARGIN,
@@ -119,15 +121,7 @@ public class ServerView extends MBPanel {
 
         // Button to host server
         host = new MBButton("Host");
-        host.addActionListener(e -> showDialog(new EnterServerName(this), () -> {
-            if (!hostedServer.isEmpty()) {
-                new Thread(() -> new Server(hostedServer).run()).start();
-                toastSuccess("Server started");
-            } else {
-                toastError("Server name empty");
-            }
-
-        }));
+        host.addActionListener(e -> showDialog(new EnterServerName(this), () -> {}));
         addComponent(host, () -> host.setBounds(
                 scroll.getX() + scroll.getWidth() + MARGIN,
                 scroll.getY() - 4,
@@ -139,16 +133,9 @@ public class ServerView extends MBPanel {
         join = new MBButton("Join");
         join.addActionListener(e -> {
             if (selected) {
-                try {
-                    MB.show(new LobbyView(selectedServerAddress), false);
-                } catch (IndexOutOfBoundsException x) {
-                    x.printStackTrace();
-                    toastError("Server not", "available");
-                    MB.show(new ServerView(), false);
-                }
-                finally {
-                    selected = false;
-                }
+                running = false;
+                selected = false;
+                MB.show(new LobbyView(selectedServerAddress), false);
             } else {
                 toastError("No server", "selected");
             }
@@ -182,6 +169,7 @@ public class ServerView extends MBPanel {
     public void afterVisible() {
         //Thread for detecting server in local network
         new Thread(() -> {
+            running = true;
             while (true) {
                 //search for local servers
                 serverList.searchLocalServer();
@@ -191,7 +179,10 @@ public class ServerView extends MBPanel {
                 serverList.updateListView(listView);
                 spinner.setVisible(false);
                 back.setVisible(true);
-
+                //check if Thread still needed
+                if (!running) {
+                    break;
+                }
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
@@ -201,8 +192,14 @@ public class ServerView extends MBPanel {
         }).start();
     }
 
-    public void setHostedServer(String hostedServer) {
-        this.hostedServer = hostedServer;
+    public void hostServer (String hostServerName) {
+        if (!hostServerName.isEmpty()) {
+            new Thread(() -> new Server(hostServerName).run()).start();
+            toastSuccess("Server started");
+        } else {
+            toastError("Server name empty");
+        }
+
     }
 
     public void addRemoteServer (String serverAddress) {
@@ -225,7 +222,7 @@ public class ServerView extends MBPanel {
 
 
         public ServerListItem(String name, String description, String serverAddress) {
-            super(name);
+            super(serverAddress);
 
             this.serverAddress = serverAddress;
 

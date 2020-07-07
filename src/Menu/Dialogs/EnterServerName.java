@@ -40,7 +40,7 @@ public class EnterServerName extends JPanel {
         MBButton confirm = new MBButton("Confirm");
         confirm.setBounds(2 * MARGIN + BUTTON_WIDTH, 100, BUTTON_WIDTH, BUTTON_HEIGHT);
         confirm.addActionListener(e -> {
-            serverView.setHostedServer(input.getText());
+            serverView.hostServer(input.getText());
             MB.activePanel.closeDialog();
         });
         add(confirm);
