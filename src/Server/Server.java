@@ -208,7 +208,11 @@ public class Server implements Runnable {
 
             Lobby lobby = lobbies.get(lobbyName);
 
-            if (lobby.isFull()) {
+            if (playerID == null || playerID.isEmpty()) {
+                return new ErrorMessage("Player name may not be empty");
+            } else if (lobby.state != Lobby.WAITING) {
+                return new ErrorMessage("Lobby is not in the correct state");
+            } else if (lobby.isFull()) {
                 return new ErrorMessage("The requested lobby is full");
             } else if (!lobby.isOpen()) {
                 lobbies.remove(lobbyName);
