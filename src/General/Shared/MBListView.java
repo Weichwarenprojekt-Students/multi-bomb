@@ -1,5 +1,7 @@
 package General.Shared;
 
+import Menu.ServerView;
+
 import javax.swing.*;
 import javax.swing.text.html.ListView;
 import java.awt.event.ComponentAdapter;
@@ -105,11 +107,57 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
         resizeList();
     }
 
-    public void removeAllItems() {
-        items.clear();
-        removeAll();
+    /**
+     * Remove item from the list
+     *
+     * @param name of the item
+     */
+    public void removeItem(String name) {
+        // Find the item
+        int index = -1;
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).name.equals(name)) {
+                index = i;
+            }
+        }
+
+        // Check if the item was found
+        if (index == -1) {
+            return;
+        }
+
+        // Remove the item
+        remove(items.get(index));
+        items.remove(index);
+
+        // Rebuild the list
         resizeList();
     }
+
+    /**
+     * Checks if Item is already in list
+     */
+    public boolean containsItem(String compare) {
+        for (T item : items) {
+            if (item.name.equals(compare)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Add Items that are in list but not in items list
+     */
+    public void addMissingItems(ArrayList<T> list) {
+        //Remove object from list if already in ListView
+        list.removeIf(x -> containsItem(x.name));
+        //Add remaining items from list to ListView
+        list.forEach(this::addItem);
+        //Rebuild the list
+        resizeList();
+    }
+
 
     /**
      * The base class for an item
