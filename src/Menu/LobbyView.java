@@ -5,6 +5,7 @@ import General.Shared.*;
 import General.MB;
 import Menu.Dialogs.EnterLobbyName;
 import Menu.Dialogs.EnterPlayerName;
+import Menu.Models.Lobby;
 import Server.DetectLobby;
 
 import Server.Messages.ErrorMessage;
@@ -34,24 +35,24 @@ public class LobbyView extends MBPanel {
     /**
      * Address of selected Server
      */
-    String serverAddress;
+    private String serverAddress;
     /**
      * Lobbyinfo
      */
-    LobbyInfo lobbyInfo;
+    private LobbyInfo lobbyInfo;
     /**
      * Listview for lobbies
      */
-    MBListView<LobbyListItem> list = new MBListView<>();
+    private MBListView<LobbyListItem> listView = new MBListView<>();
     /**
      * Spinner
      */
-    MBSpinner spinner;
+    private MBSpinner spinner;
 
     /**
      * Buttons
      */
-    MBButton back, join, create;
+    private MBButton back, join, create;
     /**
      * True if lobby is selected
      */
@@ -63,13 +64,20 @@ public class LobbyView extends MBPanel {
     /**
      * Player name
      */
-    String playerName = "";
-
+    private String playerName = "";
     /**
      * Created Lobby name
      */
-    String createLobbyName = "";
-
+    private String createLobbyName = "";
+    /**
+     * Lobbies found in lobbyInfo
+     */
+    private ArrayList<LobbyListItem> lobbyCache = new ArrayList<>();
+    /**
+     * Boolean for running Thread
+     * True if running
+     */
+    private boolean running = false;
 
     public LobbyView() {
     }
@@ -94,9 +102,9 @@ public class LobbyView extends MBPanel {
                 200,
                 40));
 
-        //Create scrollable listview
-        list = new MBListView<>();
-        MBScrollView scroll = new MBScrollView(list);
+        //Create scrollable listView
+        listView = new MBListView<>();
+        MBScrollView scroll = new MBScrollView(listView);
         addComponent(scroll, () -> scroll.setBounds(
                 getWidth() / 2 - (getHeight() + MARGIN + BUTTON_WIDTH) / 2,
                 96,
@@ -130,9 +138,8 @@ public class LobbyView extends MBPanel {
                     showDialog(new EnterPlayerName(this), () -> {});
                 }
                 if (joinLobby() == 200) {
-                    /**
-                     * Call DetailedLobbyView
-                     */
+                    running = false;
+                    //Call DetailedLobbyView
                 } else {
                     toastError("Lobby join failed");
                 }
@@ -156,18 +163,7 @@ public class LobbyView extends MBPanel {
             //set player name
                     showDialog(new EnterLobbyName(this), () -> {
                         if (!createLobbyName.isEmpty()) {
-                            /**
-                             *
-                             * Call detailedLobbyView
-                             * playerName
-                             * createLobbyName
-                             *
-                             */
-                             CreateLobby msg = new CreateLobby();
-                             //msg.playerID = playerName;
-                             msg.playerID = "TestSpieler";
-                             msg.lobbyName = createLobbyName;
-                             createLobby(msg);
+                            //Call DetailedLobbyView
                         }
                     });
             });
@@ -183,8 +179,9 @@ public class LobbyView extends MBPanel {
         // Back button
         back = new MBButton("Back");
         back.addActionListener(e -> {
-            MB.show(new ServerView(), false);
+            running = false;
             selected = false;
+            MB.show(new ServerView(), false);
         });
         addComponent(back, () -> back.setBounds(
                 scroll.getX() + scroll.getWidth() + MARGIN,
@@ -204,14 +201,15 @@ public class LobbyView extends MBPanel {
      */
     @Override
     public void afterVisible() {
-        ArrayList<LobbyListItem> lobbyCache = new ArrayList<>();
         //Thread to detect lobbies on server
         new Thread(() -> {
+            running = true;
             while (true) {
-                //get lobby infos from server
+                //get lobby info from server
                 lobbyInfo = DetectLobby.getLobbyInfo(serverAddress);
                 if (lobbyInfo == null) {
                     toastError("Server not" , "available");
+                    running = false;
                     MB.show(new ServerView(), false);
                 }
                 LobbyInfo.SingleLobbyInfo[] lobbies = lobbyInfo.lobbies;
@@ -220,13 +218,17 @@ public class LobbyView extends MBPanel {
                     LobbyListItem listItem = new LobbyListItem(lobby.name, lobby.players, lobby.gameMode, lobby.status);
                     lobbyCache.add(listItem);
                 }
-                //clear ListView and show new lobbies
-                list.removeAllItems();
-                lobbyCache.forEach(lobby -> list.addItem(lobby));
+                 //clear ListView and show new lobbies
+                listView.addMissingItems(lobbyCache);
                 lobbyCache.clear();
                 //Set button visibility
                 spinner.setVisible(false);
                 back.setVisible(true);
+                //check if Thread still needed
+                if (!running) {
+                    break;
+                }
+                //Wait 2 seconds
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
@@ -276,27 +278,6 @@ public class LobbyView extends MBPanel {
             toastError("Server not", "available");
         }
         return statusCode;
-    }
-
-    public int createLobby(CreateLobby msg) {
-
-        HttpClient httpClient = HttpClient.newBuilder().build();
-        HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofByteArray(msg.toJson().getBytes())).uri(URI.create("http://" + serverAddress + ":" + Server.HTTP_PORT + "/lobby")).build();
-        HttpResponse<String> response = null;
-
-        try {
-            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() != 200) {
-                ErrorMessage error = (ErrorMessage) Message.fromJson(response.body());
-                toastError(error.error, Integer.toString(response.statusCode()));
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            toastError("Server not", "available");
-
-        }
-        return response.statusCode();
     }
 
 
