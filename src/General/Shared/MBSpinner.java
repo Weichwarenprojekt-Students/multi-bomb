@@ -81,6 +81,7 @@ public class MBSpinner extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         MB.settings.enableAntiAliasing(g);
+        g.setColor(Color.WHITE);
         g.fillArc(0, 0, getWidth(), getHeight(), progress + deltaAngle, -2 * progress);
     }
 }
