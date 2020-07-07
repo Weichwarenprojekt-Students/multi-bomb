@@ -14,7 +14,7 @@ public abstract class Message {
             SERVER_INFO_TYPE = "serverInfo", LOBBY_INFO_TYPE = "lobbyInfo",
             JOIN_LOBBY_TYPE = "joinLobby", CREATE_LOBBY_TYPE = "createLobby",
             INVALID_TYPE = "invalidMessage", ERROR_MESSAGE_TYPE = "errorMessage",
-            CLOSE_CONNECTION_TYPE = "closeConnection";
+            CLOSE_CONNECTION_TYPE = "closeConnection", NEW_ITEM_TYPE = "newItem";
 
     /**
      * Gson object with deserializer for Message.class

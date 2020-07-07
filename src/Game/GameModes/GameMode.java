@@ -1,10 +1,13 @@
 package Game.GameModes;
 
 import Server.Messages.Socket.PlayerState;
+import Server.Messages.Socket.Position;
+import Server.Models.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Optional;
 
 public abstract class GameMode {
     /**
@@ -26,7 +29,7 @@ public abstract class GameMode {
     /**
      * The player's match statistics
      */
-    public HashMap<String, PlayerState> players;
+    public HashMap<String, PlayerState> players = new HashMap<>();
 
     /**
      * Constructor
@@ -67,7 +70,17 @@ public abstract class GameMode {
     public abstract void updateClientState();
 
     /**
-     * Evaluate game state changes
+     * Calculate the winner of the game on the server
+     *
+     * @return Optional containing the playerId of the winner, empty Optional if there is no winner
      */
-    public abstract void updateServerState();
+    public abstract Optional<String> calculateWinner();
+
+    /**
+     * Handle the death of a player in a special way, for example respawn
+     *
+     * @param player     the player that died
+     * @param spawnPoint the original spawnpoint of the player
+     */
+    public abstract void handleDeath(Player player, Position spawnPoint);
 }

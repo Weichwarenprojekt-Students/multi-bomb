@@ -113,7 +113,7 @@ public class Lobby {
         if (players.isEmpty()) {
             if (state == IN_GAME) {
                 // stop game loop
-                gameWorld.isRunning = false;
+                gameWorld.stopGame();
             }
 
             // close lobby

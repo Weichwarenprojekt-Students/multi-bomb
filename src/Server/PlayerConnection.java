@@ -1,24 +1,26 @@
 package Server;
 
-import Server.Messages.Socket.Map;
 import Server.Messages.ErrorMessage;
 import Server.Messages.Message;
-import Server.Messages.Socket.CloseConnection;
-import Server.Messages.Socket.GameState;
-import Server.Messages.Socket.LobbyState;
-import Server.Messages.Socket.Position;
+import Server.Messages.Socket.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerConnection extends Thread {
     /**
      * Name of the player
      */
     public final String name;
+    /**
+     * List of all ItemActions that occurred
+     */
+    public final List<ItemAction> itemActions;
     /**
      * TCP socket connection to the client
      */
@@ -64,6 +66,8 @@ public class PlayerConnection extends Thread {
         this.socket = socket;
         this.lobby = lobby;
         this.name = playerName;
+
+        this.itemActions = new ArrayList<>();
 
         try {
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -154,8 +158,21 @@ public class PlayerConnection extends Thread {
             case Message.POSITION_TYPE:
                 if (lobby.state == Lobby.IN_GAME) {
                     // update last position
-                    lastPosition = (Position) msg;
-                    lastPosition.playerId = name;
+                    Position newPosition = (Position) msg;
+                    newPosition.playerId = name;
+                    lastPosition = newPosition;
+                }
+                break;
+            case Message.ITEM_ACTION_TYPE:
+                // prepare item action object
+                ItemAction itemAction = (ItemAction) msg;
+                itemAction.playerId = name;
+                itemAction.m = (int) lastPosition.x / Map.FIELD_SIZE;
+                itemAction.n = (int) lastPosition.y / Map.FIELD_SIZE;
+
+                // add item action to itemActions
+                synchronized (itemActions) {
+                    itemActions.add(itemAction);
                 }
                 break;
         }

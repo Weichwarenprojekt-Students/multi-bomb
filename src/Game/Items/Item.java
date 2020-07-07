@@ -2,7 +2,6 @@ package Game.Items;
 
 import Game.Models.Field;
 import Game.Models.Upgrades;
-import General.Shared.MBImage;
 import Server.Messages.Socket.Position;
 
 import java.awt.*;
@@ -38,4 +37,8 @@ public abstract class Item {
      * Draw a used item
      */
     public abstract Item draw(Graphics2D g, int m, int n);
+
+    public interface ItemCallback {
+        boolean callback(int[][] position);
+    }
 }

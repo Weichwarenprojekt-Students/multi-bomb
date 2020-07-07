@@ -1,5 +1,6 @@
 package Server.Models;
 
+import Server.Messages.Socket.PlayerState;
 import Server.Messages.Socket.Position;
 
 public class Player {
@@ -12,13 +13,9 @@ public class Player {
      */
     public Position position;
     /**
-     * Health of the player
+     * State of the player
      */
-    public int health;
-    /**
-     * Number of kills the player has done
-     */
-    public int kills;
+    public PlayerState playerState;
 
     /**
      * Constructor
@@ -28,15 +25,21 @@ public class Player {
     public Player(String name) {
         this.name = name;
 
-        health = 3;
-        kills = 0;
+        this.playerState = new PlayerState(name);
     }
 
     /**
      * Kill the player instantly
      */
-    public void kill() {
-        health = 0;
+    public synchronized void kill() {
+        playerState.health = 0;
+    }
+
+    /**
+     * Hit the player
+     */
+    public synchronized void hit() {
+        playerState.health -= 1;
     }
 
     /**
@@ -44,7 +47,7 @@ public class Player {
      *
      * @return boolean indicating if the player is still alive
      */
-    public boolean isAlive() {
-        return health != 0;
+    public synchronized boolean isAlive() {
+        return playerState.isAlive();
     }
 }

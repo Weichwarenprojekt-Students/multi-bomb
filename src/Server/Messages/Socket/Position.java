@@ -38,8 +38,11 @@ public class Position extends Message {
 
     /**
      * Constructor
+     *
+     * @param x coordinate
+     * @param y coordinate
      */
-    public Position(int x, int y) {
+    public Position(float x, float y) {
         // Initialize message with type
         super(Message.POSITION_TYPE);
         this.x = x;

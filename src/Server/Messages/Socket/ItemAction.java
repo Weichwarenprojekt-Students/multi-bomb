@@ -11,6 +11,10 @@ public class ItemAction extends Message {
      * The player who uses the item
      */
     public String playerId;
+    /**
+     * The position at which the item is used
+     */
+    public int m, n;
 
     /**
      * Constructor
