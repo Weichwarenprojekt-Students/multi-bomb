@@ -1,13 +1,11 @@
 package Game.GameModes;
 
+import Server.Messages.Message;
 import Server.Messages.Socket.PlayerState;
 import Server.Messages.Socket.Position;
 import Server.Models.Player;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.*;
 
 public abstract class GameMode {
     /**
@@ -77,10 +75,11 @@ public abstract class GameMode {
     public abstract Optional<String> calculateWinner();
 
     /**
-     * Handle the death of a player in a special way, for example respawn
+     * Handle the hit of a player
      *
-     * @param player     the player that died
+     * @param player     the player that gets hit
+     * @param from       the player which deals the hit
      * @param spawnPoint the original spawnpoint of the player
      */
-    public abstract void handleDeath(Player player, Position spawnPoint);
+    public abstract List<Message> handleHit(Player player, Player from, Position spawnPoint);
 }

@@ -164,15 +164,9 @@ public class PlayerConnection extends Thread {
                 }
                 break;
             case Message.ITEM_ACTION_TYPE:
-                // prepare item action object
-                ItemAction itemAction = (ItemAction) msg;
-                itemAction.playerId = name;
-                itemAction.m = (int) lastPosition.x / Map.FIELD_SIZE;
-                itemAction.n = (int) lastPosition.y / Map.FIELD_SIZE;
-
                 // add item action to itemActions
                 synchronized (itemActions) {
-                    itemActions.add(itemAction);
+                    itemActions.add((ItemAction) msg);
                 }
                 break;
         }

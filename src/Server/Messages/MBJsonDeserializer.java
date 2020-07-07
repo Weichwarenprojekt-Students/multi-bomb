@@ -72,6 +72,9 @@ public class MBJsonDeserializer implements JsonDeserializer<Message> {
             case Message.NEW_ITEM_TYPE:
                 typeModel = context.deserialize(json, NewItem.class);
                 break;
+            case Message.RESPAWN_TYPE:
+                typeModel = context.deserialize(json, Respawn.class);
+                break;
             default:
                 typeModel = new Message(Message.INVALID_TYPE) {};
         }

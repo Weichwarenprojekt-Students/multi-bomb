@@ -1,12 +1,15 @@
 package Game.GameModes;
 
 import Game.Models.Field;
+import Server.Messages.Message;
 import Server.Messages.Socket.PlayerState;
 import Server.Messages.Socket.Position;
 import Server.Models.Player;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 public class Classic extends GameMode {
     /**
@@ -28,13 +31,14 @@ public class Classic extends GameMode {
 
     @Override
     public synchronized Optional<String> calculateWinner() {
-        // Get stream of all players that are alive
-        Stream<PlayerState> alivePlayerStream = players.values().stream().filter(PlayerState::isAlive);
+        // Get list of all players that are alive
+        List<PlayerState> alivePlayers = players.values().stream().filter(PlayerState::isAlive)
+                .collect(Collectors.toList());
 
         // If only one player is alive
-        if (alivePlayerStream.count() == 1) {
+        if (alivePlayers.size() == 1) {
             // Return a non-empty Optional<String> containing the playerId of the winner
-            return alivePlayerStream.findFirst().map(ps -> ps.playerId);
+            return alivePlayers.stream().findFirst().map(ps -> ps.playerId);
         }
 
         // Return empty Optional because there is no winner yet
@@ -42,7 +46,23 @@ public class Classic extends GameMode {
     }
 
     @Override
-    public synchronized void handleDeath(Player player, Position spawnPoint) {
-        // Deaths are not handled in a special way
+    public synchronized List<Message> handleHit(Player player, Player from, Position spawnPoint) {
+        List<Message> result = new ArrayList<>();
+
+        if (player.isAlive()) {
+            // player got hit
+            player.hit();
+            // notify all players about the hit
+            result.add(player.playerState);
+
+            if (!player.isAlive() && !player.name.equals(from.name)) {
+                // player died and the hit was from another player
+                from.playerState.kills++;
+                // notify players about the kill
+                result.add(from.playerState);
+            }
+        }
+
+        return result;
     }
 }

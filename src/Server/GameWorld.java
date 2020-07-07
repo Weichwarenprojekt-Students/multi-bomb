@@ -1,7 +1,7 @@
 package Server;
 
 import Game.GameModes.GameMode;
-import Game.Items.Bomb;
+import Server.Items.Bomb;
 import Game.Models.Field;
 import Server.Messages.Socket.*;
 import Server.Models.Player;
@@ -191,31 +191,12 @@ public class GameWorld extends Thread {
                 // a hit occurs if any of the players are on the hit's position
                 hitSomething = players.values().stream().anyMatch(p -> {
                     if (p.isAlive()
-                            && (int) (p.position.x / Map.FIELD_SIZE) == pos[0]
-                            && (int) (p.position.y / Map.FIELD_SIZE) == pos[1]) {
+                            && (int) (p.position.y / Map.FIELD_SIZE) == pos[0]
+                            && (int) (p.position.x / Map.FIELD_SIZE) == pos[1]) {
                         // hit player
-                        p.hit();
+                        gameMode.handleHit(p, players.get(from), map.spawns[lobby.players.get(p.name).color])
+                                .forEach(lobby::sendToAllPlayers);
 
-                        // send current player state
-                        lobby.sendToAllPlayers(p.playerState);
-
-                        if (!p.isAlive()) {
-                            // player died because of hit, handle death
-                            gameMode.handleDeath(p, map.spawns[lobby.players.get(p.name).color]);
-
-                            if (p.isAlive()) {
-                                // player is respawned, send new position and player state
-                                lobby.sendToAllPlayers(p.position);
-                                lobby.sendToAllPlayers(p.playerState);
-                            }
-
-                            // Add one kill to the player who used the item
-                            PlayerState ps = players.get(from).playerState;
-                            ps.kills += 1;
-
-                            // notify players about the kill
-                            lobby.sendToAllPlayers(ps);
-                        }
                         // hit a player
                         return true;
                     }
@@ -246,8 +227,8 @@ public class GameWorld extends Thread {
                 lobby.sendToAllPlayers(player.position);
 
                 // position on the map
-                int m = (int) (player.position.x / Map.FIELD_SIZE);
-                int n = (int) (player.position.y / Map.FIELD_SIZE);
+                int m = (int) (player.position.y / Map.FIELD_SIZE);
+                int n = (int) (player.position.x / Map.FIELD_SIZE);
 
                 // Collect items
                 Field field = Field.getItem(map.fields[m][n]);
@@ -280,29 +261,31 @@ public class GameWorld extends Thread {
      */
     private synchronized void handleItemActions(Player player, PlayerConnection playerConnection) {
         // position on the map
-        int m = (int) (player.position.x / Map.FIELD_SIZE);
-        int n = (int) (player.position.y / Map.FIELD_SIZE);
+        if (player.isAlive()) {
+            int m = (int) (player.position.y / Map.FIELD_SIZE);
+            int n = (int) (player.position.x / Map.FIELD_SIZE);
 
-        synchronized (playerConnection.itemActions) {
-            // for each item action
-            playerConnection.itemActions.forEach(iA -> {
-                // send item action to all players
-                lobby.sendToAllPlayers(iA);
-                switch (iA.itemId) {
-                    case Bomb.NAME:
-                        // start the server logic of the bomb
-                        Bomb.serverLogic(
-                                (positions) -> handleHits(player.name, positions),
-                                m,
-                                n,
-                                player.playerState.upgrades.bombSize
-                        );
-                        break;
-                }
-            });
+            synchronized (playerConnection.itemActions) {
+                // for each item action
+                playerConnection.itemActions.forEach(iA -> {
+                    // send item action to all players
+                    lobby.sendToAllPlayers(iA);
+                    switch (iA.itemId) {
+                        case Bomb.NAME:
+                            // start the server logic of the bomb
+                            Bomb.serverLogic(
+                                    (positions) -> handleHits(player.name, positions),
+                                    m,
+                                    n,
+                                    player.playerState.upgrades.bombSize
+                            );
+                            break;
+                    }
+                });
 
-            // clear the item actions from the player connection
-            playerConnection.itemActions.clear();
+                // clear the item actions from the player connection
+                playerConnection.itemActions.clear();
+            }
         }
     }
 

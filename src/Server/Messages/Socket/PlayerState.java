@@ -5,7 +5,13 @@ import Game.Models.Upgrades;
 import Server.Messages.Message;
 
 public class PlayerState extends Message {
-    public static final int DEFAULT_HEALTH = 3;
+    /**
+     * Default health of a player
+     */
+    public static final int DEFAULT_HEALTH = 1;
+    /**
+     * Maximum health of a player
+     */
     public static final int MAX_HEALTH = 3;
     /**
      * The player name
