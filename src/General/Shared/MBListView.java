@@ -1,5 +1,7 @@
 package General.Shared;
 
+import Game.Models.Player;
+
 import javax.swing.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -9,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 public class MBListView<T extends MBListView.Item> extends JPanel {
-
     /**
      * The list that contains the content
      */
@@ -105,20 +106,6 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
     /**
      * Remove item from the list
      *
-     * @param index of the item
-     */
-    public void removeItem(int index) {
-        // Remove the item
-        remove(items.get(index));
-        items.remove(index);
-
-        // Rebuild the list
-        resizeList();
-    }
-
-    /**
-     * Remove item from the list
-     *
      * @param name of the item
      */
     public void removeItem(String name) {
@@ -142,6 +129,51 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
         // Rebuild the list
         resizeList();
     }
+
+    /**
+     * Check if an item is already in the list
+     *
+     * @param name of the item
+     */
+    public boolean containsItem(String name) {
+        for (T item : items) {
+            if (item.name.equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Add Items that are in list but not in items list
+     */
+    public void addMissingItems(ArrayList<T> list) {
+        // Check if an item is new
+        for (T item : list) {
+            if (!containsItem(item.name)) {
+                addItem(item);
+            }
+        }
+
+        // Check if an item was removed
+        for (T item : items) {
+            // Remove the item if it can't be found anymore
+            boolean found = false;
+            for (T newItem : list) {
+                if (item.name.equals(newItem.name)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                removeItem(item.name);
+            }
+        }
+
+        //Rebuild the list
+        resizeList();
+    }
+
 
     /**
      * The base class for an item

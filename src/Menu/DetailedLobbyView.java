@@ -1,13 +1,11 @@
 package Menu;
 
+import Game.Lobby;
 import General.MB;
 import General.Shared.*;
 import Menu.Dialogs.HostPromotion;
 import Menu.Dialogs.MapSelection;
 import Menu.Dialogs.ModeSelection;
-import Game.Lobby;
-import Server.LobbyView;
-import Server.ServerView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,11 +19,11 @@ public class DetailedLobbyView extends MBPanel {
     /**
      * Distance between buttons and player list
      */
-    private static final int MARGIN = 32;
+    public static final int MARGIN = 32;
     /**
      * Measurements of the buttons
      */
-    private static final int BUTTON_WIDTH = 200, BUTTON_HEIGHT = 40;
+    public static final int BUTTON_WIDTH = 200, BUTTON_HEIGHT = 40;
     /**
      * The player corresponding to the client
      */
@@ -62,15 +60,16 @@ public class DetailedLobbyView extends MBPanel {
     /**
      * Constructor
      *
-     * @param lobbyName of the lobby
-     * @param ip        address
-     * @param tickRate  of the server
+     * @param player   name of the player
+     * @param name     of the lobby
+     * @param ip       address
+     * @param tickRate of the server
      */
-    public DetailedLobbyView(String player, String lobbyName, String ip, int tickRate) throws IOException {
+    public DetailedLobbyView(String player, String name, String ip, int tickRate) throws IOException {
         super(true);
         this.player = player;
         setupLayout();
-        setupLobby(lobbyName, ip, tickRate);
+        setupLobby(name, ip, tickRate);
     }
 
     /**
@@ -208,7 +207,7 @@ public class DetailedLobbyView extends MBPanel {
         leave = new MBButton("Leave");
         leave.addActionListener(e -> {
             Lobby.leave();
-            MB.show(new LobbyView(), false);
+            MB.show(new LobbyView(Lobby.ipAddress), false);
         });
         addComponent(leave, () -> leave.setBounds(
                 scroll.getX() + scroll.getWidth() + MARGIN,

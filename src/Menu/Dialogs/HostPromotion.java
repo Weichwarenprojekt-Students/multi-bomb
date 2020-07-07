@@ -12,11 +12,11 @@ public class HostPromotion extends JPanel {
     /**
      * The margin
      */
-    private static final int MARGIN = 16;
+    public static final int MARGIN = 16;
     /**
      * Button measurements
      */
-    private static final int BUTTON_WIDTH = 100, BUTTON_HEIGHT = 35;
+    public static final int BUTTON_WIDTH = 100, BUTTON_HEIGHT = 35;
 
     /**
      * Constructor

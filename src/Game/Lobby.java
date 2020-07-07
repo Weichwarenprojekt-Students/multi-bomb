@@ -5,13 +5,13 @@ import Game.GameModes.GameMode;
 import Game.Models.Player;
 import General.MB;
 import Menu.DetailedLobbyView;
+import Menu.ServerView;
 import Server.Messages.Message;
 import Server.Messages.Socket.GameState;
 import Server.Messages.Socket.LobbyState;
 import Server.Messages.Socket.Map;
 import Server.Messages.Socket.Position;
 import Server.Server;
-import Server.ServerView;
 
 import java.io.BufferedReader;
 import java.io.IOException;

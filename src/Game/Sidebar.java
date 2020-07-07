@@ -4,7 +4,7 @@ import Game.Models.Player;
 import General.MB;
 import General.Shared.*;
 import Menu.SettingsOverview;
-import Server.LobbyView;
+import Menu.LobbyView;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -81,7 +81,7 @@ public class Sidebar extends MBPanel {
         leave.addActionListener(e -> {
             Lobby.leave();
             Game.gameOver = true;
-            MB.show(new LobbyView(), false);
+            MB.show(new LobbyView(Lobby.ipAddress), false);
         });
 
         // The list view

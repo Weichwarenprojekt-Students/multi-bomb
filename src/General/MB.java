@@ -2,23 +2,14 @@ package General;
 
 
 import Editor.MapManager;
-import Game.Game;
 import General.Shared.MBImage;
-import Menu.DetailedLobbyView;
 import General.Shared.MBPanel;
-import Server.LobbyView;
-import Server.Messages.REST.CreateLobby;
-import Server.Messages.REST.JoinLobby;
-import Server.Server;
+import Menu.Menu;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class MB {
@@ -36,55 +27,23 @@ public class MB {
      */
     public static MBPanel activePanel;
     /**
-     * A players sprite
-     */
-    private static MBImage playerSprite;
-    /**
      * The game background
      */
     public static MBImage background;
+    /**
+     * A players sprite
+     */
+    private static MBImage playerSprite;
 
     /**
      * Setup the JFrame and show the menu
      */
-    public static void startGame(boolean create, String name) {
+    public static void startGame() {
         MB.settings.loadSettings();
         MapManager.loadMaps();
         background = new MBImage("General/background.png");
         setupFrame();
-
-        try {
-            HttpURLConnection urlConn;
-            String ip = "92.60.38.195";
-            URL mUrl = new URL("http://" + ip + ":" + Server.HTTP_PORT + "/lobby");
-            urlConn = (HttpURLConnection) mUrl.openConnection();
-            urlConn.addRequestProperty("Content-Type", "application/" + "GET");
-            urlConn.setDoOutput(true);
-            String lobbyName = "TestLobby";
-            if (create) {
-                CreateLobby message = new CreateLobby();
-                message.playerID = name;
-                message.lobbyName = lobbyName;
-                String query = message.toJson();
-                urlConn.setRequestProperty("Content-Length", Integer.toString(query.length()));
-                urlConn.getOutputStream().write(query.getBytes(StandardCharsets.UTF_8));
-            } else {
-                JoinLobby message = new JoinLobby();
-                message.playerID = name;
-                message.lobbyName = lobbyName;
-                String query = message.toJson();
-                urlConn.setRequestProperty("Content-Length", Integer.toString(query.length()));
-                urlConn.getOutputStream().write(query.getBytes(StandardCharsets.UTF_8));
-            }
-            if (urlConn.getResponseCode() == 200) {
-                show(new DetailedLobbyView(name, lobbyName, ip, 128), false);
-            } else {
-                throw new IOException();
-            }
-        } catch (IOException e) {
-            show(new LobbyView(), false);
-            e.printStackTrace();
-        }
+        MB.show(new Menu(), false);
 
         // Set fullscreen if necessary
         if (settings.fullscreen) {

@@ -5,7 +5,6 @@ import General.MB;
 import General.Shared.MBButton;
 import General.Shared.MBPanel;
 import General.Shared.MBTitle;
-import Server.ServerView;
 
 /**
  * This class provides a menu for navigating through the game
