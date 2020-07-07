@@ -30,10 +30,6 @@ public class Game extends MBPanel {
      */
     public static boolean gameOver = true;
     /**
-     * The name of the user
-     */
-    private final String player;
-    /**
      * The sidebar
      */
     private Sidebar sidebar;
@@ -45,9 +41,8 @@ public class Game extends MBPanel {
     /**
      * Constructor
      */
-    public Game(String player) {
+    public Game() {
         super(true);
-        this.player = player;
         setupLayout();
     }
 
@@ -111,7 +106,7 @@ public class Game extends MBPanel {
     public void startGame() {
         // Initialize the player
         for (java.util.Map.Entry<String, Player> player : Lobby.players.entrySet()) {
-            player.getValue().initialize(this, this.player.equals(player.getKey()));
+            player.getValue().initialize(this, Lobby.player.equals(player.getKey()));
         }
 
         // Start the game loop
@@ -125,7 +120,7 @@ public class Game extends MBPanel {
             long start = System.currentTimeMillis();
 
             // Update the player and repaint
-            Lobby.players.get(this.player).update();
+            Lobby.players.get(Lobby.player).update();
             MB.frame.revalidate();
             MB.frame.repaint();
 

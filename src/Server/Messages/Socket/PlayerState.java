@@ -55,6 +55,16 @@ public class PlayerState extends Message {
     }
 
     /**
+     * Update health and kills
+     *
+     * @param state new state
+     */
+    public void update(PlayerState state) {
+        this.health = state.health;
+        this.kills = state.kills;
+    }
+
+    /**
      * Check if player is alive
      *
      * @return true if player is alive
@@ -66,9 +76,10 @@ public class PlayerState extends Message {
     /**
      * Handle collected item
      *
-     * @param item the collected item
+     * @param item           the collected item
+     * @param increaseHealth true if the health shall be increased
      */
-    public void collectItem(Field item) {
+    public void collectItem(Field item, boolean increaseHealth) {
         switch (item) {
             case BOMB:
                 // increment number of bombs the player can place
@@ -84,7 +95,7 @@ public class PlayerState extends Message {
                 break;
             case HEART:
                 // increment health
-                if (health < MAX_HEALTH) {
+                if (health < MAX_HEALTH && increaseHealth) {
                     health++;
                 }
                 break;

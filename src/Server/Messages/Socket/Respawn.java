@@ -7,7 +7,7 @@ public class Respawn extends Message {
     /**
      * The id of the player
      */
-    String playerId;
+    public String playerId;
 
     /**
      * Constructor

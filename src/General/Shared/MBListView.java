@@ -156,6 +156,7 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
         }
 
         // Check if an item was removed
+        ArrayList<String> removedItems = new ArrayList<>();
         for (T item : items) {
             // Remove the item if it can't be found anymore
             boolean found = false;
@@ -166,8 +167,11 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
                 }
             }
             if (!found) {
-                removeItem(item.name);
+                removedItems.add(item.name);
             }
+        }
+        for (String name : removedItems) {
+            removeItem(name);
         }
 
         //Rebuild the list

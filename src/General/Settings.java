@@ -30,9 +30,17 @@ public class Settings {
      */
     public int refreshRate = 60;
     /**
-     * Player name
+     * Default player name
      */
     public String playerName ="";
+    /**
+     * Default lobby name
+     */
+    public String lobbyName ="";
+    /**
+     * Default server name
+     */
+    public String serverName ="";
     /**
      * Remote server
      */

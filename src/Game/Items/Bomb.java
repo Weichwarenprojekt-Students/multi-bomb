@@ -7,15 +7,10 @@ import Game.Models.Field;
 import Game.Models.Upgrades;
 import General.Shared.MBImage;
 import Server.Messages.Socket.Map;
-import Server.Messages.Socket.Position;
 
 import java.awt.*;
 
 public class Bomb extends Item {
-    /**
-     * The name of the item
-     */
-    public static final String NAME = "Bomb";
     /**
      * The horizontal sprite
      */
@@ -85,7 +80,7 @@ public class Bomb extends Item {
      * Constructor
      */
     public Bomb() {
-        super(NAME, Field.BOMB);
+        super(Item.BOMB, Field.BOMB);
 
         // Initialize the bomb sprite
         bombImage = new MBImage("Items/Bomb/bomb.png", () -> {
@@ -98,17 +93,14 @@ public class Bomb extends Item {
     /**
      * Use the bomb
      *
-     * @param position of the player
+     * @param m        position of the item use
+     * @param n        position of the item use
      * @param upgrades of the player
      * @return a new bomb
      */
     @Override
-    public Item use(Position position, Upgrades upgrades) {
+    public Item use(int m, int n, Upgrades upgrades) {
         this.upgrades = upgrades;
-
-        // Calculate the players position
-        int m = (int) (position.y / Map.FIELD_SIZE);
-        int n = (int) (position.x / Map.FIELD_SIZE);
 
         // Check if the player is able to place a bomb
         if (upgrades.bombCount > 0 && Map.items[m][n] == null) {

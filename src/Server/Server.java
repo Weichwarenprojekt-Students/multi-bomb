@@ -1,5 +1,6 @@
 package Server;
 
+import General.MB;
 import Server.Messages.ErrorMessage;
 import Server.Messages.Socket.CloseConnection;
 
@@ -26,6 +27,10 @@ public class Server implements Runnable {
      */
     public static final int GAME_PORT = 42422;
     /**
+     * True if the server is running locally
+     */
+    public static boolean running = false;
+    /**
      * Tick rate of the server
      */
     public static int ticksPerSecond;
@@ -36,7 +41,7 @@ public class Server implements Runnable {
     /**
      * Map of lobby names to their lobby objects
      */
-    public final Map<String, Lobby> lobbies;
+    public Map<String, Lobby> lobbies;
     /**
      * HTTP server thread which provides information about this server
      */
@@ -44,7 +49,7 @@ public class Server implements Runnable {
     /**
      * UDP Broadcast discovery thread
      */
-    private final Thread discoveryThread;
+    private final DiscoveryThread discoveryThread;
     /**
      * Map of ip addresses to players that requested to join a lobby
      */
@@ -54,9 +59,9 @@ public class Server implements Runnable {
      */
     public String name;
     /**
-     * Indicate if server is running
+     * The server socket
      */
-    private boolean running;
+    private ServerSocket serverSocket;
 
     /**
      * Constructor
@@ -66,11 +71,12 @@ public class Server implements Runnable {
      * @param maxLobbies     maximum number of lobbies
      */
     public Server(String name, int ticksPerSecond, int maxLobbies) {
+        running = true;
         this.name = name;
         Server.ticksPerSecond = ticksPerSecond;
         Server.maxLobbies = maxLobbies;
 
-        discoveryThread = new Thread(new DiscoveryThread());
+        discoveryThread = new DiscoveryThread();
         httpThread = new HttpThread(this);
 
         lobbies = new HashMap<>();
@@ -87,6 +93,21 @@ public class Server implements Runnable {
     }
 
     /**
+     * Close the server
+     */
+    public void closeServer() {
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            MB.activePanel.toastError("Could not close the server socket!");
+            return;
+        }
+        running = false;
+        httpThread.close();
+        discoveryThread.close();
+    }
+
+    /**
      * Run server
      */
     @Override
@@ -98,7 +119,7 @@ public class Server implements Runnable {
         httpThread.start();
 
         try {
-            ServerSocket serverSocket = new ServerSocket(GAME_PORT);
+            serverSocket = new ServerSocket(GAME_PORT);
             clientSocketLoop(serverSocket);
         } catch (IOException e) {
             e.printStackTrace();
@@ -112,7 +133,6 @@ public class Server implements Runnable {
      * @param serverSocket server socket which listens for new connections
      */
     public void clientSocketLoop(ServerSocket serverSocket) {
-        running = true;
         while (running) {
             Socket clientSocket;
             try {

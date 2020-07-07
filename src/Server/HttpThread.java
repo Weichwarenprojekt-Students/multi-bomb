@@ -22,6 +22,10 @@ public class HttpThread extends Thread {
      * Instance of the game server
      */
     public final Server server;
+    /**
+     * The actual http server
+     */
+    private HttpServer httpServer;
 
     /**
      * Constructor
@@ -39,7 +43,7 @@ public class HttpThread extends Thread {
     public void run() {
         try {
             // create new HttpServer
-            HttpServer httpServer = HttpServer.create(new InetSocketAddress("0.0.0.0", Server.HTTP_PORT), 0);
+            httpServer = HttpServer.create(new InetSocketAddress("0.0.0.0", Server.HTTP_PORT), 0);
 
             // create new ThreadPoolExecutor for the HttpServer
             ThreadPoolExecutor threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
@@ -57,6 +61,13 @@ public class HttpThread extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Close the http server
+     */
+    public void close() {
+        httpServer.stop(0);
     }
 
     public class ServerRequestHandler implements HttpHandler {

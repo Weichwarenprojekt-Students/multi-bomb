@@ -19,8 +19,12 @@ public class ItemAction extends Message {
     /**
      * Constructor
      */
-    public ItemAction() {
+    public ItemAction(String itemId, String playerId, int m, int n) {
         // Initialize message with type
         super(Message.ITEM_ACTION_TYPE);
+        this.itemId = itemId;
+        this.playerId = playerId;
+        this.m = m;
+        this.n = n;
     }
 }

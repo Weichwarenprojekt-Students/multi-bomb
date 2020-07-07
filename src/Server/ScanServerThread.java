@@ -4,13 +4,15 @@ import Menu.ServerView;
 import Server.Messages.Message;
 import Server.Messages.REST.ServerInfo;
 
+import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 
-public class ScanServerThread implements  Runnable{
+public class ScanServerThread implements Runnable {
     /**
      * The server address
      */
@@ -36,25 +38,30 @@ public class ScanServerThread implements  Runnable{
 
     @Override
     public void run() {
-        //Create http Request for Serverinfo
-        HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://" + serverAddress + ":" + Server.HTTP_PORT +"/server")).build();
+        // Create http request for server info
+        HttpRequest request = HttpRequest.newBuilder().GET().uri(
+                URI.create("http://" + serverAddress + ":" + Server.HTTP_PORT +"/server")
+        ).build();
 
         try {
-            //send request
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            // Send request
+            HttpResponse<String> response;
+            try {
+                 response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            } catch (IOException e) {
+                return;
+            }
 
-            //Store responsemessage
+            // Store response message
             Message responseMessage = Message.fromJson(response.body());
 
 
-            //Cast responsemessage to ServerList
+            // Cast response message to ServerList
             ServerInfo serverInfo = (ServerInfo) responseMessage;
-
-
-            String description = "Tickrate " + serverInfo.ticksPerSecond + " - Lobbies " + serverInfo.lobbyCount + "/" + serverInfo.maxLobbies + " - Type " + type;
+            String description = "Tick-Rate " + serverInfo.ticksPerSecond + " - Lobbies " + serverInfo.lobbyCount + "/" + serverInfo.maxLobbies + " - Type " + type;
             ServerView.ServerListItem server = new ServerView.ServerListItem(serverInfo.name, description, serverAddress);
 
-            //add detected server to serverlist
+            // Add detected server to serverlist
             synchronized (serverList) {
                 serverList.add(server);
             }

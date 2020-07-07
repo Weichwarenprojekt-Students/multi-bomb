@@ -2,7 +2,6 @@ package Game.Items;
 
 import Game.Models.Field;
 import Game.Models.Upgrades;
-import Server.Messages.Socket.Position;
 
 import java.awt.*;
 
@@ -10,7 +9,10 @@ import java.awt.*;
  * The base class for a usable item
  */
 public abstract class Item {
-
+    /**
+     * The available items
+     */
+    public static final String BOMB = "Bomb";
     /**
      * The name of the item
      */
@@ -29,9 +31,20 @@ public abstract class Item {
     }
 
     /**
+     * Get an item by the name
+     *
+     * @param name of the item
+     * @return the corresponding item
+     */
+    public static Item getItem(String name) {
+        return new Bomb();
+    }
+
+
+    /**
      * Handle the use of an item
      */
-    public abstract Item use(Position position, Upgrades upgrades);
+    public abstract Item use(int m, int n, Upgrades upgrades);
 
     /**
      * Draw a used item

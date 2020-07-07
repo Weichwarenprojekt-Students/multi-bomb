@@ -5,7 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-public class DiscoveryThread implements Runnable {
+public class DiscoveryThread extends Thread {
 
     /**
      * The request message
@@ -19,20 +19,28 @@ public class DiscoveryThread implements Runnable {
      * The used port
      */
     public static int PORT = Server.UDP_PORT;
+    /**
+     * The socket
+     */
+    DatagramSocket socket;
 
     @Override
     public void run() {
         try {
             // Listen for udp broadcasts
-            DatagramSocket socket = new DatagramSocket(PORT, InetAddress.getByName("0.0.0.0"));
+            socket = new DatagramSocket(PORT, InetAddress.getByName("0.0.0.0"));
             socket.setBroadcast(true);
 
             // Start the server
-            while (true) {
+            while (Server.running) {
                 // Receive a packet
                 byte[] receiveBuffer = new byte[15000];
                 DatagramPacket packet = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-                socket.receive(packet);
+                try {
+                    socket.receive(packet);
+                } catch (IOException e) {
+                    continue;
+                }
 
                 // Extract the message
                 String message = new String(packet.getData());
@@ -49,5 +57,12 @@ public class DiscoveryThread implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Close the socket
+     */
+    public void close() {
+        socket.close();
     }
 }

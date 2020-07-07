@@ -3,7 +3,6 @@ package Menu;
 import General.MB;
 import General.Shared.*;
 import Menu.Dialogs.EnterServerAddress;
-import Menu.Dialogs.EnterServerName;
 import Server.Server;
 import Server.ServerList;
 
@@ -22,9 +21,13 @@ public class ServerView extends MBPanel {
      */
     public static int REFRESH_TIME = 1000;
     /**
+     * The server that can be started locally
+     */
+    private static Server server;
+    /**
      * Selected Server
      */
-    private static String selectedServerAddress = "";
+    private static ServerListItem selectedServer;
     /**
      * Server list Management
      */
@@ -63,21 +66,21 @@ public class ServerView extends MBPanel {
         //The title
         MBLabel title = new MBLabel("Server Overview", SwingConstants.CENTER, MBLabel.H1);
         addComponent(title, () -> title.setBounds(
-                getWidth() / 2 - 150,
+                getWidth() / 2 - 300,
                 32,
-                300,
-                40));
+                600,
+                40)
+        );
 
-
-        //Scrollable listView
+        // Scrollable listView
         listView = new MBListView<>();
         MBScrollView scroll = new MBScrollView(listView);
         addComponent(scroll, () -> scroll.setBounds(
                 getWidth() / 2 - (getHeight() + MARGIN + BUTTON_WIDTH) / 2,
                 96,
                 getHeight(),
-                getHeight() - 160));
-
+                getHeight() - 160)
+        );
 
         // Spinner that is shown until server list is created
         spinner = new MBSpinner();
@@ -112,9 +115,32 @@ public class ServerView extends MBPanel {
         ));
 
         // Button to host server
-        host = new MBButton("Host");
-        host.addActionListener(e -> showDialog(new EnterServerName(this), () -> {
-        }));
+        host = new MBButton(Server.running ? "Stop Local Server" : "Host Local Server");
+        host.addActionListener(e -> {
+            if (!Server.running) {
+                showDialog(new MBInputDialog(MB.settings.serverName, (hostServerName) -> {
+                            if (Server.running) {
+                                toastError("Cannot start another server");
+                            } else {
+                                MB.settings.serverName = hostServerName;
+                                MB.settings.saveSettings();
+                                server = new Server(hostServerName);
+                                new Thread(server).start();
+                                toastSuccess("Server started");
+                                host.setText("Stop Local Server");
+                            }
+                            MB.activePanel.closeDialog();
+                        }),
+                        () -> {
+                        }
+                );
+            } else if (server != null) {
+                server.closeServer();
+                host.setText("Host Local Server");
+            } else {
+                toastError("Server could not be stopped!");
+            }
+        });
         addComponent(host, () -> host.setBounds(
                 scroll.getX() + scroll.getWidth() + MARGIN,
                 scroll.getY() - 4,
@@ -125,11 +151,11 @@ public class ServerView extends MBPanel {
         // Button to join selected server
         join = new MBButton("Join");
         join.addActionListener(e -> {
-            if (!selectedServerAddress.isEmpty()) {
+            if (selectedServer != null) {
                 running = false;
-                MB.show(new LobbyView(selectedServerAddress), false);
+                MB.show(new LobbyView(selectedServer.serverName, selectedServer.name), false);
             } else {
-                toastError("No server", "selected");
+                toastError("No server selected!");
             }
         });
         addComponent(join, () -> join.setBounds(
@@ -139,7 +165,7 @@ public class ServerView extends MBPanel {
                 DetailedLobbyView.BUTTON_HEIGHT
         ));
 
-        //Button to add remote server
+        // Button to add remote server
         addRemote = new MBButton("Add Remote");
         addComponent(addRemote, () -> addRemote.setBounds(
                 scroll.getX() + scroll.getWidth() + MARGIN,
@@ -163,15 +189,13 @@ public class ServerView extends MBPanel {
         new Thread(() -> {
             running = true;
             while (true) {
-                //search for local servers
-                serverList.searchLocalServer();
-                //update allServerList
-                serverList.updateAllServerList();
-                //update ListView
+                // Search for local servers
+                serverList.searchServers();
+                // Update ListView
                 serverList.updateListView(listView);
                 spinner.setVisible(false);
                 back.setVisible(true);
-                //check if Thread still needed
+                // Check if Thread still needed
                 if (!running) {
                     break;
                 }
@@ -185,34 +209,16 @@ public class ServerView extends MBPanel {
     }
 
     /**
-     * Host a server locally
-     *
-     * @param hostServerName name of the server
-     */
-    public void hostServer(String hostServerName) {
-        if (!hostServerName.isEmpty()) {
-            new Thread(() -> new Server(hostServerName).run()).start();
-            toastSuccess("Server started");
-        } else {
-            toastError("Server name empty");
-        }
-
-    }
-
-    /**
      * Add a remote server
      *
      * @param serverAddress address of the server
      */
     public void addRemoteServer(String serverAddress) {
-        serverList.addRemoteServer(serverAddress);
+
     }
 
     public static class ServerListItem extends MBListView.Item {
-        /**
-         * Server address
-         */
-        public String serverAddress;
+
         /**
          * Label for name
          */
@@ -221,6 +227,10 @@ public class ServerView extends MBPanel {
          * Label for description of the server
          */
         MBLabel descriptionLabel;
+        /**
+         * The name of the server
+         */
+        public String serverName;
 
         /**
          * Constructor
@@ -231,8 +241,7 @@ public class ServerView extends MBPanel {
          */
         public ServerListItem(String name, String description, String serverAddress) {
             super(serverAddress);
-            this.serverAddress = serverAddress;
-
+            serverName = name;
             setBounds(0, 0, 400, 100);
             setLayout(null);
 
@@ -254,7 +263,7 @@ public class ServerView extends MBPanel {
 
         @Override
         public void onSelected(int index) {
-            ServerView.selectedServerAddress = serverAddress;
+            selectedServer = this;
             MB.frame.revalidate();
             MB.frame.repaint();
         }
@@ -266,7 +275,7 @@ public class ServerView extends MBPanel {
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             MB.settings.enableAntiAliasing(g);
-            if (ServerView.selectedServerAddress.equals(serverAddress)) {
+            if (selectedServer != null && selectedServer.name.equals(this.name)) {
                 g.setColor(Color.WHITE);
                 g.drawRoundRect(
                         0,

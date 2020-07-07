@@ -80,6 +80,16 @@ public class DetailedLobbyView extends MBPanel {
      * @param tickRate  of the server
      */
     public void setupLobby(String lobbyName, String ip, int tickRate) throws IOException {
+        setupLobbyEvents();
+
+        // Start the connection
+        Lobby.connect(lobbyName, ip, tickRate, player, this);
+    }
+
+    /**
+     * Setup a lobby event
+     */
+    public void setupLobbyEvents() {
         // React to a disconnect event
         Lobby.setDisconnectEvent((String message) -> {
             MB.show(new ServerView(), false);
@@ -116,14 +126,13 @@ public class DetailedLobbyView extends MBPanel {
             @Override
             public void gameModeChanged(String gameMode) {
                 mode.setText("Mode: " + gameMode);
+                mode.revalidate();
+                mode.repaint();
                 if (!firstStart) {
                     toastSuccess("Game mode was", "changed to " + gameMode + "!");
                 }
             }
         });
-
-        // Start the connection
-        Lobby.connect(lobbyName, ip, tickRate, player);
     }
 
     /**
@@ -132,7 +141,7 @@ public class DetailedLobbyView extends MBPanel {
     public void setupLayout() {
         // The title
         title = new MBLabel("Lobby", SwingConstants.CENTER, MBLabel.H1);
-        addComponent(title, () -> title.setBounds(getWidth() / 2 - 100, 32, 200, 40));
+        addComponent(title, () -> title.setBounds(getWidth() / 2 - 300, 32, 600, 40));
 
         // The list view
         list = new MBListView<>();
@@ -207,7 +216,7 @@ public class DetailedLobbyView extends MBPanel {
         leave = new MBButton("Leave");
         leave.addActionListener(e -> {
             Lobby.leave();
-            MB.show(new LobbyView(Lobby.ipAddress), false);
+            MB.show(new LobbyView(), false);
         });
         addComponent(leave, () -> leave.setBounds(
                 scroll.getX() + scroll.getWidth() + MARGIN,
@@ -242,6 +251,8 @@ public class DetailedLobbyView extends MBPanel {
         // Set the button text
         map.setText("Map: " + Lobby.map.name);
         mode.setText("Mode: " + Lobby.mode.name);
+        MB.frame.revalidate();
+        MB.frame.repaint();
     }
 
     /**

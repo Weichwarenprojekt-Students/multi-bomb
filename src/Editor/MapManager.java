@@ -1,6 +1,6 @@
 package Editor;
 
-import Editor.Dialogs.SaveAs;
+import General.Shared.MBInputDialog;
 import Game.Battleground;
 import General.MB;
 import General.Settings;
@@ -88,7 +88,15 @@ public class MapManager {
                 MB.activePanel.toastError("You cannot change", "a standard map!");
             }
         } else {
-            MB.activePanel.showDialog(new SaveAs(), onClose);
+            MB.activePanel.showDialog(new MBInputDialog(Editor.map.name, (text) -> {
+                // Check if the name is acceptable
+                if (MapManager.maps.containsKey(text)) {
+                    MB.activePanel.toastError("This name is taken!");
+                    return;
+                }
+                MapManager.saveMapAs(Editor.map, text);
+                MB.activePanel.closeDialog();
+            }), onClose);
         }
     }
 

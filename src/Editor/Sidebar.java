@@ -1,6 +1,5 @@
 package Editor;
 
-import Editor.Dialogs.SaveAs;
 import Game.Models.Field;
 import General.MB;
 import General.Shared.*;
@@ -21,6 +20,10 @@ public class Sidebar extends MBPanel {
      */
     private final MBListView<ToolItem> list = new MBListView<>();
     /**
+     * The informational item
+     */
+    private ToolItem erase;
+    /**
      * True if the menu is opened
      */
     private boolean menuOpen = false;
@@ -28,10 +31,6 @@ public class Sidebar extends MBPanel {
      * The buttons for the menu
      */
     private MBButton save, saveAs, leave;
-    /**
-     * The informational item
-     */
-    ToolItem erase;
     /**
      * The menu button
      */
@@ -74,7 +73,15 @@ public class Sidebar extends MBPanel {
                 getHeight() / 2,
                 height
         ));
-        saveAs.addActionListener((e) -> MB.activePanel.showDialog(new SaveAs(), () -> title.setText(Editor.map.name)));
+        saveAs.addActionListener((e) -> MB.activePanel.showDialog(new MBInputDialog(Editor.map.name, (text) -> {
+            // Check if the name is acceptable
+            if (MapManager.maps.containsKey(text)) {
+                MB.activePanel.toastError("This name is taken!");
+                return;
+            }
+            MapManager.saveMapAs(Editor.map, text);
+            MB.activePanel.closeDialog();
+        }), () -> title.setText(Editor.map.name)));
 
         // Add the leave button
         leave = new MBButton("Leave");
@@ -107,7 +114,7 @@ public class Sidebar extends MBPanel {
         menu.addActionListener(this::openMenu);
 
         // Add an informational part
-        erase = new ToolItem(Field.GROUND, "Use right click for ground fields.", -11,"ground");
+        erase = new ToolItem(Field.GROUND, "Use right click for ground fields.", -11, "ground");
         addComponent(erase, () -> {
             erase.onResize(getHeight() - erase.getHeight() - PADDING, getHeight() / 2 + 16);
             erase.setBounds(
@@ -125,10 +132,10 @@ public class Sidebar extends MBPanel {
         // Fill the list
         list.sort = false;
         list.addItem(new ToolItem(Field.SOLID_0, "An unbreakable tree.", -2, "solid_0"));
-        list.addItem(new ToolItem(Field.SOLID_1, "An unbreakable fir.", 2,"solid_1"));
-        list.addItem(new ToolItem(Field.BREAKABLE_0, "A breakable mushroom.", -4,"breakable_0"));
-        list.addItem(new ToolItem(Field.BREAKABLE_1, "A breakable stack of wood.", -10,"breakable_1"));
-        list.addItem(new ToolItem(Field.SPAWN, "The map requires 8 spawns.", -12,"spawn"));
+        list.addItem(new ToolItem(Field.SOLID_1, "An unbreakable fir.", 2, "solid_1"));
+        list.addItem(new ToolItem(Field.BREAKABLE_0, "A breakable mushroom.", -4, "breakable_0"));
+        list.addItem(new ToolItem(Field.BREAKABLE_1, "A breakable stack of wood.", -10, "breakable_1"));
+        list.addItem(new ToolItem(Field.SPAWN, "The map requires 8 spawns.", -12, "spawn"));
 
         // Add keybinding for escape
         addKeybinding(

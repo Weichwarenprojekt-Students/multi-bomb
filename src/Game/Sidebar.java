@@ -81,7 +81,7 @@ public class Sidebar extends MBPanel {
         leave.addActionListener(e -> {
             Lobby.leave();
             Game.gameOver = true;
-            MB.show(new LobbyView(Lobby.ipAddress), false);
+            MB.show(new LobbyView(), false);
         });
 
         // The list view

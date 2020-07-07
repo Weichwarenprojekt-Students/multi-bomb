@@ -1,9 +1,8 @@
 package Menu;
 
+import Game.Lobby;
 import General.MB;
 import General.Shared.*;
-import Menu.Dialogs.EnterLobbyName;
-import Menu.Dialogs.EnterPlayerName;
 import Server.DetectLobby;
 import Server.Messages.ErrorMessage;
 import Server.Messages.Message;
@@ -34,11 +33,7 @@ public class LobbyView extends MBPanel {
     /**
      * Selected lobby
      */
-    private static int selectedLobby;
-    /**
-     * Address of selected Server
-     */
-    private final String serverAddress;
+    private static int selectedLobby = 0;
     /**
      * Lobbies found in lobbyInfo
      */
@@ -60,26 +55,29 @@ public class LobbyView extends MBPanel {
      */
     private MBButton back, join, create;
     /**
-     * Player name
-     */
-    private String playerName = "";
-    /**
      * True if running
      */
     private boolean running = false;
 
     /**
      * Constructor
-     *
-     * @param address of the server
      */
-    public LobbyView(String address) {
+    public LobbyView() {
         super(true);
         setupLayout();
-        serverAddress = address;
-        if (!MB.settings.playerName.isEmpty()) {
-            playerName = MB.settings.playerName;
-        }
+    }
+
+    /**
+     * Constructor
+     *
+     * @param name of the server
+     * @param address of the server
+     */
+    public LobbyView(String name, String address) {
+        super(true);
+        Lobby.serverName = name;
+        Lobby.ipAddress = address;
+        setupLayout();
     }
 
     /**
@@ -87,11 +85,11 @@ public class LobbyView extends MBPanel {
      */
     public void setupLayout() {
         //The title
-        MBLabel title = new MBLabel("Lobby Overview", SwingConstants.CENTER, MBLabel.H1);
+        MBLabel title = new MBLabel(Lobby.serverName, SwingConstants.CENTER, MBLabel.H1);
         addComponent(title, () -> title.setBounds(
-                getWidth() / 2 - 150,
+                getWidth() / 2 - 300,
                 32,
-                300,
+                600,
                 40)
         );
 
@@ -127,15 +125,14 @@ public class LobbyView extends MBPanel {
         join = new MBButton("Join");
         join.addActionListener(e -> {
             if (selectedLobby >= 0 && selectedLobby < lobbyInfo.lobbies.length) {
-                showDialog(
-                        new EnterPlayerName(
-                        false,
-                                lobbyInfo.lobbies[selectedLobby].name,
-                                this),
-                        () -> {}
-                );
+                showDialog(new MBInputDialog(MB.settings.playerName, text -> {
+                    MB.activePanel.closeDialog();
+                    MB.settings.playerName = text;
+                    MB.settings.saveSettings();
+                    joinLobby(false, lobbyInfo.lobbies[selectedLobby].name);
+                }), () -> {});
             } else {
-                toastError("No lobby", "selected!");
+                toastError("No lobby selected!");
             }
         });
 
@@ -150,7 +147,18 @@ public class LobbyView extends MBPanel {
         create = new MBButton("Create");
         create.addActionListener(e -> {
             //set player name
-            showDialog(new EnterLobbyName(this), () -> {});
+            showDialog(new MBInputDialog(MB.settings.lobbyName, lobby -> {
+                // Close the dialog and save the name
+                MB.activePanel.closeDialog();
+                MB.settings.lobbyName = lobby;
+                MB.settings.saveSettings();
+                showDialog(new MBInputDialog(MB.settings.playerName, player -> {
+                    MB.activePanel.closeDialog();
+                    MB.settings.playerName = player;
+                    MB.settings.saveSettings();
+                    joinLobby(true, lobby);
+                }), () -> {});
+            }), () -> {});
         });
 
         addComponent(create, () -> create.setBounds(
@@ -174,8 +182,6 @@ public class LobbyView extends MBPanel {
                 DetailedLobbyView.BUTTON_HEIGHT
         ));
         addButtonGroup(back, join, create);
-
-
     }
 
 
@@ -187,31 +193,30 @@ public class LobbyView extends MBPanel {
         //Thread to detect lobbies on server
         new Thread(() -> {
             running = true;
-            while (true) {
-                //get lobby info from server
-                lobbyInfo = DetectLobby.getLobbyInfo(serverAddress);
+            while (running) {
+                // Get lobby info from server
+                lobbyInfo = DetectLobby.getLobbyInfo(Lobby.ipAddress);
                 if (lobbyInfo == null) {
-                    toastError("Server not", "available");
+                    toastError("Server not available!");
                     running = false;
                     MB.show(new ServerView(), false);
+                    break;
                 }
                 LobbyInfo.SingleLobbyInfo[] lobbies = lobbyInfo.lobbies;
-                //Create LobbyListItem for every lobby in LobbyInfo
+                // Create LobbyListItem for every lobby in LobbyInfo
                 for (LobbyInfo.SingleLobbyInfo lobby : lobbies) {
                     LobbyListItem listItem = new LobbyListItem(lobby.name, lobby.players, lobby.gameMode, lobby.status);
                     lobbyCache.add(listItem);
                 }
-                //clear ListView and show new lobbies
+                // Clear ListView and show new lobbies
                 listView.addMissingItems(lobbyCache);
                 lobbyCache.clear();
-                //Set button visibility
+
+                // Set button visibility
                 spinner.setVisible(false);
                 back.setVisible(true);
-                //check if Thread still needed
-                if (!running) {
-                    break;
-                }
-                //Wait 2 seconds
+
+                // Wait 2 seconds
                 try {
                     Thread.sleep(REFRESH_TIME);
                 } catch (InterruptedException e) {
@@ -220,18 +225,6 @@ public class LobbyView extends MBPanel {
             }
         }).start();
     }
-
-    /**
-     * Choose a name for the player
-     *
-     * @param name of the player
-     */
-    public void setPlayerName(String name) {
-        this.playerName = name;
-        MB.settings.playerName = name;
-        MB.settings.saveSettings();
-    }
-
     /**
      * JoinLobby Method
      */
@@ -239,14 +232,14 @@ public class LobbyView extends MBPanel {
         try {
             // Setup the request
             HttpURLConnection urlConn;
-            URL mUrl = new URL("http://" + serverAddress + ":" + Server.HTTP_PORT + "/lobby");
+            URL mUrl = new URL("http://" + Lobby.ipAddress + ":" + Server.HTTP_PORT + "/lobby");
             urlConn = (HttpURLConnection) mUrl.openConnection();
             urlConn.setDoOutput(true);
 
             if (create) {
                 // Create a lobby
                 CreateLobby message = new CreateLobby();
-                message.playerID = playerName;
+                message.playerID = MB.settings.playerName;
                 message.lobbyName = name;
                 String query = message.toJson();
                 urlConn.setRequestProperty("Content-Length", Integer.toString(query.length()));
@@ -254,7 +247,7 @@ public class LobbyView extends MBPanel {
             } else {
                 // Join a lobby
                 JoinLobby message = new JoinLobby();
-                message.playerID = playerName;
+                message.playerID = MB.settings.playerName;
                 message.lobbyName = name;
                 String query = message.toJson();
                 urlConn.setRequestProperty("Content-Length", Integer.toString(query.length()));
@@ -268,9 +261,9 @@ public class LobbyView extends MBPanel {
                 // Show the detailed lobby view
                 MB.show(
                         new DetailedLobbyView(
-                                playerName,
+                                MB.settings.playerName,
                                 name,
-                                serverAddress,
+                                Lobby.ipAddress,
                                 128
                         ),
                         false

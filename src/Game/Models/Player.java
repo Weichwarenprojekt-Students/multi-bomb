@@ -7,6 +7,7 @@ import Game.Items.Item;
 import Game.Lobby;
 import General.Shared.MBImage;
 import General.Shared.MBPanel;
+import Server.Messages.Socket.ItemAction;
 import Server.Messages.Socket.Map;
 import Server.Messages.Socket.PlayerState;
 import Server.Messages.Socket.Position;
@@ -52,6 +53,10 @@ public class Player {
      * The sprite of the player
      */
     private MBImage sprite;
+    /**
+     * True if the player is currently using an item
+     */
+    private boolean usingItem = false;
 
     /**
      * Constructor
@@ -69,9 +74,7 @@ public class Player {
      */
     public void initialize(MBPanel panel, boolean controllable) {
         // Set the players position
-        position.x = Lobby.map.spawns[color].x * Map.FIELD_SIZE + (float) Map.FIELD_SIZE / 2;
-        position.y = Lobby.map.spawns[color].y * Map.FIELD_SIZE + (float) Map.FIELD_SIZE / 2;
-        position.direction = Lobby.map.spawns[color].direction;
+        setSpawn();
 
         // Initialize the item and the upgrades
         item = new Bomb();
@@ -92,6 +95,15 @@ public class Player {
         if (controllable) {
             setupControls(panel);
         }
+    }
+
+    /**
+     * Set the spawn
+     */
+    public void setSpawn() {
+        position.x = Lobby.map.spawns[color].x * Map.FIELD_SIZE + (float) Map.FIELD_SIZE / 2;
+        position.y = Lobby.map.spawns[color].y * Map.FIELD_SIZE + (float) Map.FIELD_SIZE / 2;
+        position.direction = Lobby.map.spawns[color].direction;
     }
 
     /**
@@ -202,7 +214,28 @@ public class Player {
      * Use the players current item
      */
     private void useItem() {
-        item = item.use(position, state.upgrades);
+        if (!usingItem) {
+            usingItem = true;
+            Lobby.sendMessage(new ItemAction(
+                    item.name,
+                    name,
+                    (int) (position.y / Map.FIELD_SIZE),
+                    (int) (position.x / Map.FIELD_SIZE)
+            ));
+        }
+    }
+
+    /**
+     * Handle an item action
+     *
+     * @param name of the item
+     */
+    public void handleItemAction(String name, int m, int n) {
+        if (!name.equals(item.name)) {
+            item = Item.getItem(name);
+        }
+        item = item.use(m, n, state.upgrades);
+        usingItem = false;
     }
 
     /**
@@ -248,7 +281,7 @@ public class Player {
      * @param g the corresponding graphics object
      */
     public void draw(Graphics g) {
-        if (sprite == null) {
+        if (sprite == null || !state.isAlive()) {
             return;
         }
         // Calculate the destination position

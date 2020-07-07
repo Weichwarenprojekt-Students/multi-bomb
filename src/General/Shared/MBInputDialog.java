@@ -1,8 +1,7 @@
-package Editor.Dialogs;
+package General.Shared;
 
 import Editor.Editor;
 import Editor.MapManager;
-import Game.Lobby;
 import General.MB;
 import General.Shared.MBButton;
 import General.Shared.MBInput;
@@ -11,7 +10,7 @@ import General.Shared.MBLabel;
 import javax.swing.*;
 import java.awt.*;
 
-public class SaveAs extends JPanel {
+public class MBInputDialog extends JPanel {
     /**
      * The margin
      */
@@ -27,8 +26,11 @@ public class SaveAs extends JPanel {
 
     /**
      * Constructor
+     *
+     * @param defaultText to be shown in the input field
+     * @param event       that is triggered whenever the confirm button is used
      */
-    public SaveAs() {
+    public MBInputDialog(String defaultText, OnConfirm event) {
         setLayout(null);
         setBackground(Color.white);
         setBounds(0, 0, 3 * MARGIN + 2 * BUTTON_WIDTH, 50 + 2 * BUTTON_HEIGHT + MARGIN);
@@ -41,9 +43,10 @@ public class SaveAs extends JPanel {
 
         // The input field
         MBInput input = new MBInput();
+        input.setText(defaultText);
         input.setBounds(MARGIN, 46, getWidth() - 2 * MARGIN, BUTTON_HEIGHT);
         add(input);
-        
+
         // The cancel button
         MBButton cancel = new MBButton("Cancel");
         cancel.setBounds(MARGIN, 84, BUTTON_WIDTH, BUTTON_HEIGHT);
@@ -51,23 +54,26 @@ public class SaveAs extends JPanel {
         add(cancel);
 
         // The confirm button
-        MBButton confirm = new MBButton("Save");
+        MBButton confirm = new MBButton("Confirm");
         confirm.setBounds(2 * MARGIN + BUTTON_WIDTH, 84, BUTTON_WIDTH, BUTTON_HEIGHT);
         confirm.addActionListener(e -> {
-            // Check if the name is acceptable
-            if (input.getText() == null || input.getText().equals("")) {
-                MB.activePanel.toastError("Give the map a name!");
+            String text = input.getText();
+            if (text.isEmpty()) {
+                MB.activePanel.toastError("Name is empty!");
                 return;
-            } else if (input.getText().length() > MAX_LENGTH) {
+            } else if (text.length() > MAX_LENGTH) {
                 MB.activePanel.toastError("This name exceeds the", "character limit of " + MAX_LENGTH);
                 return;
-            } else if (MapManager.maps.containsKey(input.getText())) {
-                MB.activePanel.toastError("This name is taken!");
-                return;
             }
-            MapManager.saveMapAs(Editor.map, input.getText());
-            MB.activePanel.closeDialog();
+            event.onConfirm(input.getText());
         });
         add(confirm);
+    }
+
+    /**
+     * Event that is triggered when confirm button is used
+     */
+    public interface OnConfirm {
+        void onConfirm(String text);
     }
 }

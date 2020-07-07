@@ -93,7 +93,8 @@ public enum Animation {
         if (currentTimes[index] > MAX_TIME || !position.moving) {
             currentTimes[index] = 0f;
         } else {
-            return ORDER[(int) (currentTimes[index] / MAX_TIME * ORDER.length)];
+            int animation = (int) (currentTimes[index] / MAX_TIME * ORDER.length);
+            return ORDER[animation < ORDER.length ? animation : ORDER.length - 1];
         }
         return ORDER[0];
     }

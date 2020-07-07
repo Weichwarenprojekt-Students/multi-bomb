@@ -1,8 +1,9 @@
 package Server;
 
 import Game.GameModes.GameMode;
-import Server.Items.Bomb;
+import Game.Items.Item;
 import Game.Models.Field;
+import Server.Items.Bomb;
 import Server.Messages.Socket.*;
 import Server.Models.Player;
 
@@ -237,7 +238,7 @@ public class GameWorld extends Thread {
                     map.fields[m][n] = Field.GROUND.id;
                     currentItems -= 1;
                     // handle the collected item
-                    player.playerState.collectItem(field);
+                    player.playerState.collectItem(field, true);
 
                     synchronized (lobby) {
                         // notify all players about the collected item and the new player state
@@ -271,7 +272,7 @@ public class GameWorld extends Thread {
                     // send item action to all players
                     lobby.sendToAllPlayers(iA);
                     switch (iA.itemId) {
-                        case Bomb.NAME:
+                        case Item.BOMB:
                             // start the server logic of the bomb
                             Bomb.serverLogic(
                                     (positions) -> handleHits(player.name, positions),

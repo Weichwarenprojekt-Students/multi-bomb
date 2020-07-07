@@ -3,15 +3,12 @@ package Game;
 import Editor.MapManager;
 import Game.GameModes.BattleRoyale;
 import Game.GameModes.GameMode;
+import Game.Models.Field;
 import Game.Models.Player;
 import General.MB;
 import Menu.DetailedLobbyView;
-import Menu.ServerView;
 import Server.Messages.Message;
-import Server.Messages.Socket.GameState;
-import Server.Messages.Socket.LobbyState;
-import Server.Messages.Socket.Map;
-import Server.Messages.Socket.Position;
+import Server.Messages.Socket.*;
 import Server.Server;
 
 import java.io.BufferedReader;
@@ -39,6 +36,10 @@ public class Lobby {
      * The ip address of the current connection
      */
     public static String ipAddress = "";
+    /**
+     * The server name
+     */
+    public static String serverName = "";
     /**
      * The selected mode
      */
@@ -84,6 +85,10 @@ public class Lobby {
      */
     private static GameState gameState;
     /**
+     * The detailed lobby view
+     */
+    private static DetailedLobbyView lobby;
+    /**
      * The game class
      */
     private static Game game;
@@ -97,11 +102,13 @@ public class Lobby {
      * @param player    name of the client
      * @throws IOException if the socket fails to connect
      */
-    public static void connect(String name, String ipAddress, int tickRate, String player) throws IOException {
+    public static void connect(String name, String ipAddress, int tickRate, String player,
+                               DetailedLobbyView lobby) throws IOException {
         Lobby.name = name;
         Lobby.tickRate = tickRate;
         Lobby.player = player;
         Lobby.ipAddress = ipAddress;
+        Lobby.lobby = lobby;
 
         // Try to build up the connection
         socket = new Socket(ipAddress, Server.GAME_PORT);
@@ -222,6 +229,30 @@ public class Lobby {
             case Message.POSITION_TYPE:
                 updatePosition((Position) message);
                 break;
+
+            case Message.ITEM_ACTION_TYPE:
+                handleItemAction((ItemAction) message);
+                break;
+
+            case Message.FIELD_DESTROYED_TYPE:
+                removeField((FieldDestroyed) message);
+                break;
+
+            case Message.PLAYER_STATE_TYPE:
+                updatePlayerState((PlayerState) message);
+                break;
+
+            case Message.ITEM_COLLECTED_TYPE:
+                collectItem((ItemCollected) message);
+                break;
+
+            case Message.NEW_ITEM_TYPE:
+                addNewItem((NewItem) message);
+                break;
+
+            case Message.RESPAWN_TYPE:
+                respawn((Respawn) message);
+                break;
         }
     }
 
@@ -272,7 +303,7 @@ public class Lobby {
      */
     private static synchronized void startGame(Map map) {
         Lobby.map = map;
-        game = new Game(player);
+        game = new Game();
         new Thread(() -> MB.show(game, false)).start();
         out.println(GameState.preparing().toJson());
     }
@@ -325,12 +356,11 @@ public class Lobby {
         new Thread(game::startGame).start();
 
         int waitTime = 1000 / tickRate;
-        while (gameState.state == GameState.RUNNING) {
+        while (gameState.state == GameState.RUNNING && players.get(player).state.isAlive()) {
             long startTime = System.currentTimeMillis();
 
             // Send the players position
-            out.println(players.get(player).position.toJson());
-
+            sendMessage(players.get(player).position);
             // calculate sleep time for target tick rate
             long delta = System.currentTimeMillis() - startTime;
             if (delta < waitTime) {
@@ -344,14 +374,78 @@ public class Lobby {
     }
 
     /**
+     * Send a message to the server
+     *
+     * @param message to be sent
+     */
+    public static void sendMessage(Message message) {
+        out.println(message.toJson());
+    }
+
+    /**
      * Update a player's position
      *
      * @param position of the player
      */
     private static void updatePosition(Position position) {
-        if (!position.playerId.equals(player)) {
+        if (position.playerId != null && !position.playerId.equals(player)) {
             players.get(position.playerId).position = position;
         }
+    }
+
+    /**
+     * Handle an item action
+     *
+     * @param action of the server
+     */
+    private static void handleItemAction(ItemAction action) {
+        players.get(action.playerId).handleItemAction(action.itemId, action.m, action.n);
+    }
+
+    /**
+     * Handle a new player state
+     *
+     * @param state of the server
+     */
+    private static void updatePlayerState(PlayerState state) {
+        players.get(state.playerId).state.update(state);
+    }
+
+    /**
+     * Handle an item collection
+     *
+     * @param item that was collected
+     */
+    private static void collectItem(ItemCollected item) {
+        map.fields[item.m][item.n] = Field.GROUND.id;
+        players.get(item.playerId).state.collectItem(item.item, false);
+    }
+
+    /**
+     * Add a new item
+     *
+     * @param item that should be added
+     */
+    private static void addNewItem(NewItem item) {
+        map.fields[item.m][item.n] = item.item.id;
+    }
+
+    /**
+     * Handle an item action
+     *
+     * @param action of the server
+     */
+    private static void removeField(FieldDestroyed action) {
+        map.fields[action.m][action.n] = Field.GROUND.id;
+    }
+
+    /**
+     * Respawn a player
+     *
+     * @param event of the server
+     */
+    private static void respawn(Respawn event) {
+        players.get(event.playerId).setSpawn();
     }
 
     /**
@@ -359,14 +453,32 @@ public class Lobby {
      */
     private static void leaveGame(String winner) {
         new Thread(() -> {
-            try {
-                MB.show(new DetailedLobbyView(player, name, ipAddress, tickRate), false);
-            } catch (IOException e) {
-                MB.show(new ServerView(), false);
-                MB.activePanel.toastError("Lost connection to game session!");
-            }
             MB.activePanel.toastSuccess(winner + " won the game!");
-        });
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            // End the game loop
+            Game.gameOver = true;
+
+            // Reset the players
+            players.replaceAll((k, v) -> new Player(k, v.color));
+
+            // Reset the map
+            if (MapManager.maps.containsKey(map.name)) {
+                map = MapManager.maps.get(map.name);
+            } else {
+                map = MapManager.maps.get("X-Factor");
+            }
+
+            // Reset the mode
+            mode = GameMode.getMode(mode.name);
+
+            // Show the lobby view
+            MB.show(lobby, true);
+            lobby.setupLobbyEvents();
+        }).start();
     }
 
     /**
