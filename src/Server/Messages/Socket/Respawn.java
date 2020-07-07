@@ -1,18 +1,23 @@
 package Server.Messages.Socket;
 
-import Game.Models.Direction;
+import Server.Messages.Message;
 
-public class Respawn extends Position {
-    public final String type = RESPAWN_TYPE;
+public class Respawn extends Message {
+    /**
+     * Position of the respawn point
+     */
+    public Position position;
 
+    /**
+     * Constructor
+     *
+     * @param pos position of the respawn point
+     */
     public Respawn(Position pos) {
-        // Copy important values from position
-        x = pos.x;
-        y = pos.y;
-        playerId = pos.playerId;
+        // Initialize message with type
+        super(Message.RESPAWN_TYPE);
 
-        // set other values to sane defaults
-        direction = Direction.SOUTH;
-        moving = false;
+        // set position of spawn
+        this.position = pos;
     }
 }

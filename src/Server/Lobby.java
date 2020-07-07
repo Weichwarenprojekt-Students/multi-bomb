@@ -192,7 +192,13 @@ public class Lobby {
      */
     public synchronized void prepareGame(Map map) {
         state = GAME_STARTING;
-        players.values().forEach(p -> p.preparationReady = false);
+
+        players.values().forEach(p -> {
+            p.preparationReady = false;
+            p.itemActions.clear();
+            p.lastPosition = null;
+        });
+
         sendToAllPlayers(map);
         this.map = map;
     }
