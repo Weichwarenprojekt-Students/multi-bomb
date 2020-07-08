@@ -1,5 +1,7 @@
 package General.Sound;
 
+import General.MB;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -16,54 +18,42 @@ public class SoundControl {
     /**
      * Every sound effect has its own clip, with its sound file
      */
-    public Clip clip;
-
-    /**
-     * variable for handling the volume dB
-     */
-    private float gain;
+    public static Clip clip;
 
     /**
      * Volume control
      */
-    FloatControl volumeControl;
+    private static FloatControl control;
 
     /**
      * Store playing sounds in ArrayList
      * Avoids losing the reference to an looped clip
      */
-    ArrayList<Clip> sound = new ArrayList<>();
+    private static final ArrayList<Clip> sound = new ArrayList<>();
 
     /**
      * Constructor to get the SoundEffect and the URL
-     *
-     * @param effectName name of the effect
      */
-    public void playSoundEffect(SoundEffect effectName, URL url, boolean isLoop) {
+    public static void playSoundEffect(SoundEffect effect, boolean isLoop) {
         try {
+            // Set up an audio input stream with file from url
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(effect.url);
 
-            //Set up an audio input stream with file from url
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
-
-            //Get resource for clip
+            // Get resource for clip
             clip = AudioSystem.getClip();
 
-
-            //Open audio clip and load sample from input stream
+            // Open audio clip and load sample from input stream
             clip.open(audioInputStream);
 
-            //check if mute
-            volumeControl = (FloatControl) clip.getControl((FloatControl.Type.MASTER_GAIN));
-            volumeControl.setValue(gain);
+            // Check if mute
+            control = (FloatControl) clip.getControl((FloatControl.Type.MASTER_GAIN));
+            control.setValue(MB.settings.gain);
 
-            //Check if clip is already running, stop it, get to the position 0 and start
-            if (clip.isRunning()) {
-                clip.stop();
-                clip.setFramePosition(0);
-                clip.start();
-            }
+            // Check if clip is already running, stop it, get to the position 0 and start
+            clip.stop();
+            clip.setFramePosition(0);
 
-            //check if isLoop is true, then loop, if not play the clip for one time
+            // Check if isLoop is true, then loop, if not play the clip for one time
             if (isLoop) {
                 loop(clip);
             } else {
@@ -82,7 +72,7 @@ public class SoundControl {
      *
      * @param clip the clip
      */
-    public void loop(Clip clip) {
+    public static void loop(Clip clip) {
         sound.add(clip);
         clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
@@ -91,10 +81,10 @@ public class SoundControl {
     /**
      * Adjusts the running clip when the volume has changed
      */
-    public void adjustRunning() {
+    public static void adjustRunning() {
         for (Clip value : sound) {
-            volumeControl = (FloatControl) value.getControl((FloatControl.Type.MASTER_GAIN));
-            volumeControl.setValue(gain);
+            control = (FloatControl) value.getControl((FloatControl.Type.MASTER_GAIN));
+            control.setValue(MB.settings.gain);
         }
     }
 
@@ -103,37 +93,17 @@ public class SoundControl {
      *
      * @return tmp
      */
-    public int getVolume() {
-        float tmp = (gain - volumeControl.getMinimum()) * 100 / (volumeControl.getMaximum() - volumeControl.getMinimum());
+    public static int getVolume() {
+        float tmp = (MB.settings.gain - control.getMinimum()) * 100 / (control.getMaximum() - control.getMinimum());
         return (int) tmp;
     }
 
     /**
-     * Method to stop the soundeffect
+     * Method to stop the sound effect
      */
-    public void stop() {
+    public static void stop() {
         clip.stop();
         clip.setFramePosition(0);
-    }
-
-    /**
-     * Mute the Audio
-     */
-    public void muteAudio() {
-        volumeControl.setValue(volumeControl.getMinimum());
-        gain = volumeControl.getMinimum();
-        adjustRunning();
-        System.out.println("Volume muted");
-    }
-
-    /**
-     * Unmute the Audio
-     */
-    public void unmuteAudio() {
-        volumeControl.setValue(volumeControl.getMaximum());
-        gain = (volumeControl.getMaximum() / 2);
-        adjustRunning();
-        System.out.println("Volume unmuted");
     }
 
     /**
@@ -143,11 +113,11 @@ public class SoundControl {
      *
      * @param volume the volume
      */
-    public void changeVolume(int volume) {
-        gain = (float) ((volumeControl.getMaximum() - volumeControl.getMinimum()) * (volume / 100.0)) + volumeControl.getMinimum();
-        volumeControl.setValue(gain);
+    public static void changeVolume(int volume) {
+        MB.settings.gain =
+                (float) ((control.getMaximum() - control.getMinimum()) * (volume / 100.0)) + control.getMinimum();
+        control.setValue(MB.settings.gain);
         adjustRunning();
-        System.out.println("The gain is: " + gain + " dB");
-
+        MB.settings.saveSettings();
     }
 }

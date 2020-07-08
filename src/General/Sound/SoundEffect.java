@@ -1,26 +1,23 @@
 package General.Sound;
 
-
-import General.Shared.MBImage;
-
 import java.net.URL;
-
 
 /**
  * This class provides the SoundEffects for the SoundControl class
  */
-
 public enum SoundEffect {
-    SHORTBOMBEXPLOSION("shortBombexplosion.wav"),
-    LONGBOMBEXPLOSION("longBombexplosion.wav"),
-    SETBOMB("setBomb.wav"),
-    COLLECTITEM("collecitem.wav"),
-    CHARACTERDEATH("characrterDeath.wav"),
-    INGAME("multibombgamesound.wav");
 
+    SHORT_BOMB_EXPLOSION("short_bomb_explosion.wav"),
+    LONG_BOMB_EXPLOSION("long_bomb_explosion.wav"),
+    SET_BOMB("set_bomb.wav"),
+    COLLECT_ITEM("collect_item.wav"),
+    CHARACTER_DEATH("character_death.wav"),
+    IN_GAME("multi_bomb_game_sound.wav");
 
-    //the URL for the sound file
-    URL url;
+    /**
+     * The URL for the sound file
+     */
+    public final URL url;
 
     /**
      * the constructor
@@ -28,17 +25,6 @@ public enum SoundEffect {
      * @param fileName name of the file
      */
     SoundEffect(String fileName) {
-
-        url = MBImage.class.getResource("/Resources/Sound/" + fileName);
-
-    }
-
-    /**
-     * Method to return the sound file URL
-     *
-     * @return url
-     */
-    public URL getUrl() {
-        return url;
+        url = SoundEffect.class.getResource("/Resources/Sound/" + fileName);
     }
 }

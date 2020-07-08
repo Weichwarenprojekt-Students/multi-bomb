@@ -43,7 +43,7 @@ public class MB {
             setupFrame();
             show(new Intro(), false);
 
-            MB.settings.sound.playSoundEffect(SoundEffect.INGAME, SoundEffect.INGAME.getUrl(), true);
+            SoundControl.playSoundEffect(SoundEffect.IN_GAME, true);
 
             // Set fullscreen if necessary
             if (settings.fullscreen) {

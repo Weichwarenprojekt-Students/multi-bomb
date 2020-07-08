@@ -30,8 +30,10 @@ public class Settings {
      * The refresh rate the game should target
      */
     public int refreshRate = 60;
-
-    public SoundControl sound = new SoundControl();
+    /**
+     * Variable for handling the volume dB
+     */
+    public float gain = -30;
 
     /**
      * Load the settings

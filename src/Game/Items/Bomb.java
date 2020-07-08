@@ -5,6 +5,7 @@ import Game.Game;
 import Game.Models.Field;
 import Game.Models.Map;
 import General.MB;
+import General.Sound.SoundControl;
 import General.Sound.SoundEffect;
 import Server.Messages.Position;
 import General.Shared.MBImage;
@@ -126,14 +127,14 @@ public class Bomb extends Item {
             Game.map.items[m][n] = this;
 
             //Plays the Sound when Bomb is set
-            MB.settings.sound.playSoundEffect(SoundEffect.SETBOMB, SoundEffect.SETBOMB.getUrl(), false);
+            SoundControl.playSoundEffect(SoundEffect.SET_BOMB, false);
 
             //Plays the explosion sound when bomb detonates
             new java.util.Timer().schedule(
                     new java.util.TimerTask() {
                         @Override
                         public void run() {
-                            MB.settings.sound.playSoundEffect(SoundEffect.SHORTBOMBEXPLOSION, SoundEffect.SHORTBOMBEXPLOSION.getUrl(), false);
+                            SoundControl.playSoundEffect(SoundEffect.SHORT_BOMB_EXPLOSION, false);
                         }
                     },
                     (int) (DETONATION_TIME * 1000)
