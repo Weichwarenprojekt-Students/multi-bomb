@@ -21,7 +21,7 @@ public class DetectLobby {
         LobbyInfo lobbyInfo;
 
 
-        //Send HttpRequest and return Lobbyinfo message
+        //Send HttpRequest and return lobby info message
         try {
             HttpResponse<String> response = httpClient.send(request,HttpResponse.BodyHandlers.ofString());
             Message responseMessage = Message.fromJson(response.body());

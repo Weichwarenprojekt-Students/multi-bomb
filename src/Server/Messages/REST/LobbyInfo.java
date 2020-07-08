@@ -4,11 +4,13 @@ import Server.Lobby;
 import Server.Messages.Message;
 import Server.Server;
 
+import java.util.HashMap;
+
 public class LobbyInfo extends Message {
     /**
      * Information of all lobbies
      */
-    public SingleLobbyInfo[] lobbies;
+    public HashMap<String, SingleLobbyInfo> lobbies = new HashMap<>();
 
     /**
      * Constructor
@@ -20,7 +22,7 @@ public class LobbyInfo extends Message {
         super(Message.LOBBY_INFO_TYPE);
 
         // transform all lobbies from server into SingleLobbyInfo objects
-        lobbies = server.getLobbies().stream().map(SingleLobbyInfo::new).toArray(SingleLobbyInfo[]::new);
+        server.getLobbies().forEach(lobby -> lobbies.put(lobby.name, new SingleLobbyInfo(lobby)));
     }
 
     /**
