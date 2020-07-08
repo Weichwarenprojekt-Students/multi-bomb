@@ -45,6 +45,10 @@ public class Settings {
      * Remote server
      */
     public HashSet<String> remoteServers = new HashSet<>();
+    /**
+     * Variable for handling the volume dB
+     */
+    public float gain = -30;
 
     /**
      * Load the settings

@@ -4,6 +4,8 @@ package General;
 import Editor.MapManager;
 import General.Shared.MBImage;
 import General.Shared.MBPanel;
+import General.Sound.SoundControl;
+import General.Sound.SoundEffect;
 import Menu.Menu;
 
 import javax.swing.*;
@@ -40,6 +42,7 @@ public class MB {
      */
     public static void startGame() {
         MB.settings.loadSettings();
+        SoundControl.playLoop(SoundControl.MENU_LOOP, SoundEffect.IN_GAME);
         MapManager.loadMaps();
         background = new MBImage("General/background.png");
         setupFrame();

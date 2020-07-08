@@ -77,7 +77,6 @@ public class Menu extends MBPanel {
                 height
         ));
 
-
         // Setup a button group for navigation
         addButtonGroup(play, editor, settings, exit);
     }

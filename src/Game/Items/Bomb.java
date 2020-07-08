@@ -1,10 +1,11 @@
 package Game.Items;
 
 import Game.Battleground;
-import Game.Game;
 import Game.Lobby;
 import Game.Models.Field;
 import Game.Models.Upgrades;
+import General.Sound.SoundControl;
+import General.Sound.SoundEffect;
 import General.Shared.MBImage;
 import General.Shared.MBPanel;
 import Server.Messages.Socket.Map;
@@ -124,6 +125,20 @@ public class Bomb extends Item {
 
             // Add the item to the map so that the battleground can draw it
             Map.items[m][n] = this;
+
+            //Plays the Sound when Bomb is set
+            SoundControl.playSoundEffect(SoundEffect.SET_BOMB);
+
+            //Plays the explosion sound when bomb detonates
+            new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
+                        @Override
+                        public void run() {
+                            SoundControl.playSoundEffect(SoundEffect.SHORT_BOMB_EXPLOSION);
+                        }
+                    },
+                    (int) (DETONATION_TIME * 1000)
+            );
 
             // Decrease the bomb count
             upgrades.bombCount--;

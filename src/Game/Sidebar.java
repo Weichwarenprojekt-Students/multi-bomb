@@ -280,9 +280,23 @@ public class Sidebar extends MBPanel {
                 );
             }
 
-            // Draw the kills and the current item
+            // Set font and color
             g.setFont(font);
             g.setColor(Color.WHITE);
+
+            // Draw the kills and the current item
+            if (Lobby.player.equals(name)) {
+                g.setColor(Color.WHITE);
+                g.drawRoundRect(
+                        0,
+                        0,
+                        getWidth() - 1,
+                        getHeight() - 1,
+                        MBBackground.CORNER_RADIUS,
+                        MBBackground.CORNER_RADIUS
+                );
+            }
+            // Draw the selection rectangle
             g.drawString(
                     "Kills: " + player.state.kills,
                     textStart,

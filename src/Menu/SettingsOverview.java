@@ -1,14 +1,11 @@
 package Menu;
 
 import General.MB;
-import General.Shared.MBButton;
-import General.Shared.MBLabel;
-import General.Shared.MBPanel;
+import General.Shared.*;
 import Game.Game;
-import General.Shared.MBTitle;
+import General.Sound.SoundControl;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
 
 import static Menu.Menu.MARGIN;
 import static Menu.Menu.START_Y;
@@ -116,21 +113,33 @@ public class SettingsOverview extends MBPanel {
                 height
         ));
 
+        // The label for muting the audio
+        MBLabel volumeLabel = new MBLabel("Volume:");
+        addComponent(volumeLabel, () -> volumeLabel.setBounds(
+                getWidth() / 2 - width - margin,
+                START_Y + 3 * (height + margin),
+                width,
+                height
+        ));
+
+        // The slider to handle the game volume
+        MBSlider volumeSlider = new MBSlider(SoundControl.getVolume(), SoundControl::changeVolume);
+        addComponent(volumeSlider, () -> volumeSlider.setBounds(
+                getWidth() / 2 + margin,
+                START_Y + 3 * (height + margin),
+                width,
+                height
+        ));
+
         // The button for opening a lobby overview
         MBButton back = new MBButton("Back");
         back.addActionListener(e -> MB.show(last, true));
         addComponent(back, () -> back.setBounds(
                 (getWidth() - width) / 2,
-                START_Y + 3 * (height + margin),
+                START_Y + 4 * (height + margin),
                 width,
                 height
         ));
-        addKeybinding(
-                false,
-                "Close Settings",
-                (e) -> MB.show(last, true),
-                KeyEvent.VK_ESCAPE
-        );
 
         // Add the buttons to a group
         addButtonGroup(fullscreen, antiAliasing, back);
