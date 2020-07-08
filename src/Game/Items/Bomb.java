@@ -4,10 +4,10 @@ import Game.Battleground;
 import Game.Lobby;
 import Game.Models.Field;
 import Game.Models.Upgrades;
-import General.Sound.SoundControl;
-import General.Sound.SoundEffect;
 import General.Shared.MBImage;
 import General.Shared.MBPanel;
+import General.Sound.SoundControl;
+import General.Sound.SoundEffect;
 import Server.Messages.Socket.Map;
 
 import java.awt.*;
@@ -44,11 +44,11 @@ public class Bomb extends Item {
     /**
      * The time till the bomb detonates in seconds
      */
-    public static float DETONATION_TIME = 3f;
+    public static float DETONATION_TIME = Server.Items.Bomb.DETONATION_TIME;
     /**
      * The total time in seconds
      */
-    public static float TOTAL_TIME = 3.3f;
+    public static float TOTAL_TIME = Server.Items.Bomb.TOTAL_TIME;
     /**
      * The bomb sprite
      */
@@ -94,7 +94,7 @@ public class Bomb extends Item {
 
     /**
      * Load the textures for the bomb
-     * 
+     *
      * @param parent the image size depends on
      */
     public static void loadTextures(MBPanel parent) {

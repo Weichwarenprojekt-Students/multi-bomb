@@ -1,14 +1,18 @@
 package Server;
 
 import Game.GameModes.GameMode;
-import Game.Items.Item;
 import Game.Models.Field;
 import Server.Items.Bomb;
-import Server.Messages.Socket.*;
+import Server.Messages.Socket.FieldDestroyed;
+import Server.Messages.Socket.ItemCollected;
+import Server.Messages.Socket.Map;
+import Server.Messages.Socket.NewItem;
 import Server.Models.Player;
 
 import java.util.HashMap;
 import java.util.Random;
+
+import static General.MultiBomb.LOGGER;
 
 public class GameWorld extends Thread {
     /**
@@ -77,6 +81,8 @@ public class GameWorld extends Thread {
 
         this.random = new Random();
 
+        LOGGER.info("Initialized new GameWorld");
+
         // For every playerConnection in the lobby
         lobby.players.values().forEach(pc -> {
             // create new Player object
@@ -96,6 +102,8 @@ public class GameWorld extends Thread {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        LOGGER.info("Start game loop");
 
         while (isRunning) {
             long startTime = System.currentTimeMillis();
@@ -151,62 +159,55 @@ public class GameWorld extends Thread {
     }
 
     /**
-     * Handle hits from an item in a row, interrupt if solid field is hit
+     * Handle hit on a field
      *
-     * @param from      the player that used the item
-     * @param positions the positions in a row, which the item hits
-     * @return boolean indicating if a field or player was hit
+     * @param from           the player that used the item
+     * @param m              coordinate on the map
+     * @param n              coordinate on the map
+     * @param throughPlayers item goes through players
+     * @return indication if something was hit
      */
-    public synchronized boolean handleHits(String from, int[][] positions) {
-        // initialize the return value if something was hit to false
+    public synchronized boolean handleHits(String from, int m, int n, boolean throughPlayers) {
         boolean hitSomething = false;
 
-        // for every position that was hit
-        for (int[] pos : positions) {
-            if (pos[0] >= Map.SIZE || pos[0] < 0 || pos[1] >= Map.SIZE || pos[1] < 0) {
-                // if position is not on map, stop loop because all other positions will be outside of map as well
-                break;
-            }
-
+        // if pos is inside map
+        if (m < Map.SIZE && m >= 0 && n < Map.SIZE && n >= 0) {
             // get the field of the position
-            Field field = Field.getItem(map.fields[pos[0]][pos[1]]);
+            Field field = Field.getItem(map.fields[m][n]);
 
             if (!field.isPassable() && field != Field.SPAWN) {
                 // field is solid or breakable, so it's a hit
                 hitSomething = true;
 
                 if (field == Field.BREAKABLE_0 || field == Field.BREAKABLE_1) {
+                    LOGGER.info("Field broken at m=" + m + ", n=" + n + " by " + from);
+
                     // field is destroyed, notify players
-                    lobby.sendToAllPlayers(new FieldDestroyed(pos[0], pos[1]));
+                    lobby.sendToAllPlayers(new FieldDestroyed(m, n));
 
                     // set the field to ground
-                    map.fields[pos[0]][pos[1]] = Field.GROUND.id;
+                    map.fields[m][n] = Field.GROUND.id;
 
                     // randomly spawn a new item at the fields position
-                    spawnItem(pos);
+                    spawnItem(m, n);
                 }
-                // stop loop because row of hits is interrupted
-                break;
-
             } else {
                 // a hit occurs if any of the players are on the hit's position
                 hitSomething = players.values().stream().anyMatch(p -> {
                     if (p.isAlive()
-                            && (int) (p.position.y / Map.FIELD_SIZE) == pos[0]
-                            && (int) (p.position.x / Map.FIELD_SIZE) == pos[1]) {
+                            && (int) (p.position.y / Map.FIELD_SIZE) == m
+                            && (int) (p.position.x / Map.FIELD_SIZE) == n) {
                         // hit player
-                        gameMode.handleHit(p, players.get(from), map.spawns[lobby.players.get(p.name).color])
-                                .forEach(lobby::sendToAllPlayers);
+                        gameMode.handleHit(p, players.get(from)).forEach(lobby::sendToAllPlayers);
 
-                        // hit a player
-                        return true;
+                        // if item doesn't go through players, return true to register hit
+                        return !throughPlayers;
                     }
                     // hit no player
                     return false;
                 });
             }
         }
-
         return hitSomething;
     }
 
@@ -240,6 +241,8 @@ public class GameWorld extends Thread {
                     // handle the collected item
                     player.playerState.collectItem(field, true);
 
+                    LOGGER.info(player.name + " collected " + field.name);
+
                     synchronized (lobby) {
                         // notify all players about the collected item and the new player state
                         lobby.sendToAllPlayers(new ItemCollected(player.name, field, m, n));
@@ -263,21 +266,24 @@ public class GameWorld extends Thread {
     private synchronized void handleItemActions(Player player, PlayerConnection playerConnection) {
         // position on the map
         if (player.isAlive()) {
-            int m = (int) (player.position.y / Map.FIELD_SIZE);
-            int n = (int) (player.position.x / Map.FIELD_SIZE);
+            int item_m = (int) (player.position.y / Map.FIELD_SIZE);
+            int item_n = (int) (player.position.x / Map.FIELD_SIZE);
 
             synchronized (playerConnection.itemActions) {
                 // for each item action
                 playerConnection.itemActions.forEach(iA -> {
                     // send item action to all players
                     lobby.sendToAllPlayers(iA);
+
+                    LOGGER.info(player.name + " used item " + iA.itemId);
+
                     switch (iA.itemId) {
-                        case Item.BOMB:
+                        case Bomb.NAME:
                             // start the server logic of the bomb
                             Bomb.serverLogic(
-                                    (positions) -> handleHits(player.name, positions),
-                                    m,
-                                    n,
+                                    (hit_m, hit_n) -> handleHits(player.name, hit_m, hit_n, true),
+                                    item_m,
+                                    item_n,
                                     player.playerState.upgrades.bombSize
                             );
                             break;
@@ -293,20 +299,25 @@ public class GameWorld extends Thread {
     /**
      * Randomly spawn a new item
      *
-     * @param pos position at which the item should spawn
+     * @param m coordinate on the map
+     * @param n coordinate on the map
      */
-    private synchronized void spawnItem(int[] pos) {
+    private synchronized void spawnItem(int m, int n) {
         if (currentItems < MAX_ITEMS
                 && random.nextFloat() < RANDOM_THRESHOLD
-                && map.fields[pos[0]][pos[1]] == Field.GROUND.id) {
+                && map.fields[m][n] == Field.GROUND.id) {
+
             // get random new item
             int index = random.nextInt(gameMode.items.length);
 
+            LOGGER.info(String.format("Set new item %s at m=%d, n=%d",
+                    Field.getItem(gameMode.items[index]).name, m, n));
+
             // set new item on map
-            map.fields[pos[0]][pos[1]] = gameMode.items[index];
+            map.fields[m][n] = gameMode.items[index];
 
             // notify all players about new item
-            lobby.sendToAllPlayers(new NewItem(Field.getItem(gameMode.items[index]), pos[0], pos[1]));
+            lobby.sendToAllPlayers(new NewItem(Field.getItem(gameMode.items[index]), m, n));
         }
     }
 
@@ -316,6 +327,7 @@ public class GameWorld extends Thread {
     private synchronized void spawnItem() {
         // set number for maximum number of tries a new random position is generated
         int maxTries = 20;
+        LOGGER.info("Start randomly spawning an item on an empty field");
         for (int i = 0; i < maxTries; i++) {
             // generate random position that is not on the border of the map
             int m = random.nextInt(Map.SIZE - 2) + 1;
@@ -324,7 +336,7 @@ public class GameWorld extends Thread {
             // check if location is ground on the map
             if (map.fields[m][n] == Field.GROUND.id) {
                 // spawn new item at position
-                spawnItem(new int[]{m, n});
+                spawnItem(m, n);
                 // break loop because field with ground was found
                 break;
             }

@@ -8,6 +8,8 @@ import Server.Messages.Socket.Map;
 
 import java.util.*;
 
+import static General.MultiBomb.LOGGER;
+
 public class Lobby {
     /**
      * Possible states of the lobby
@@ -136,6 +138,7 @@ public class Lobby {
      * @param msg the message to send
      */
     public synchronized void sendToAllPlayers(Message msg) {
+        LOGGER.finer(msg.toJson());
         players.values().forEach(p -> p.send(msg));
     }
 
@@ -191,16 +194,18 @@ public class Lobby {
      * @param map game map
      */
     public synchronized void prepareGame(Map map) {
-        state = GAME_STARTING;
+        if (players.size() > 1) {
+            state = GAME_STARTING;
 
-        players.values().forEach(p -> {
-            p.preparationReady = false;
-            p.itemActions.clear();
-            p.lastPosition = null;
-        });
+            players.values().forEach(p -> {
+                p.preparationReady = false;
+                p.itemActions.clear();
+                p.lastPosition = null;
+            });
 
-        sendToAllPlayers(map);
-        this.map = map;
+            sendToAllPlayers(map);
+            this.map = map;
+        }
     }
 
     /**

@@ -25,6 +25,6 @@ public abstract class Item {
     }
 
     public interface ItemCallback {
-        boolean callback(int[][] position);
+        boolean callback(int m, int n);
     }
 }

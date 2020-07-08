@@ -2,7 +2,6 @@ package Game.GameModes;
 
 import Server.Messages.Message;
 import Server.Messages.Socket.PlayerState;
-import Server.Messages.Socket.Position;
 import Server.Models.Player;
 
 import java.util.*;
@@ -77,9 +76,8 @@ public abstract class GameMode {
     /**
      * Handle the hit of a player
      *
-     * @param player     the player that gets hit
-     * @param from       the player which deals the hit
-     * @param spawnPoint the original spawnpoint of the player
+     * @param player the player that gets hit
+     * @param from   the player which deals the hit
      */
-    public abstract List<Message> handleHit(Player player, Player from, Position spawnPoint);
+    public abstract List<Message> handleHit(Player player, Player from);
 }

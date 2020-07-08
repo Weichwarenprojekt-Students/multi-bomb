@@ -1,7 +1,10 @@
 package Server.Items;
 
 import Game.Models.Field;
-import Game.Models.Upgrades;
+
+import java.util.logging.Level;
+
+import static General.MultiBomb.LOGGER;
 
 public class Bomb extends Item {
     /**
@@ -13,9 +16,9 @@ public class Bomb extends Item {
      */
     public static float DETONATION_TIME = 3f;
     /**
-     * The player's upgrades
+     * The total time in seconds
      */
-    private Upgrades upgrades;
+    public static float TOTAL_TIME = 3.3f;
 
     /**
      * Constructor
@@ -39,31 +42,35 @@ public class Bomb extends Item {
                 // wait for the detonation time
                 Thread.sleep((long) (DETONATION_TIME * 1000));
             } catch (InterruptedException e) {
+                LOGGER.log(Level.WARNING, "Bomb countdown interrupted", e);
                 e.printStackTrace();
             }
 
-            // initialize arrays for the four rows the bomb hits
-            int[][] row1 = new int[bombSize][2];
-            int[][] row2 = new int[bombSize][2];
-            int[][] row3 = new int[bombSize][2];
-            int[][] row4 = new int[bombSize][2];
+            LOGGER.info("Detonate Bomb at m=" + m + ", n=" + n + ", with size=" + bombSize);
 
             // callback for hitting the position of the bomb
-            itemCallback.callback(new int[][]{{m, n}});
+            itemCallback.callback(m, n);
+
+            boolean hit_north = false;
+            boolean hit_south = false;
+            boolean hit_east = false;
+            boolean hit_west = false;
+
+            long delay = (long) ((TOTAL_TIME - DETONATION_TIME) * 1000 / bombSize);
 
             for (int r = 1; r <= bombSize; r++) {
+                try {
+                    Thread.sleep(delay);
+                    System.out.println(delay);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 // fill all four rows with the according positions
-                row1[r-1] = new int[]{m + r, n};
-                row2[r-1] = new int[]{m, n + r};
-                row3[r-1] = new int[]{m - r, n};
-                row4[r-1] = new int[]{m, n - r};
+                if (!hit_north) hit_north = itemCallback.callback(m - r, n);
+                if (!hit_south) hit_south = itemCallback.callback(m + r, n);
+                if (!hit_east) hit_east = itemCallback.callback(m, n + r);
+                if (!hit_west) hit_west = itemCallback.callback(m, n - r);
             }
-
-            // callback for hitting all four rows
-            itemCallback.callback(row1);
-            itemCallback.callback(row2);
-            itemCallback.callback(row3);
-            itemCallback.callback(row4);
         }).start();
     }
 }

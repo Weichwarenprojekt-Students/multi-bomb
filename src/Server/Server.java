@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static General.MultiBomb.LOGGER;
+
 public class Server implements Runnable {
     /**
      * Port for UPD Broadcast server discovery
@@ -41,7 +43,7 @@ public class Server implements Runnable {
     /**
      * Map of lobby names to their lobby objects
      */
-    public Map<String, Lobby> lobbies;
+    private final Map<String, Lobby> lobbies;
     /**
      * HTTP server thread which provides information about this server
      */
@@ -133,6 +135,7 @@ public class Server implements Runnable {
      * @param serverSocket server socket which listens for new connections
      */
     public void clientSocketLoop(ServerSocket serverSocket) {
+        LOGGER.info("Server-Loop started");
         while (running) {
             Socket clientSocket;
             try {
@@ -158,6 +161,7 @@ public class Server implements Runnable {
             String remoteIp = clientSocket.getInetAddress().getHostAddress();
 
             LobbyTimestamp lobbyTimestamp;
+            String errMsg = null;
             if (preparedPlayers.containsKey(remoteIp) && !(lobbyTimestamp = preparedPlayers.get(remoteIp)).isExpired()) {
                 String lobbyName = lobbyTimestamp.lobbyName;
 
@@ -168,23 +172,30 @@ public class Server implements Runnable {
                             new PlayerConnection(clientSocket, lobby, lobbyTimestamp.playerID).start();
                             preparedPlayers.remove(remoteIp);
 
+                            LOGGER.info("New player (" + lobbyTimestamp.playerID + ") connected to " + lobbyName);
+
                             // success, listen for next socket connection
                             continue;
 
                         } catch (IOException e) {
                             // catch exception from PlayerConnection constructor
-                            out.println(new ErrorMessage("Could not connect to lobby!"));
+                            errMsg = "Could not connect to lobby!";
+                            out.println(new ErrorMessage(errMsg).toJson());
                         }
                     } else {
-                        out.println(new ErrorMessage("Lobby is full!").toJson());
+                        errMsg = "Lobby is full!";
+                        out.println(new ErrorMessage(errMsg).toJson());
                     }
                 } else {
                     out.println(new ErrorMessage("Lobby does not exist!").toJson());
                 }
             } else {
-                out.println(new ErrorMessage("Player could not be assigned to lobby").toJson());
+                errMsg = "Player could not be assigned to lobby";
+                out.println(new ErrorMessage(errMsg).toJson());
             }
             preparedPlayers.remove(remoteIp);
+
+            LOGGER.info("Problem while establishing new connection: " + errMsg);
 
             out.println(new CloseConnection().toJson());
 

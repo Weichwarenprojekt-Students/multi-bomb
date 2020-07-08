@@ -3,13 +3,14 @@ package Game.GameModes;
 import Game.Models.Field;
 import Server.Messages.Message;
 import Server.Messages.Socket.PlayerState;
-import Server.Messages.Socket.Position;
 import Server.Models.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static General.MultiBomb.LOGGER;
 
 public class BattleRoyale extends GameMode {
     /**
@@ -46,7 +47,7 @@ public class BattleRoyale extends GameMode {
     }
 
     @Override
-    public synchronized List<Message> handleHit(Player player, Player from, Position spawnPoint) {
+    public synchronized List<Message> handleHit(Player player, Player from) {
         List<Message> result = new ArrayList<>();
 
         if (player.isAlive()) {
@@ -55,11 +56,15 @@ public class BattleRoyale extends GameMode {
             // notify all players about the hit
             result.add(player.playerState);
 
+            LOGGER.info(String.format("Player %s got hit by %s", player.name, from));
+
             if (!player.isAlive() && !player.name.equals(from.name)) {
                 // player died and the hit was from another player
                 from.playerState.kills++;
                 // notify players about the kill
                 result.add(from.playerState);
+
+                LOGGER.info(String.format("Player %s killed %s", from, player.name));
             }
         }
 
