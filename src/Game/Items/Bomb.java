@@ -55,7 +55,7 @@ public class Bomb extends Item {
     /**
      * The counter for the detonation
      */
-    private float counter = 0;
+    private long startTime = 0;
     /**
      * The maximum possible range of the bomb on the east
      */
@@ -117,6 +117,7 @@ public class Bomb extends Item {
     @Override
     public Item use(int m, int n, Upgrades upgrades) {
         this.upgrades = upgrades;
+        this.startTime = System.currentTimeMillis();
 
         // Check if the player is able to place a bomb
         if (upgrades.bombCount > 0 && Map.items[m][n] == null) {
@@ -142,7 +143,7 @@ public class Bomb extends Item {
     @Override
     public Item draw(Graphics2D g, int m, int n) {
         // Update the counter
-        counter += Game.deltaTime;
+        float counter = (float) (System.currentTimeMillis() - startTime) / 1000;
 
         // Check if bomb is still there
         if (counter < DETONATION_TIME) {
