@@ -64,6 +64,8 @@ public class MBButton extends JButton {
         this.text = text;
     }
 
+    public String getButtonText () {return this.text;}
+
     /**
      * Paint the button
      *

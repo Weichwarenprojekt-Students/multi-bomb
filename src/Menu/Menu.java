@@ -6,6 +6,7 @@ import General.Shared.MBButton;
 import General.Shared.MBLabel;
 import General.Shared.MBPanel;
 import General.SettingsOverview;
+import General.Shared.MBSlider;
 import Server.ServerView;
 
 import javax.swing.*;
@@ -49,6 +50,7 @@ public class Menu extends MBPanel {
         MBButton exit = new MBButton("Exit");
         exit.addActionListener(e -> System.exit(0));
         addComponent(exit, () -> exit.setBounds(getWidth() / 2 - 70, 250, 140, 40));
+
 
         // Setup a button group for navigation
         addButtonGroup(play, editor, settings, exit);

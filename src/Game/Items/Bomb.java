@@ -4,6 +4,8 @@ import Game.Battleground;
 import Game.Game;
 import Game.Models.Field;
 import Game.Models.Map;
+import General.MB;
+import General.Sound.SoundEffect;
 import Server.Messages.Position;
 import General.Shared.MBImage;
 
@@ -122,6 +124,20 @@ public class Bomb extends Item {
 
             // Add the item to the map so that the battleground can draw it
             Game.map.items[m][n] = this;
+
+            //Plays the Sound when Bomb is set
+            MB.settings.sound.playSoundEffect(SoundEffect.SETBOMB, SoundEffect.SETBOMB.getUrl(), false);
+
+            //Plays the explosion sound when bomb detonates
+            new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
+                        @Override
+                        public void run() {
+                            MB.settings.sound.playSoundEffect(SoundEffect.SHORTBOMBEXPLOSION, SoundEffect.SHORTBOMBEXPLOSION.getUrl(), false);
+                        }
+                    },
+                    (int) (DETONATION_TIME * 1000)
+            );
 
             // Decrease the bomb count
             BOMB_COUNT--;
@@ -259,6 +275,7 @@ public class Bomb extends Item {
      * @param percentage of the progress of the explosion
      */
     private void drawVerticalExplosion(Graphics g, int m, int n, float percentage) {
+
         // Calculate the explosion range
         int[] dy = calculateEndpoints(m, percentage, percentageNorth, percentageSouth);
 
@@ -308,6 +325,7 @@ public class Bomb extends Item {
      * @param percentage of the progress of the explosion
      */
     private void drawCore(Graphics g, int m, int n, float percentage) {
+
         // Rescale the image
         coreImage.rescale(
                 (int) ((1 + 0.5 * percentage) * Battleground.fieldSize),

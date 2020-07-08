@@ -13,7 +13,7 @@ public class MBSlider extends JLabel {
     /**
      * The percentage of the slider
      */
-    private int percentage;
+    public int percentage;
     /**
      * The event that is triggered when sliding
      */
@@ -102,4 +102,5 @@ public class MBSlider extends JLabel {
     public interface SlideEvent {
         void onSlide(int percentage);
     }
+
 }

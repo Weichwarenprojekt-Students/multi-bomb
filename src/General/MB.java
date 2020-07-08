@@ -2,6 +2,8 @@ package General;
 
 
 import General.Shared.MBPanel;
+import General.Sound.SoundControl;
+import General.Sound.SoundEffect;
 import Server.Server;
 
 import javax.swing.*;
@@ -41,12 +43,15 @@ public class MB {
             setupFrame();
             show(new Intro(), false);
 
+            MB.settings.sound.playSoundEffect(SoundEffect.INGAME, SoundEffect.INGAME.getUrl(), true);
+
             // Set fullscreen if necessary
             if (settings.fullscreen) {
                 Window activeWindow = javax.swing.FocusManager.getCurrentManager().getActiveWindow();
                 activeWindow.getGraphicsConfiguration().getDevice().setFullScreenWindow(MB.frame);
             }
         }
+
     }
 
     /**

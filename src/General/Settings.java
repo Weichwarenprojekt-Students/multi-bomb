@@ -1,7 +1,9 @@
 package General;
 
+import General.Sound.SoundControl;
 import com.google.gson.Gson;
 
+import javax.sound.sampled.FloatControl;
 import java.awt.*;
 import java.io.*;
 
@@ -28,6 +30,8 @@ public class Settings {
      * The refresh rate the game should target
      */
     public int refreshRate = 60;
+
+    public SoundControl sound = new SoundControl();
 
     /**
      * Load the settings
@@ -77,4 +81,5 @@ public class Settings {
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
         }
     }
+
 }

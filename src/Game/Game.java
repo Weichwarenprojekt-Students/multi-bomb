@@ -5,6 +5,8 @@ import Game.Models.Map;
 import Game.Models.Player;
 import General.MB;
 import General.Shared.MBPanel;
+import General.Sound.SoundControl;
+import General.Sound.SoundEffect;
 
 import java.awt.event.KeyEvent;
 
@@ -110,6 +112,7 @@ public class Game extends MBPanel {
      * Start the game
      */
     public void startGame() {
+
         // Reset the bomb upgrades
         Bomb.reset();
         // Initialize the player

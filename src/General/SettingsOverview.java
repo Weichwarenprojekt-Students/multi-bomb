@@ -4,9 +4,12 @@ import General.Shared.MBButton;
 import General.Shared.MBLabel;
 import General.Shared.MBPanel;
 import Game.Game;
+import General.Shared.MBSlider;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 /**
@@ -25,6 +28,8 @@ public class SettingsOverview extends MBPanel {
      * The button to change the refresh rate
      */
     private MBButton refreshRate;
+
+    private MBButton mute;
     /**
      * The last panel that was open
      */
@@ -75,10 +80,47 @@ public class SettingsOverview extends MBPanel {
         refreshRate.addActionListener(e -> changeRefreshRate());
         addComponent(refreshRate, () -> refreshRate.setBounds(getWidth() / 2 + 16, 180, 140, 30));
 
+        // The label for muting the audio
+        MBLabel muteLabel = new MBLabel("Mute Audio:");
+        addComponent(muteLabel, () -> muteLabel.setBounds(getWidth() / 2 - 156, 220, 140, 30));
+
+
+        // The button for muting the udio
+        mute = new MBButton("Mute");
+        //mute.addActionListener(e -> MB.settings.sound.muteAudio());
+        mute.addActionListener(e -> {
+            if (mute.getButtonText().equals("Mute")) {
+                MB.settings.sound.muteAudio();
+                mute.setText("Unmute");
+            }
+            else if (mute.getButtonText().equals("Unmute")) {
+                MB.settings.sound.unmuteAudio();
+                mute.setText("Mute");
+            }
+        });
+        addComponent(mute, () -> mute.setBounds(getWidth() / 2 + 16, 220, 140, 30));
+
+        // The label for muting the audio
+        MBLabel volumeLabel = new MBLabel("Change Volume:");
+        addComponent(volumeLabel, () -> volumeLabel.setBounds(getWidth() / 2 - 156, 260, 140, 30));
+
+        // The slider to handle the game volume
+        MBSlider volumeslider = new MBSlider(MB.settings.sound.getVolume(), percentage -> {
+            MB.settings.sound.changeVolume(percentage);
+            if (percentage==0) {
+                mute.setText("Unmute");
+            }
+            else if (percentage==100) {
+                mute.setText("Mute");
+            }
+            //System.out.println(percentage);
+        });
+        addComponent(volumeslider, () -> volumeslider.setBounds(getWidth() / 2 + 16,260,140,30));
+
         // The button for opening a lobby overview
         MBButton back = new MBButton("Back");
         back.addActionListener(e -> MB.show(last, true));
-        addComponent(back, () -> back.setBounds(getWidth() / 2 - 70, 220, 140, 30));
+        addComponent(back, () -> back.setBounds(getWidth() / 2 - 70, 320, 140, 30));
         addKeybinding(
                 false,
                 "Close Settings",
@@ -87,7 +129,7 @@ public class SettingsOverview extends MBPanel {
         );
 
         // Add the buttons to a group
-        addButtonGroup(fullscreen, antiAliasing, back);
+        addButtonGroup(fullscreen, antiAliasing, mute, back);
     }
 
     /**
