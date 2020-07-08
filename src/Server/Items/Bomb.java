@@ -61,7 +61,6 @@ public class Bomb extends Item {
             for (int r = 1; r <= bombSize; r++) {
                 try {
                     Thread.sleep(delay);
-                    System.out.println(delay);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

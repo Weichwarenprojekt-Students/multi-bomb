@@ -19,9 +19,6 @@ public class MultiBomb {
      */
     public static void main(String[] args) {
         if (args.length > 0) {
-            ConsoleHandler consoleHandler = new ConsoleHandler();
-            LOGGER.addHandler(consoleHandler);
-            consoleHandler.setLevel(Level.ALL);
             LOGGER.setLevel(Level.ALL);
 
             if (!"-s".equals(args[0]) || args.length < 4) {

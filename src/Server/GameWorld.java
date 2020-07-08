@@ -327,7 +327,6 @@ public class GameWorld extends Thread {
     private synchronized void spawnItem() {
         // set number for maximum number of tries a new random position is generated
         int maxTries = 20;
-        LOGGER.info("Start randomly spawning an item on an empty field");
         for (int i = 0; i < maxTries; i++) {
             // generate random position that is not on the border of the map
             int m = random.nextInt(Map.SIZE - 2) + 1;
