@@ -118,7 +118,7 @@ public class ServerView extends MBPanel {
         host = new MBButton(Server.running ? "Stop Local Server" : "Host Local Server");
         host.addActionListener(e -> {
             if (!Server.running) {
-                showDialog(new MBInputDialog(MB.settings.serverName, (hostServerName) -> {
+                showDialog(new MBInputDialog("Enter the server name", MB.settings.serverName, (hostServerName) -> {
                             if (Server.running) {
                                 toastError("Cannot start another server");
                             } else {

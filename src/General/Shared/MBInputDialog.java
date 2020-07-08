@@ -27,19 +27,20 @@ public class MBInputDialog extends JPanel {
     /**
      * Constructor
      *
+     * @param title       of the dialog
      * @param defaultText to be shown in the input field
      * @param event       that is triggered whenever the confirm button is used
      */
-    public MBInputDialog(String defaultText, OnConfirm event) {
+    public MBInputDialog(String title, String defaultText, OnConfirm event) {
         setLayout(null);
         setBackground(Color.white);
         setBounds(0, 0, 3 * MARGIN + 2 * BUTTON_WIDTH, 50 + 2 * BUTTON_HEIGHT + MARGIN);
 
         // The title
-        MBLabel title = new MBLabel(MBLabel.H2, "Enter the name");
-        title.setFontColor(Color.BLACK);
-        title.setBounds(MARGIN, MARGIN, getWidth() - 2 * MARGIN, 20);
-        add(title);
+        MBLabel titleLabel = new MBLabel(MBLabel.H2, title);
+        titleLabel.setFontColor(Color.BLACK);
+        titleLabel.setBounds(MARGIN, MARGIN, getWidth() - 2 * MARGIN, 20);
+        add(titleLabel);
 
         // The input field
         MBInput input = new MBInput();

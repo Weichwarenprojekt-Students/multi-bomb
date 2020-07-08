@@ -125,7 +125,7 @@ public class LobbyView extends MBPanel {
         join = new MBButton("Join");
         join.addActionListener(e -> {
             if (selectedLobby >= 0 && selectedLobby < lobbyInfo.lobbies.length) {
-                showDialog(new MBInputDialog(MB.settings.playerName, text -> {
+                showDialog(new MBInputDialog("Enter your name", MB.settings.playerName, text -> {
                     MB.activePanel.closeDialog();
                     MB.settings.playerName = text;
                     MB.settings.saveSettings();
@@ -147,12 +147,12 @@ public class LobbyView extends MBPanel {
         create = new MBButton("Create");
         create.addActionListener(e -> {
             //set player name
-            showDialog(new MBInputDialog(MB.settings.lobbyName, lobby -> {
+            showDialog(new MBInputDialog("Enter the lobby name", MB.settings.lobbyName, lobby -> {
                 // Close the dialog and save the name
                 MB.activePanel.closeDialog();
                 MB.settings.lobbyName = lobby;
                 MB.settings.saveSettings();
-                showDialog(new MBInputDialog(MB.settings.playerName, player -> {
+                showDialog(new MBInputDialog("Enter your name", MB.settings.playerName, player -> {
                     MB.activePanel.closeDialog();
                     MB.settings.playerName = player;
                     MB.settings.saveSettings();

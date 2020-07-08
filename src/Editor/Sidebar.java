@@ -73,15 +73,19 @@ public class Sidebar extends MBPanel {
                 getHeight() / 2,
                 height
         ));
-        saveAs.addActionListener((e) -> MB.activePanel.showDialog(new MBInputDialog(Editor.map.name, (text) -> {
-            // Check if the name is acceptable
-            if (MapManager.maps.containsKey(text)) {
-                MB.activePanel.toastError("This name is taken!");
-                return;
-            }
-            MapManager.saveMapAs(Editor.map, text);
-            MB.activePanel.closeDialog();
-        }), () -> title.setText(Editor.map.name)));
+        saveAs.addActionListener((e) -> MB.activePanel.showDialog(new MBInputDialog(
+                "Enter the map name",
+                Editor.map.name,
+                (text) -> {
+                    // Check if the name is acceptable
+                    if (MapManager.maps.containsKey(text)) {
+                        MB.activePanel.toastError("This name is taken!");
+                        return;
+                    }
+                    MapManager.saveMapAs(Editor.map, text);
+                    MB.activePanel.closeDialog();
+                }), () -> title.setText(Editor.map.name)
+        ));
 
         // Add the leave button
         leave = new MBButton("Leave");

@@ -88,7 +88,7 @@ public class MapManager {
                 MB.activePanel.toastError("You cannot change", "a standard map!");
             }
         } else {
-            MB.activePanel.showDialog(new MBInputDialog(Editor.map.name, (text) -> {
+            MB.activePanel.showDialog(new MBInputDialog("Enter the map name", Editor.map.name, (text) -> {
                 // Check if the name is acceptable
                 if (MapManager.maps.containsKey(text)) {
                     MB.activePanel.toastError("This name is taken!");
