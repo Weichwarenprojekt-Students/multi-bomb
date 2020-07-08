@@ -134,7 +134,7 @@ public class Bomb extends Item {
                     new java.util.TimerTask() {
                         @Override
                         public void run() {
-                            SoundControl.playSoundEffect(SoundEffect.SHORT_BOMB_EXPLOSION);
+                            SoundControl.playSoundEffect(SoundEffect.BOMB_EXPLOSION);
                         }
                     },
                     (int) (DETONATION_TIME * 1000)

@@ -2,6 +2,8 @@ package Server.Messages.Socket;
 
 import Game.Models.Field;
 import Game.Models.Upgrades;
+import General.Sound.SoundControl;
+import General.Sound.SoundEffect;
 import Server.Messages.Message;
 
 public class PlayerState extends Message {
@@ -62,6 +64,9 @@ public class PlayerState extends Message {
     public void update(PlayerState state) {
         this.health = state.health;
         this.kills = state.kills;
+        if (this.health <= 0) {
+            SoundControl.playSoundEffect(SoundEffect.CHARACTER_DEATH);
+        }
     }
 
     /**

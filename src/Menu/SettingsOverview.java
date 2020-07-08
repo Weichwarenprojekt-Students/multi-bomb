@@ -114,8 +114,8 @@ public class SettingsOverview extends MBPanel {
         ));
 
         // The label for muting the audio
-        MBLabel volumeLabel = new MBLabel("Volume:");
-        addComponent(volumeLabel, () -> volumeLabel.setBounds(
+        MBLabel musicLabel = new MBLabel("Music:");
+        addComponent(musicLabel, () -> musicLabel.setBounds(
                 getWidth() / 2 - width - margin,
                 START_Y + 3 * (height + margin),
                 width,
@@ -123,10 +123,34 @@ public class SettingsOverview extends MBPanel {
         ));
 
         // The slider to handle the game volume
-        MBSlider volumeSlider = new MBSlider(SoundControl.getVolume(), SoundControl::changeVolume);
-        addComponent(volumeSlider, () -> volumeSlider.setBounds(
+        MBSlider musicSlider = new MBSlider(
+                SoundControl.getVolumePercent(MB.settings.musicVolume),
+                SoundControl::changeMusicVolume
+        );
+        addComponent(musicSlider, () -> musicSlider.setBounds(
                 getWidth() / 2 + margin,
                 START_Y + 3 * (height + margin),
+                width,
+                height
+        ));
+
+        // The label for muting the audio
+        MBLabel volumeLabel = new MBLabel("Sound Effect:");
+        addComponent(volumeLabel, () -> volumeLabel.setBounds(
+                getWidth() / 2 - width - margin,
+                START_Y + 4 * (height + margin),
+                width,
+                height
+        ));
+
+        // The slider to handle the game volume
+        MBSlider volumeSlider = new MBSlider(
+                SoundControl.getVolumePercent(MB.settings.soundVolume),
+                SoundControl::changeSoundVolume
+        );
+        addComponent(volumeSlider, () -> volumeSlider.setBounds(
+                getWidth() / 2 + margin,
+                START_Y + 4 * (height + margin),
                 width,
                 height
         ));
@@ -136,7 +160,7 @@ public class SettingsOverview extends MBPanel {
         back.addActionListener(e -> MB.show(last, true));
         addComponent(back, () -> back.setBounds(
                 (getWidth() - width) / 2,
-                START_Y + 4 * (height + margin),
+                START_Y + 5 * (height + margin),
                 width,
                 height
         ));

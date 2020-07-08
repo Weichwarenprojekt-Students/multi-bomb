@@ -6,6 +6,8 @@ import Game.GameModes.GameMode;
 import Game.Models.Field;
 import Game.Models.Player;
 import General.MB;
+import General.Sound.SoundControl;
+import General.Sound.SoundEffect;
 import Menu.DetailedLobbyView;
 import Server.Messages.Message;
 import Server.Messages.Socket.*;
@@ -417,6 +419,9 @@ public class Lobby {
      * @param item that was collected
      */
     private static void collectItem(ItemCollected item) {
+        if (player.equals(item.playerId)) {
+            SoundControl.playSoundEffect(SoundEffect.COLLECT_ITEM);
+        }
         map.fields[item.m][item.n] = Field.GROUND.id;
         players.get(item.playerId).state.collectItem(item.item, false);
     }

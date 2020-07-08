@@ -7,12 +7,11 @@ import java.net.URL;
  */
 public enum SoundEffect {
 
-    SHORT_BOMB_EXPLOSION("short_bomb_explosion.wav"),
-    LONG_BOMB_EXPLOSION("long_bomb_explosion.wav"),
+    BOMB_EXPLOSION("bomb_explosion.wav"),
     SET_BOMB("set_bomb.wav"),
     COLLECT_ITEM("collect_item.wav"),
     CHARACTER_DEATH("character_death.wav"),
-    IN_GAME("multi_bomb_game_sound.wav");
+    MENU_SOUND("menu_sound.wav");
 
     /**
      * The URL for the sound file

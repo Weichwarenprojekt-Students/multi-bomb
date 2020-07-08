@@ -42,7 +42,7 @@ public class MB {
      */
     public static void startGame() {
         MB.settings.loadSettings();
-        SoundControl.playLoop(SoundControl.MENU_LOOP, SoundEffect.IN_GAME);
+        SoundControl.playMusic(SoundEffect.MENU_SOUND);
         MapManager.loadMaps();
         background = new MBImage("General/background.png");
         setupFrame();
