@@ -165,10 +165,12 @@ public class DetailedLobbyView extends MBPanel {
         // The start button
         start = new MBButton("Start");
         start.addActionListener(e -> {
-            if (start.enabled) {
-                Lobby.startGame();
-            } else {
+            if (!start.enabled) {
                 toastError("Only the host can", "start the game!");
+            } else if (Lobby.players.size() <= 1) {
+                toastError("You cannot start the game alone!", "Go and get some friends!");
+            } else {
+                Lobby.startGame();
             }
         });
         addComponent(start, () -> start.setBounds(
