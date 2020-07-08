@@ -19,8 +19,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Map;
 
 import static Menu.DetailedLobbyView.BUTTON_WIDTH;
 import static Menu.DetailedLobbyView.MARGIN;
@@ -35,10 +33,6 @@ public class LobbyView extends MBPanel {
      * Selected lobby
      */
     private static String selectedLobby = "";
-    /**
-     * Lobbies found in lobbyInfo
-     */
-    private final ArrayList<LobbyListItem> lobbyCache = new ArrayList<>();
     /**
      * Lobby info
      */
@@ -71,7 +65,7 @@ public class LobbyView extends MBPanel {
     /**
      * Constructor
      *
-     * @param name of the server
+     * @param name    of the server
      * @param address of the server
      */
     public LobbyView(String name, String address) {
@@ -132,7 +126,8 @@ public class LobbyView extends MBPanel {
                     MB.settings.playerName = text;
                     MB.settings.saveSettings();
                     joinLobby(false, lobby.name);
-                }), () -> {});
+                }), () -> {
+                });
             } else {
                 toastError("No lobby selected!");
             }
@@ -159,17 +154,17 @@ public class LobbyView extends MBPanel {
                     MB.settings.playerName = player;
                     MB.settings.saveSettings();
                     joinLobby(true, lobby);
-                }), () -> {});
-            }), () -> {});
+                }), () -> {
+                });
+            }), () -> {
+            });
         });
-
         addComponent(create, () -> create.setBounds(
                 scroll.getX() + scroll.getWidth() + MARGIN,
                 scroll.getY() + 46,
                 DetailedLobbyView.BUTTON_WIDTH,
                 DetailedLobbyView.BUTTON_HEIGHT
         ));
-
 
         // Back button
         back = new MBButton("Back");
@@ -199,19 +194,16 @@ public class LobbyView extends MBPanel {
                 // Get lobby info from server
                 lobbyInfo = DetectLobby.getLobbyInfo(Lobby.ipAddress);
                 if (lobbyInfo == null) {
-                    toastError("Server not available!");
                     running = false;
                     MB.show(new ServerView(), false);
+                    MB.activePanel.toastError("Server not available!");
                     break;
                 }
-                // Create LobbyListItem for every lobby in LobbyInfo
-                for (Map.Entry<String, LobbyInfo.SingleLobbyInfo> lobby : lobbyInfo.lobbies.entrySet()) {
-                    LobbyListItem listItem = new LobbyListItem(lobby.getKey());
-                    lobbyCache.add(listItem);
-                }
+
                 // Clear ListView and show new lobbies
-                listView.addMissingItems(lobbyCache);
-                lobbyCache.clear();
+                listView.addMissingItems(lobbyInfo.lobbies.keySet(), LobbyListItem::new);
+                MB.frame.revalidate();
+                MB.frame.repaint();
 
                 // Set button visibility
                 spinner.setVisible(false);
@@ -226,6 +218,7 @@ public class LobbyView extends MBPanel {
             }
         }).start();
     }
+
     /**
      * JoinLobby Method
      */
@@ -311,7 +304,7 @@ public class LobbyView extends MBPanel {
             add(nameLabel);
 
             // Setup the description
-            descriptionLabel = new MBLabel(MBLabel.DESCRIPTION, getDescription());
+            descriptionLabel = new MBLabel(MBLabel.DESCRIPTION, "");
             add(descriptionLabel);
         }
 
@@ -323,18 +316,25 @@ public class LobbyView extends MBPanel {
         }
 
         @Override
-        public void onSelected(int index) {
+        public void onSelected() {
             selectedLobby = name;
             MB.frame.revalidate();
             MB.frame.repaint();
         }
 
         /**
-         * @return the description string
+         * Update the description of the lobby item
          */
-        private String getDescription() {
+        private void updateDescription() {
             LobbyInfo.SingleLobbyInfo lobby = lobbyInfo.lobbies.get(name);
-            return "Players " + lobby.players + "/8 - Game Mode" + lobby.gameMode + " - Status " + lobby.status;
+            if (lobby == null) {
+                return;
+            }
+            descriptionLabel.setText(
+                    "Players " + lobby.players
+                    + "/8 \u2022 Game Mode " + lobby.gameMode
+                    + " \u2022 Status " + lobby.status
+            );
         }
 
         /**
@@ -344,7 +344,7 @@ public class LobbyView extends MBPanel {
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             MB.settings.enableAntiAliasing(g);
-            descriptionLabel.setText(getDescription());
+            updateDescription();
             if (selectedLobby.equals(name)) {
                 g.setColor(Color.WHITE);
                 g.drawRoundRect(

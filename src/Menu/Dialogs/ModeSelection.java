@@ -74,7 +74,7 @@ public class ModeSelection extends JPanel {
         }
 
         @Override
-        public void onSelected(int index) {
+        public void onSelected() {
             Lobby.changeMode(mode);
             MB.activePanel.closeDialog();
         }

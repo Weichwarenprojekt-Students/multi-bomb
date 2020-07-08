@@ -1,28 +1,21 @@
 package General.Shared;
 
-import Game.Models.Player;
-
 import javax.swing.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 
 public class MBListView<T extends MBListView.Item> extends JPanel {
     /**
      * The list that contains the content
      */
-    private final ArrayList<T> items = new ArrayList<>();
+    private final TreeMap<String, T> items = new TreeMap<>();
     /**
-     * The comparator that describes how the list view should be sorted
+     * The order can be used to give the list a specific order
      */
-    private final Comparator<T> comparator;
-    /**
-     * True if the list shall be sorted
-     */
-    public boolean sort = true;
+    public ArrayList<String> order;
     /**
      * The last width of the view
      */
@@ -32,8 +25,6 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
      * Constructor
      */
     public MBListView() {
-        this.comparator = Comparator.comparing(item -> item.name.toLowerCase());
-
         // Initialize the view
         setLayout(null);
         setOpaque(false);
@@ -51,13 +42,27 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
     }
 
     /**
-     * Resize the lists items
+     * Give the list a specific order
+     */
+    public void setSpecificOrder(String... order) {
+        this.order = new ArrayList<>(Arrays.asList(order));
+    }
+
+    /**
+     * Resize and reposition the lists items
      */
     private void resizeList() {
         int height = 0;
-        for (Item item : items) {
-            item.onResize(height, getWidth());
-            height += item.getHeight();
+        if (order != null) {
+            for (String name : order) {
+                items.get(name).onResize(height, getWidth());
+                height += items.get(name).getHeight();
+            }
+        } else {
+            for (Item item : items.values()) {
+                item.onResize(height, getWidth());
+                height += item.getHeight();
+            }
         }
         setSize(getWidth(), height);
     }
@@ -68,11 +73,11 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
      * @param item to be added
      */
     public void addItem(T item) {
-        // Add the item and sort the list
-        items.add(item);
-        if (sort) {
-            items.sort(comparator);
-        }
+        // Check if item has to be removed
+        removeItem(item.name);
+
+        // Add the item
+        items.put(item.name, item);
         add(item);
 
         // Add a mouse listener to catch selections
@@ -83,7 +88,7 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                item.onSelected(items.indexOf(item));
+                item.onSelected();
             }
 
             @Override
@@ -104,80 +109,73 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
     }
 
     /**
+     * Check if the list contains an item
+     *
+     * @param name of the item
+     * @return true if the item is in the list
+     */
+    public boolean containsItem(String name) {
+        return items.containsKey(name);
+    }
+
+    /**
+     * Get an item
+     *
+     * @param name of the item
+     * @return the corresponding item
+     */
+    public T getItem(String name) {
+        return items.get(name);
+    }
+
+    /**
      * Remove item from the list
      *
      * @param name of the item
      */
     public void removeItem(String name) {
-        // Find the item
-        int index = -1;
-        for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).name.equals(name)) {
-                index = i;
-            }
-        }
-
-        // Check if the item was found
-        if (index == -1) {
+        // Check if the list contains the item
+        if (!items.containsKey(name)) {
             return;
         }
 
         // Remove the item
-        remove(items.get(index));
-        items.remove(index);
+        remove(items.get(name));
+        items.remove(name);
 
         // Rebuild the list
         resizeList();
     }
 
     /**
-     * Check if an item is already in the list
-     *
-     * @param name of the item
-     */
-    public boolean containsItem(String name) {
-        for (T item : items) {
-            if (item.name.equals(name)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Add Items that are in list but not in items list
      */
-    public void addMissingItems(ArrayList<T> list) {
+    public void addMissingItems(Set<String> list, AddMissingItems<T> event) {
         // Check if an item is new
-        for (T item : list) {
-            if (!containsItem(item.name)) {
-                addItem(item);
+        for (String item : list) {
+            if (!items.containsKey(item)) {
+                addItem(event.newItem(item));
             }
         }
 
         // Check if an item was removed
         ArrayList<String> removedItems = new ArrayList<>();
-        for (T item : items) {
-            // Remove the item if it can't be found anymore
-            boolean found = false;
-            for (T newItem : list) {
-                if (item.name.equals(newItem.name)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                removedItems.add(item.name);
+        for (Map.Entry<String, T> item : items.entrySet()) {
+            if (!list.contains(item.getKey())) {
+                removedItems.add(item.getKey());
             }
         }
         for (String name : removedItems) {
             removeItem(name);
         }
 
-        //Rebuild the list
+        // Rebuild the list
         resizeList();
     }
 
+    public interface AddMissingItems<T> {
+        T newItem(String name);
+    }
 
     /**
      * The base class for an item
@@ -206,9 +204,7 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
 
         /**
          * Handle selection of an item
-         *
-         * @param index of the selected item
          */
-        public abstract void onSelected(int index);
+        public abstract void onSelected();
     }
 }

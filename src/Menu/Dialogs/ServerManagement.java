@@ -163,7 +163,7 @@ public class ServerManagement extends JPanel {
         }
 
         @Override
-        public void onSelected(int index) {
+        public void onSelected() {
             selectedServer = name;
             MB.frame.revalidate();
             MB.frame.repaint();

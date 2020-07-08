@@ -345,7 +345,7 @@ public class DetailedLobbyView extends MBPanel {
         }
 
         @Override
-        public void onSelected(int index) {
+        public void onSelected() {
         }
 
         /**

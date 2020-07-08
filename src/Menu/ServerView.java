@@ -3,6 +3,7 @@ package Menu;
 import General.MB;
 import General.Shared.*;
 import Menu.Dialogs.ServerManagement;
+import Server.Messages.REST.ServerInfo;
 import Server.Server;
 import Server.ServerList;
 
@@ -27,7 +28,7 @@ public class ServerView extends MBPanel {
     /**
      * Selected Server
      */
-    private static ServerListItem selectedServer;
+    private static String selectedServer = "";
     /**
      * Server list Management
      */
@@ -151,9 +152,9 @@ public class ServerView extends MBPanel {
         // Button to join selected server
         join = new MBButton("Join");
         join.addActionListener(e -> {
-            if (selectedServer != null) {
+            if (listView.containsItem(selectedServer)) {
                 running = false;
-                MB.show(new LobbyView(selectedServer.serverName, selectedServer.name), false);
+                MB.show(new LobbyView(listView.getItem(selectedServer).serverName, selectedServer), false);
             } else {
                 toastError("No server selected!");
             }
@@ -191,10 +192,14 @@ public class ServerView extends MBPanel {
             while (true) {
                 // Search for local servers
                 serverList.searchServers();
+
                 // Update ListView
-                serverList.updateListView(listView);
+                listView.addMissingItems(serverList.servers.keySet(), ServerView.ServerListItem::new);
+                MB.frame.revalidate();
+                MB.frame.repaint();
                 spinner.setVisible(false);
                 back.setVisible(true);
+
                 // Check if Thread still needed
                 if (!running) {
                     break;
@@ -208,7 +213,7 @@ public class ServerView extends MBPanel {
         }).start();
     }
 
-    public static class ServerListItem extends MBListView.Item {
+    public class ServerListItem extends MBListView.Item {
 
         /**
          * Label for name
@@ -226,23 +231,21 @@ public class ServerView extends MBPanel {
         /**
          * Constructor
          *
-         * @param name          of the server
-         * @param description   of the server
-         * @param serverAddress server address
+         * @param name of the server
          */
-        public ServerListItem(String name, String description, String serverAddress) {
-            super(serverAddress);
-            serverName = name;
+        public ServerListItem(String name) {
+            super(name);
             setBounds(0, 0, 400, 100);
             setLayout(null);
 
             // Add the labels
-            nameLabel = new MBLabel(name);
+            serverName = serverList.servers.get(name).name;
+            nameLabel = new MBLabel(serverName);
             nameLabel.setBold();
             add(nameLabel);
-            descriptionLabel = new MBLabel(MBLabel.DESCRIPTION, description);
+            descriptionLabel = new MBLabel(MBLabel.DESCRIPTION, "");
+            updateDescription();
             add(descriptionLabel);
-
         }
 
         @Override
@@ -253,10 +256,25 @@ public class ServerView extends MBPanel {
         }
 
         @Override
-        public void onSelected(int index) {
-            selectedServer = this;
+        public void onSelected() {
+            selectedServer = name;
             MB.frame.revalidate();
             MB.frame.repaint();
+        }
+
+        /**
+         * Update the description of the server item
+         */
+        private void updateDescription() {
+            ServerInfo server = serverList.servers.get(name);
+            if (server == null) {
+                return;
+            }
+            descriptionLabel.setText(
+                    "Tick-Rate " + server.ticksPerSecond
+                            + " \u2022 Lobbies " + server.lobbyCount + "/" + server.maxLobbies
+                            + " \u2022 Type " + server.type
+            );
         }
 
         /**
@@ -266,7 +284,8 @@ public class ServerView extends MBPanel {
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             MB.settings.enableAntiAliasing(g);
-            if (selectedServer != null && selectedServer.name.equals(this.name)) {
+            updateDescription();
+            if (selectedServer.equals(this.name)) {
                 g.setColor(Color.WHITE);
                 g.drawRoundRect(
                         0,

@@ -261,7 +261,7 @@ public class Sidebar extends MBPanel {
         }
 
         @Override
-        public void onSelected(int index) {
+        public void onSelected() {
         }
 
         /**

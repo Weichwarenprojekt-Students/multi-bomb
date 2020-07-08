@@ -1,19 +1,18 @@
 package Server;
 
-import Menu.ServerView;
-
+import Server.Messages.REST.ServerInfo;
 
 import java.io.IOException;
 import java.net.*;
-import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 
 public class DetectServer {
 
     /**
      * Scan local network for running servers
      */
-    public void search(ArrayList<ServerView.ServerListItem> serverList) {
+    public void search(HashMap<String, ServerInfo> serverList) {
         try {
             // Open socket
             DatagramSocket c = new DatagramSocket();
@@ -24,8 +23,13 @@ public class DetectServer {
 
             // Try the 255.255.255.255 first
             try {
-                DatagramPacket sendPacket = new DatagramPacket(request, request.length, InetAddress.getByName("255.255.255.255"), DiscoveryThread.PORT);
-                //c.send(sendPacket);
+                DatagramPacket sendPacket = new DatagramPacket(
+                        request,
+                        request.length,
+                        InetAddress.getByName("255.255.255.255"),
+                        DiscoveryThread.PORT
+                );
+                c.send(sendPacket);
             } catch (Exception e) {
                 System.out.println("255.255.255.255 did not work!");
             }
@@ -41,7 +45,7 @@ public class DetectServer {
                 }
 
                 // Iterate through the addresses
-                for (InterfaceAddress interfaceAddress: networkInterface.getInterfaceAddresses()) {
+                for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
                     InetAddress broadcast = interfaceAddress.getBroadcast();
                     if (broadcast == null) {
                         continue;
@@ -71,8 +75,8 @@ public class DetectServer {
                 }
                 String serverAddress = receivePacket.getAddress().getHostAddress();
 
-                //start thread to get Serverinfo
-                new Thread(new ScanServerThread(serverAddress,serverList, "local")).start();
+                // Start thread to get server info
+                new Thread(new ScanServerThread(serverAddress, serverList, "Local")).start();
 
             }
 
@@ -81,8 +85,6 @@ public class DetectServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 }
 

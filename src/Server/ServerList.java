@@ -1,16 +1,15 @@
 package Server;
 
 import General.MB;
-import General.Shared.MBListView;
-import Menu.ServerView;
+import Server.Messages.REST.ServerInfo;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ServerList {
     /**
      * List for local found servers
      */
-    private final ArrayList<ServerView.ServerListItem> serverList = new ArrayList<>();
+    public final HashMap<String, ServerInfo> servers = new HashMap<>();
     /**
      * Detect server
      */
@@ -20,20 +19,13 @@ public class ServerList {
      * Search for servers in local network
      */
     public void searchServers () {
-        serverList.clear();
+        servers.clear();
 
         // Add local servers
-        dS.search(serverList);
+        dS.search(servers);
 
         // Add remote servers
-        MB.settings.remoteServers.forEach(server -> new ScanServerThread(server, serverList, "remote").run());
-    }
-
-    /**
-     * Update ListView
-     */
-    public void updateListView (MBListView<ServerView.ServerListItem> listView) {
-        listView.addMissingItems(serverList);
+        MB.settings.remoteServers.forEach(server -> new ScanServerThread(server, servers, "Remote").run());
     }
 }
 

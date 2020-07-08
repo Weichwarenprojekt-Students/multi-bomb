@@ -199,7 +199,7 @@ public class MapSelection extends MBPanel {
         }
 
         @Override
-        public void onSelected(int index) {
+        public void onSelected() {
             edit.enabled = true;
             delete.enabled = true;
             selectedMap = map;

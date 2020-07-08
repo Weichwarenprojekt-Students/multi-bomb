@@ -134,12 +134,18 @@ public class Sidebar extends MBPanel {
         addComponent(background, () -> background.setBounds(0, 0, getWidth(), getHeight()));
 
         // Fill the list
-        list.sort = false;
         list.addItem(new ToolItem(Field.SOLID_0, "An unbreakable tree.", -2, "solid_0"));
         list.addItem(new ToolItem(Field.SOLID_1, "An unbreakable fir.", 2, "solid_1"));
         list.addItem(new ToolItem(Field.BREAKABLE_0, "A breakable mushroom.", -4, "breakable_0"));
         list.addItem(new ToolItem(Field.BREAKABLE_1, "A breakable stack of wood.", -10, "breakable_1"));
         list.addItem(new ToolItem(Field.SPAWN, "The map requires 8 spawns.", -12, "spawn"));
+        list.setSpecificOrder(
+                Field.SOLID_0.name,
+                Field.SOLID_1.name,
+                Field.BREAKABLE_0.name,
+                Field.BREAKABLE_1.name,
+                Field.SPAWN.name
+        );
 
         // Add keybinding for escape
         addKeybinding(
@@ -293,7 +299,7 @@ public class Sidebar extends MBPanel {
          * Select the right field
          */
         @Override
-        public void onSelected(int index) {
+        public void onSelected() {
             Editor.selectedId = field.id;
         }
 
