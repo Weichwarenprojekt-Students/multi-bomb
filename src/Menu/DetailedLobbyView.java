@@ -29,6 +29,10 @@ public class DetailedLobbyView extends MBPanel {
      */
     private final String player;
     /**
+     * The list showing the players
+     */
+    public MBListView<PlayerItem> list;
+    /**
      * The player sprites
      */
     private ArrayList<MBImage> playerSprites = new ArrayList<>();
@@ -36,10 +40,6 @@ public class DetailedLobbyView extends MBPanel {
      * The label showing the title
      */
     private MBLabel title;
-    /**
-     * The list showing the players
-     */
-    private MBListView<PlayerItem> list;
     /**
      * The buttons for lobby configuration
      */

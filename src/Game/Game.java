@@ -61,6 +61,7 @@ public class Game extends MBPanel {
             public void playerLeft(String name) {
                 toastError(name + " left the lobby!");
                 sidebar.removePlayer(name);
+                Lobby.lobby.list.removeItem(name);
             }
 
             @Override

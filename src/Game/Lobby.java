@@ -57,6 +57,10 @@ public class Lobby {
      */
     public static String player;
     /**
+     * The detailed lobby view
+     */
+    public static DetailedLobbyView lobby;
+    /**
      * Reader for receiving server messages
      */
     private static BufferedReader in;
@@ -84,10 +88,6 @@ public class Lobby {
      * The state of the current game
      */
     private static GameState gameState;
-    /**
-     * The detailed lobby view
-     */
-    private static DetailedLobbyView lobby;
     /**
      * The game class
      */
