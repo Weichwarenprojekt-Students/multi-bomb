@@ -69,10 +69,9 @@ public class Player {
     /**
      * Initialize the players position and controls
      *
-     * @param panel        the game panel
      * @param controllable true if the player should be controllable
      */
-    public void initialize(MBPanel panel, boolean controllable) {
+    public void initialize(boolean controllable) {
         // Set the players position
         setSpawn();
 
@@ -81,7 +80,7 @@ public class Player {
         state = new PlayerState();
 
         // Load the sprite
-        sprite = new MBImage("Characters/" + color + ".png", () -> {
+        sprite = new MBImage("Characters/" + color + ".png", Lobby.game.battleground, () -> {
             // Update the ratio
             spriteRatio = (float) Battleground.fieldSize / PLAYER_WIDTH;
 
@@ -93,7 +92,7 @@ public class Player {
 
         // Setup the players controls
         if (controllable) {
-            setupControls(panel);
+            setupControls(Lobby.game);
         }
     }
 

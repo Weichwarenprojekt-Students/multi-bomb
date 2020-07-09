@@ -85,7 +85,7 @@ public class Bomb extends Item {
         super(Item.BOMB, Field.BOMB);
 
         // Initialize the bomb sprite
-        bombImage = new MBImage("Items/Bomb/bomb.png", () -> {
+        bombImage = new MBImage("Items/Bomb/bomb.png", Lobby.game.battleground, () -> {
             bombImage.width = (int) (1.2 * Battleground.fieldSize);
             bombImage.height = (int) (1.2 * Battleground.fieldSize);
         });

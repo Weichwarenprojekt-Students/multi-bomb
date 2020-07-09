@@ -111,7 +111,7 @@ public class MB {
     public static ArrayList<MBImage> getPlayerSprites() {
         ArrayList<MBImage> playerSprites = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
-            playerSprite = new MBImage("Characters/" + i + ".png", () -> {
+            playerSprite = new MBImage("Characters/" + i + ".png", null, () -> {
                 playerSprite.width = 96;
                 playerSprite.height = 144;
             });

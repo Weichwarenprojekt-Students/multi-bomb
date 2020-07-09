@@ -235,11 +235,11 @@ public class DetailedLobbyView extends MBPanel {
         changeButtonActivity();
 
         // Load the images
-        crown = new MBImage("General/crown.png", () -> {
+        crown = new MBImage("General/crown.png", null, () -> {
             crown.width = 35;
             crown.height = 35;
         });
-        crownChange = new MBImage("General/crown_change.png", () -> {
+        crownChange = new MBImage("General/crown_change.png", null, () -> {
             crownChange.width = 35;
             crownChange.height = 35;
         });

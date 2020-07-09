@@ -63,6 +63,10 @@ public class Lobby {
      */
     public static DetailedLobbyView lobby;
     /**
+     * The game class
+     */
+    public static Game game;
+    /**
      * Reader for receiving server messages
      */
     private static BufferedReader in;
@@ -90,10 +94,6 @@ public class Lobby {
      * The state of the current game
      */
     private static GameState gameState;
-    /**
-     * The game class
-     */
-    private static Game game;
 
     /**
      * Try to start a socket connection

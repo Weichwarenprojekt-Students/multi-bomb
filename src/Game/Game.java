@@ -30,13 +30,13 @@ public class Game extends MBPanel {
      */
     public static boolean gameOver = true;
     /**
+     * The battleground
+     */
+    public Battleground battleground;
+    /**
      * The sidebar
      */
     private Sidebar sidebar;
-    /**
-     * The battleground
-     */
-    private Battleground battleground;
 
     /**
      * Constructor
@@ -110,7 +110,7 @@ public class Game extends MBPanel {
     public void startGame() {
         // Initialize the player
         for (java.util.Map.Entry<String, Player> player : Lobby.players.entrySet()) {
-            player.getValue().initialize(this, Lobby.player.equals(player.getKey()));
+            player.getValue().initialize(Lobby.player.equals(player.getKey()));
         }
 
         // Start the game loop

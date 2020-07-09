@@ -41,7 +41,7 @@ public class MBImage {
      */
     public MBImage(String relativePath) {
         this.resize = () -> {
-            if ((float)MB.frame.getWidth() / MB.frame.getHeight() > 21f / 9) {
+            if ((float) MB.frame.getWidth() / MB.frame.getHeight() > 21f / 9) {
                 this.width = MB.frame.getWidth();
                 this.height = (int) (9f / 21 * MB.frame.getWidth());
             } else {
@@ -56,8 +56,8 @@ public class MBImage {
      * Constructor
      *
      * @param relativePath to the image
-     * @param square true if the image is a square
-     * @param parent the image's size depends on
+     * @param square       true if the image is a square
+     * @param parent       the image's size depends on
      */
     public MBImage(String relativePath, boolean square, MBPanel parent) {
         if (square) {
@@ -78,11 +78,12 @@ public class MBImage {
      * Constructor
      *
      * @param relativePath to the image
-     * @param resize the handler
+     * @param parent       the image's size depends on
+     * @param resize       the handler
      */
-    public MBImage(String relativePath, MBPanel.ComponentResize resize) {
+    public MBImage(String relativePath, MBPanel parent, MBPanel.ComponentResize resize) {
         this.resize = resize;
-        initialize(relativePath, false, null);
+        initialize(relativePath, false, parent);
     }
 
     /**

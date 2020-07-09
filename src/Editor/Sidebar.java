@@ -277,7 +277,7 @@ public class Sidebar extends MBPanel {
             this.field = field;
             this.description = description;
             this.offsetY = offsetY;
-            this.logo = new MBImage("Maps/Forest/" + image + ".png", () -> {
+            this.logo = new MBImage("Maps/Forest/" + image + ".png", null, () -> {
                 logo.width = 40;
                 logo.height = 60;
             });
