@@ -3,9 +3,11 @@ package Game;
 import Editor.MapManager;
 import Game.GameModes.BattleRoyale;
 import Game.GameModes.GameMode;
+import Game.Items.Item;
 import Game.Models.Field;
 import Game.Models.Player;
 import General.MB;
+import General.MultiBomb;
 import General.Sound.SoundControl;
 import General.Sound.SoundEffect;
 import Menu.DetailedLobbyView;
@@ -20,6 +22,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static Server.Messages.Socket.Map.SIZE;
 
 public class Lobby {
     /**
@@ -339,40 +343,26 @@ public class Lobby {
      * Start the game countdown and enable controls when finished
      */
     private static void startCountdown(long timestamp) {
-        try {
-            // wait until the game loop can start
-            long timeDifference = timestamp - System.currentTimeMillis();
-            while (timeDifference > 0) {
-                MB.activePanel.toastSuccess(
-                        "Game starts in " + ((timestamp - System.currentTimeMillis()) / 1000 + 1) + "s!"
-                );
-                Thread.sleep(timeDifference % 1000 + 1);
-                timeDifference = timestamp - System.currentTimeMillis();
-            }
-            MB.activePanel.toastSuccess("GO!");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        // Wait until the game loop can start
+        long timeDifference = timestamp - System.currentTimeMillis();
+        while (timeDifference > 0) {
+            MB.activePanel.toastSuccess(
+                    "Game starts in " + ((timestamp - System.currentTimeMillis()) / 1000 + 1) + "s!"
+            );
+            MultiBomb.sleep(timeDifference % 1000 + 1);
+            timeDifference = timestamp - System.currentTimeMillis();
         }
+        MB.activePanel.toastSuccess("GO!");
 
         // Start game in new thread
         new Thread(game::startGame).start();
 
+        // Start sending positions
         int waitTime = 1000 / tickRate;
-        while (gameState.state == GameState.RUNNING && players.get(player).state.isAlive()) {
-            long startTime = System.currentTimeMillis();
-
-            // Send the players position
+        MultiBomb.startTimedAction(waitTime, ((deltaTime, totalTime) -> {
             sendMessage(players.get(player).position);
-            // calculate sleep time for target tick rate
-            long delta = System.currentTimeMillis() - startTime;
-            if (delta < waitTime) {
-                try {
-                    Thread.sleep(waitTime - delta);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+            return gameState.state == GameState.RUNNING && players.get(player).state.isAlive();
+        }));
     }
 
     /**
@@ -459,11 +449,8 @@ public class Lobby {
     private static void leaveGame(String winner) {
         new Thread(() -> {
             MB.activePanel.toastSuccess(winner + " won the game!");
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            MultiBomb.sleep(3000);
+
             // End the game loop
             Game.gameOver = true;
 
@@ -476,6 +463,7 @@ public class Lobby {
             } else {
                 map = MapManager.maps.get("X-Factor");
             }
+            Map.items = new Item[SIZE][SIZE];
 
             // Reset the mode
             mode = GameMode.getMode(mode.name);

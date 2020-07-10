@@ -1,6 +1,7 @@
 package General.Shared;
 
 import General.MB;
+import General.MultiBomb;
 
 import javax.swing.*;
 import java.awt.*;
@@ -70,11 +71,7 @@ public class MBSpinner extends JPanel {
      * Sleep until animation continues
      */
     private void sleep() {
-        try {
-            Thread.sleep(16);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        MultiBomb.sleep(16);
     }
 
     @Override

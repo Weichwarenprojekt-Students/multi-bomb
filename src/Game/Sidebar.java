@@ -2,6 +2,7 @@ package Game;
 
 import Game.Models.Player;
 import General.MB;
+import General.MultiBomb;
 import General.Shared.*;
 import Menu.SettingsOverview;
 import Menu.LobbyView;
@@ -143,11 +144,7 @@ public class Sidebar extends MBPanel {
 
             // Wait a bit and move the leave button
             new Thread(() -> {
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                MultiBomb.sleep(delay);
                 slide(leave, (progress, distance) ->
                         menuOpen ? (int) (Math.sin(Math.PI / 2 * progress) * distance) : 0);
 
@@ -163,12 +160,9 @@ public class Sidebar extends MBPanel {
 
             // Wait a bit and hide the settings button
             new Thread(() -> {
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                MultiBomb.sleep(delay);
                 slide(settings, (progress, distance) -> menuOpen ? 0 : (int) -(progress * progress * distance));
+
                 // Ensure right position
                 settings.setLocation(menuOpen ? PADDING : -getHeight() / 2 - PADDING, settings.getY());
                 leave.setLocation(menuOpen ? PADDING : -getHeight() / 2 - PADDING, leave.getY());

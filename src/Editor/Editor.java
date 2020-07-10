@@ -3,6 +3,7 @@ package Editor;
 import Game.Battleground;
 import Game.Models.Field;
 import General.MB;
+import General.MultiBomb;
 import General.Shared.*;
 
 import Server.Messages.Socket.Map;
@@ -184,32 +185,13 @@ public class Editor extends MBPanel {
     private void startDrawing() {
         // Start the draw loop
         editingFinished = false;
-        while (!editingFinished) {
-            // Record the start time
-            long start = System.currentTimeMillis();
-
+        MultiBomb.startTimedAction(WAIT_TIME, ((deltaTime, totalTime) -> {
             // Update the player and repaint
             MB.frame.revalidate();
             MB.frame.repaint();
 
-            // Wait for the next run
-            targetRefreshRate(start);
-        }
-    }
-
-    /**
-     * Target the refresh rate by waiting for the next run
-     *
-     * @param start time in milliseconds
-     */
-    private void targetRefreshRate(long start) {
-        long localDelta = System.currentTimeMillis() - start;
-        if (localDelta < WAIT_TIME) {
-            try {
-                Thread.sleep(WAIT_TIME - localDelta);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+            // Stop drawing if editing is finished
+            return !editingFinished;
+        }));
     }
 }

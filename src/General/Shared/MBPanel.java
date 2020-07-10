@@ -1,6 +1,7 @@
 package General.Shared;
 
 import General.MB;
+import General.MultiBomb;
 
 import javax.swing.*;
 import java.awt.*;
@@ -286,11 +287,7 @@ public abstract class MBPanel extends JPanel {
                 MB.activePanel.repaint();
 
                 // Wait
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                MultiBomb.sleep(delay);
             }
             toast.setLocation(startX + fade.fade(1, distance), toast.getY());
             MB.activePanel.revalidate();
@@ -336,11 +333,7 @@ public abstract class MBPanel extends JPanel {
             slide(toast, (progress, distance) -> (int) -(Math.sin(Math.PI / 2 * progress) * distance));
 
             // Show the toast
-            try {
-                Thread.sleep(DURATION);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            MultiBomb.sleep(DURATION);
             slide(toast, (progress, distance) -> (int) (progress * progress * distance));
             synchronized (this) {
                 toasts.remove(toast);

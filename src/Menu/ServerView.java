@@ -1,6 +1,7 @@
 package Menu;
 
 import General.MB;
+import General.MultiBomb;
 import General.Shared.*;
 import Menu.Dialogs.ServerManagement;
 import Server.Messages.REST.ServerInfo;
@@ -64,7 +65,11 @@ public class ServerView extends MBPanel {
      * Setup the layout
      */
     public void setupLayout() {
-        //The title
+        // Update the player and repaint
+        MB.frame.revalidate();
+        MB.frame.repaint();
+
+        // The title
         MBLabel title = new MBLabel("Server Overview", SwingConstants.CENTER, MBLabel.H1);
         addComponent(title, () -> title.setBounds(
                 getWidth() / 2 - 300,
@@ -186,31 +191,25 @@ public class ServerView extends MBPanel {
      */
     @Override
     public void afterVisible() {
-        //Thread for detecting server in local network
-        new Thread(() -> {
-            running = true;
-            while (true) {
-                // Search for local servers
-                serverList.searchServers();
+        // Thread for detecting server in local network
+        running = true;
+        MultiBomb.startTimedAction(REFRESH_TIME, ((deltaTime, totalTime) -> {
+            // Search for local servers
+            serverList.searchServers();
 
-                // Update ListView
-                listView.addMissingItems(serverList.servers.keySet(), ServerView.ServerListItem::new);
-                MB.frame.revalidate();
-                MB.frame.repaint();
-                spinner.setVisible(false);
-                back.setVisible(true);
+            // Update ListView
+            listView.addMissingItems(serverList.servers.keySet(), ServerListItem::new);
 
-                // Check if Thread still needed
-                if (!running) {
-                    break;
-                }
-                try {
-                    Thread.sleep(REFRESH_TIME);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+            // Remove the loading spinner
+            spinner.setVisible(false);
+
+            // Repaint everything
+            MB.frame.revalidate();
+            MB.frame.repaint();
+
+            // Keep the action running
+            return running;
+        }));
     }
 
     public class ServerListItem extends MBListView.Item {

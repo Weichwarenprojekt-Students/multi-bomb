@@ -2,6 +2,7 @@ package Editor;
 
 import Game.Models.Field;
 import General.MB;
+import General.MultiBomb;
 import General.Shared.*;
 
 import java.awt.*;
@@ -179,22 +180,14 @@ public class Sidebar extends MBPanel {
 
             // Wait a bit and move the save as button
             new Thread(() -> {
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                MultiBomb.sleep(delay);
                 slide(saveAs, (progress, distance) ->
                         menuOpen ? (int) (Math.sin(Math.PI / 2 * progress) * distance) : 0);
             }).start();
 
             // Wait a bit and move the leave button
             new Thread(() -> {
-                try {
-                    Thread.sleep(2 * delay);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                MultiBomb.sleep(2 * delay);
                 slide(leave, (progress, distance) ->
                         menuOpen ? (int) (Math.sin(Math.PI / 2 * progress) * distance) : 0);
 
@@ -211,21 +204,13 @@ public class Sidebar extends MBPanel {
 
             // Wait a bit and hide the save as button
             new Thread(() -> {
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                MultiBomb.sleep(delay);
                 slide(saveAs, (progress, distance) -> menuOpen ? 0 : (int) -(progress * progress * distance));
             }).start();
 
             // Wait a bit and hide the save button
             new Thread(() -> {
-                try {
-                    Thread.sleep(2 * delay);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                MultiBomb.sleep(2 * delay);
                 slide(save, (progress, distance) -> menuOpen ? 0 : (int) -(progress * progress * distance));
 
                 // Ensure right position

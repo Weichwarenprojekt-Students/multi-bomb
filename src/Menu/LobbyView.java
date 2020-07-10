@@ -2,6 +2,7 @@ package Menu;
 
 import Game.Lobby;
 import General.MB;
+import General.MultiBomb;
 import General.Shared.*;
 import Server.DetectLobby;
 import Server.Messages.ErrorMessage;
@@ -79,7 +80,7 @@ public class LobbyView extends MBPanel {
      * Setup the layout
      */
     public void setupLayout() {
-        //The title
+        // The title
         MBLabel title = new MBLabel(Lobby.serverName, SwingConstants.CENTER, MBLabel.H1);
         addComponent(title, () -> title.setBounds(
                 getWidth() / 2 - 300,
@@ -88,7 +89,7 @@ public class LobbyView extends MBPanel {
                 40)
         );
 
-        //Create scrollable listView
+        // Create scrollable listView
         listView = new MBListView<>();
         MBScrollView scroll = new MBScrollView(listView);
         addComponent(scroll, () -> scroll.setBounds(
@@ -97,7 +98,7 @@ public class LobbyView extends MBPanel {
                 getHeight(),
                 getHeight() - 160));
 
-        //loading spinner
+        // Loading spinner
         spinner = new MBSpinner();
         addComponent(spinner, () ->
                 spinner.setBounds(
@@ -187,36 +188,30 @@ public class LobbyView extends MBPanel {
      */
     @Override
     public void afterVisible() {
-        //Thread to detect lobbies on server
-        new Thread(() -> {
-            running = true;
-            while (running) {
-                // Get lobby info from server
-                lobbyInfo = DetectLobby.getLobbyInfo(Lobby.ipAddress);
-                if (lobbyInfo == null) {
-                    running = false;
-                    MB.show(new ServerView(), false);
-                    MB.activePanel.toastError("Server not available!");
-                    break;
-                }
-
-                // Clear ListView and show new lobbies
-                listView.addMissingItems(lobbyInfo.lobbies.keySet(), LobbyListItem::new);
-                MB.frame.revalidate();
-                MB.frame.repaint();
-
-                // Set button visibility
-                spinner.setVisible(false);
-                back.setVisible(true);
-
-                // Wait 2 seconds
-                try {
-                    Thread.sleep(REFRESH_TIME);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        running = true;
+        MultiBomb.startTimedAction(REFRESH_TIME, ((deltaTime, totalTime) -> {
+            // Get lobby info from server
+            lobbyInfo = DetectLobby.getLobbyInfo(Lobby.ipAddress);
+            if (lobbyInfo == null) {
+                running = false;
+                MB.show(new ServerView(), false);
+                MB.activePanel.toastError("Server not available!");
+                return false;
             }
-        }).start();
+
+            // Clear ListView and show new lobbies
+            listView.addMissingItems(lobbyInfo.lobbies.keySet(), LobbyListItem::new);
+
+            // Remove the spinner
+            spinner.setVisible(false);
+
+            // Repaint everything
+            MB.frame.revalidate();
+            MB.frame.repaint();
+
+            // Keep the action running
+            return running;
+        }));
     }
 
     /**

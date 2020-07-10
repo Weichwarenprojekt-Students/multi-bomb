@@ -31,7 +31,7 @@ public class Player {
     /**
      * The speed of a player
      */
-    public static float SPEED = 45f;
+    public static float SPEED = 0.06f;
     /**
      * The name of the player
      */

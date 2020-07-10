@@ -2,6 +2,7 @@ package Game;
 
 import Game.Models.Player;
 import General.MB;
+import General.MultiBomb;
 import General.Shared.MBPanel;
 
 /**
@@ -20,11 +21,7 @@ public class Game extends MBPanel {
     /**
      * The time difference to the last repaint
      */
-    public static float deltaTime;
-    /**
-     * The last time the frame was repainted
-     */
-    public static long lastTime = System.currentTimeMillis();
+    public static long deltaTime;
     /**
      * True if the game is over
      */
@@ -117,37 +114,16 @@ public class Game extends MBPanel {
 
         // Start the game loop
         gameOver = false;
-        while (!gameOver) {
-            // Update the global times
-            deltaTime = (float) (System.currentTimeMillis() - lastTime) / 1000;
-            lastTime = System.currentTimeMillis();
-
-            // Record the start time
-            long start = System.currentTimeMillis();
+        MultiBomb.startTimedAction(WAIT_TIME, (deltaTime, lastTime) -> {
+            Game.deltaTime = deltaTime;
 
             // Update the player and repaint
             Lobby.players.get(Lobby.player).update();
             MB.frame.revalidate();
             MB.frame.repaint();
 
-            // Wait for the next run
-            targetRefreshRate(start);
-        }
-    }
-
-    /**
-     * Target the refresh rate by waiting for the next run
-     *
-     * @param start time in milliseconds
-     */
-    private void targetRefreshRate(long start) {
-        long localDelta = System.currentTimeMillis() - start;
-        if (localDelta < WAIT_TIME) {
-            try {
-                Thread.sleep(WAIT_TIME - localDelta);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+            // End the game if gameOver is true
+            return !gameOver;
+        });
     }
 }

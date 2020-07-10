@@ -2,7 +2,6 @@ package General;
 
 import Server.Server;
 
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -85,11 +84,20 @@ public class MultiBomb {
     private static void targetRefreshRate(long start, long waitTime) {
         long localDelta = System.currentTimeMillis() - start;
         if (localDelta < waitTime) {
-            try {
-                Thread.sleep(waitTime - localDelta);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            sleep(waitTime - localDelta);
+        }
+    }
+
+    /**
+     * Let a thread sleep for a certain time
+     *
+     * @param time to be in sleep mode
+     */
+    public static void sleep(long time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

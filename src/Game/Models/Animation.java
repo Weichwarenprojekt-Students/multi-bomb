@@ -23,7 +23,7 @@ public enum Animation {
     /**
      * The time for one animation run
      */
-    public static final float MAX_TIME = 0.8f;
+    public static final long MAX_TIME = 600;
     /**
      * The ratio of the measurements
      */
@@ -35,7 +35,7 @@ public enum Animation {
     /**
      * The current time counter for the animation
      */
-    public float[] currentTimes = new float[]{0, 0, 0, 0, 0, 0, 0, 0};
+    public long[] currentTimes = new long[]{0, 0, 0, 0, 0, 0, 0, 0};
     /**
      * The row in which the corresponding sprite is in
      */
@@ -91,9 +91,9 @@ public enum Animation {
     private int getN(Position position, int index) {
         currentTimes[index] += Game.deltaTime;
         if (currentTimes[index] > MAX_TIME || !position.moving) {
-            currentTimes[index] = 0f;
+            currentTimes[index] = 0;
         } else {
-            int animation = (int) (currentTimes[index] / MAX_TIME * ORDER.length);
+            int animation = (int) ((float) currentTimes[index] / MAX_TIME * ORDER.length);
             return ORDER[animation < ORDER.length ? animation : ORDER.length - 1];
         }
         return ORDER[0];
