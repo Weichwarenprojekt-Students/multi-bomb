@@ -66,6 +66,8 @@ public class Game extends MBPanel {
 
             @Override
             public void hostChanged(String name) {
+                toastSuccess(name + " is host now!");
+                Lobby.lobby.changeButtonActivity();
             }
 
             @Override

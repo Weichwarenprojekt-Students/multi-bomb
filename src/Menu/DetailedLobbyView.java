@@ -260,7 +260,7 @@ public class DetailedLobbyView extends MBPanel {
     /**
      * Enable/Disable the configuration buttons
      */
-    private void changeButtonActivity() {
+    public void changeButtonActivity() {
         // Check if player is host
         boolean enabled = Lobby.isHost(player);
         // Enable/Disable buttons
