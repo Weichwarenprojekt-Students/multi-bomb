@@ -31,6 +31,9 @@ public class MapManager {
         loadAllCustomMaps(new File(PATH));
         // Load the standard maps
         loadStandardMap("X-Factor");
+        loadStandardMap("Labyrinth");
+        loadStandardMap("Breakable");
+        loadStandardMap("Cage-Fight");
     }
 
     /**
