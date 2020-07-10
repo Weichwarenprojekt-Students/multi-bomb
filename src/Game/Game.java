@@ -4,6 +4,7 @@ import Game.Models.Player;
 import General.MB;
 import General.MultiBomb;
 import General.Shared.MBPanel;
+import General.Shared.MBSpinner;
 
 /**
  * This class displays and handles the game
@@ -47,7 +48,6 @@ public class Game extends MBPanel {
      * Setup the layout
      */
     public void setupLayout() {
-
         // React to lobby changes
         Lobby.setLobbyChangeEvent(new Lobby.LobbyChangeEvent() {
             @Override
@@ -78,6 +78,15 @@ public class Game extends MBPanel {
      */
     @Override
     public void afterVisible() {
+        // The loading spinner
+        MBSpinner spinner = new MBSpinner();
+        addComponent(spinner, () -> spinner.setBounds(
+                getWidth() / 2 - 50,
+                getHeight() / 2 - 50,
+                100,
+                100
+        ));
+
         // Add the battleground
         battleground = new Battleground(Lobby.map, true, false);
         addComponent(battleground, () -> {
@@ -89,6 +98,7 @@ public class Game extends MBPanel {
             );
             battleground.calculateSize();
         });
+
         // Add the sidebar
         sidebar = new Sidebar();
         addComponent(sidebar, () -> sidebar.setBounds(
@@ -97,10 +107,14 @@ public class Game extends MBPanel {
                 (int) (1.5 * getHeight()) - 2 * MARGIN,
                 getHeight() - 2 * MARGIN
         ));
-
-        // Call the after visible methods
         sidebar.afterVisible();
+
+        // Show the battleground
+        MultiBomb.sleep(1000);
+        spinner.setVisible(false);
         battleground.afterVisible();
+        MB.frame.repaint();
+        MB.frame.revalidate();
     }
 
     /**
