@@ -27,11 +27,15 @@ public class Player {
     /**
      * The amount of time the player is protected after respawn
      */
-    public static int SPAWN_PROTECTION = 3000;
+    public static final int SPAWN_PROTECTION = 3000;
     /**
-     * The speed of a player
+     * The maximum speed value for a player
      */
-    public static float SPEED = 0.06f;
+    public static final float MAX_SPEED = 0.1f, MIN_SPEED = 0.06f;
+    /**
+     * The current speed value for a player
+     */
+    public float speed = MIN_SPEED;
     /**
      * The name of the player
      */
@@ -132,6 +136,14 @@ public class Player {
     }
 
     /**
+     * Update the speed of the player
+     */
+    public void updateSpeed() {
+        speed = (MAX_SPEED - MIN_SPEED) * state.upgrades.speed / Upgrades.MAX_SPEED + MIN_SPEED;
+        System.out.println(speed);
+    }
+
+    /**
      * Show visually that the player took a hit
      */
     public void takeHit() {
@@ -144,7 +156,7 @@ public class Player {
             }
 
             // Reduce the players opacity
-            opacity = (float) (0.3 * Math.cos(6 * Math.PI * (duration - totalTime) / duration)) + 0.5f ;
+            opacity = (float) (0.3 * Math.cos(6 * Math.PI * (duration - totalTime) / duration)) + 0.5f;
             return true;
         });
     }
@@ -317,8 +329,8 @@ public class Player {
      */
     public void update() {
         // Calculate the next position
-        float newX = position.x + position.direction.x * Game.deltaTime * SPEED;
-        float newY = position.y + position.direction.y * Game.deltaTime * SPEED;
+        float newX = position.x + position.direction.x * Game.deltaTime * speed;
+        float newY = position.y + position.direction.y * Game.deltaTime * speed;
 
         // Calculate the item on the next field (with some offset for collision detection)
         int m = (int) (newY + position.direction.y * 10) / Map.FIELD_SIZE;

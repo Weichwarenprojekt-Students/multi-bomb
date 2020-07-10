@@ -412,8 +412,13 @@ public class Lobby {
         if (player.equals(item.playerId)) {
             SoundControl.playSoundEffect(SoundEffect.COLLECT_ITEM);
         }
+
+        // Update the map
         map.fields[item.m][item.n] = Field.GROUND.id;
+
+        // Update the state
         players.get(item.playerId).state.collectItem(item.item, false);
+        players.get(item.playerId).updateSpeed();
     }
 
     /**
