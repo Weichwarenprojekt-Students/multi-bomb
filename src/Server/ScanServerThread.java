@@ -53,6 +53,7 @@ public class ScanServerThread implements Runnable {
             // Add the item
             Message responseMessage = Message.fromJson(response.body());
             ServerInfo serverInfo = (ServerInfo) responseMessage;
+            serverInfo.serverType = type;
             synchronized (serverList) {
                 serverList.put(serverAddress, serverInfo);
             }

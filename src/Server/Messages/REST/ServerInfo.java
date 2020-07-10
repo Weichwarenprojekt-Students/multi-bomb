@@ -20,6 +20,10 @@ public class ServerInfo extends Message {
      * Maximum number of lobbies
      */
     public int maxLobbies;
+    /**
+     * The server type (remote or local)
+     */
+    public String serverType;
 
     /**
      * Constructor

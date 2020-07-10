@@ -273,7 +273,7 @@ public class ServerView extends MBPanel {
             descriptionLabel.setText(
                     "Tick-Rate " + server.ticksPerSecond
                             + " \u2022 Lobbies " + server.lobbyCount + "/" + server.maxLobbies
-                            + " \u2022 Type " + server.type
+                            + " \u2022 Type " + server.serverType
             );
         }
 
