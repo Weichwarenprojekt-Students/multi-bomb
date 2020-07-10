@@ -45,4 +45,58 @@ public class MultiBomb {
             MB.startGame();
         }
     }
+
+    /**
+     * Start a timed action
+     *
+     * @param waitTime  for each iteration
+     * @param action    to be executed
+     */
+    public static void startTimedAction(long waitTime, TimedAction action) {
+        new Thread(() -> {
+            // The time variables
+            long startTime = System.currentTimeMillis(), deltaTime, lastTime = startTime - waitTime;
+
+            // The running variable
+            boolean running = true;
+
+            while (running) {
+                // Update the global times
+                deltaTime = System.currentTimeMillis() - lastTime;
+                lastTime = System.currentTimeMillis();
+
+                // Record the start time
+                long start = System.currentTimeMillis();
+
+                // Execute the action
+                running = action.action(deltaTime, System.currentTimeMillis() - startTime);
+
+                // Wait for the next run
+                targetRefreshRate(start, waitTime);
+            }
+        }).start();
+    }
+
+    /**
+     * Target the refresh rate by waiting for the next run
+     *
+     * @param start time in milliseconds
+     */
+    private static void targetRefreshRate(long start, long waitTime) {
+        long localDelta = System.currentTimeMillis() - start;
+        if (localDelta < waitTime) {
+            try {
+                Thread.sleep(waitTime - localDelta);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * The interface for timed actions
+     */
+    public interface TimedAction {
+        boolean action(long deltaTime, long totalTime);
+    }
 }

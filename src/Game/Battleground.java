@@ -95,6 +95,7 @@ public class Battleground extends MBPanel {
         if (!startDrawing) {
             return;
         }
+        Graphics2D g2d = (Graphics2D) g;
         MB.settings.enableAntiAliasing(g);
 
         // Draw the ground
@@ -142,9 +143,11 @@ public class Battleground extends MBPanel {
 
                 // Check if it should draw the player
                 if (drawPlayers) {
-                    for (java.util.Map.Entry<String, Player> player : Lobby.players.entrySet()) {
-                        if (player.getValue() != null && player.getValue().isOnField(m, n)) {
-                            player.getValue().draw(g);
+                    for (Player player : Lobby.players.values()) {
+                        if (player != null && player.isOnField(m, n)) {
+                            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, player.opacity));
+                            player.draw(g);
+                            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
                         }
                     }
                 }

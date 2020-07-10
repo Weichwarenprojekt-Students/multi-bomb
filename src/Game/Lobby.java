@@ -450,7 +450,7 @@ public class Lobby {
      * @param event of the server
      */
     private static void respawn(Respawn event) {
-        players.get(event.playerId).setSpawn();
+        players.get(event.playerId).die(true);
     }
 
     /**

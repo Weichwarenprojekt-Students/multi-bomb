@@ -1,5 +1,6 @@
 package Server.Messages.Socket;
 
+import Game.Lobby;
 import Game.Models.Field;
 import Game.Models.Upgrades;
 import General.Sound.SoundControl;
@@ -62,10 +63,16 @@ public class PlayerState extends Message {
      * @param state new state
      */
     public void update(PlayerState state) {
-        this.health = state.health;
         this.kills = state.kills;
-        if (this.health <= 0) {
-            SoundControl.playSoundEffect(SoundEffect.CHARACTER_DEATH);
+
+        // Check if the player should die
+        if (state.health <= 0) {
+            Lobby.players.get(state.playerId).die(false);
+        } else if (state.health < this.health) {
+            this.health = state.health;
+            Lobby.players.get(state.playerId).takeHit();
+        } else {
+            this.health = state.health;
         }
     }
 

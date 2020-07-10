@@ -5,8 +5,11 @@ import Game.Game;
 import Game.Items.Bomb;
 import Game.Items.Item;
 import Game.Lobby;
+import General.MultiBomb;
 import General.Shared.MBImage;
 import General.Shared.MBPanel;
+import General.Sound.SoundControl;
+import General.Sound.SoundEffect;
 import Server.Messages.Socket.ItemAction;
 import Server.Messages.Socket.Map;
 import Server.Messages.Socket.PlayerState;
@@ -42,6 +45,10 @@ public class Player {
      */
     public int color;
     /**
+     * Opacity of the player
+     */
+    public float opacity = 1f;
+    /**
      * The player state
      */
     public PlayerState state = new PlayerState();
@@ -49,6 +56,10 @@ public class Player {
      * The player's item
      */
     public Item item;
+    /**
+     * True if the player is controllable
+     */
+    private boolean controllable = true;
     /**
      * The sprite of the player
      */
@@ -103,6 +114,68 @@ public class Player {
         position.x = Lobby.map.spawns[color].x * Map.FIELD_SIZE + (float) Map.FIELD_SIZE / 2;
         position.y = Lobby.map.spawns[color].y * Map.FIELD_SIZE + (float) Map.FIELD_SIZE / 2;
         position.direction = Lobby.map.spawns[color].direction;
+    }
+
+    /**
+     * Method to disable movement
+     */
+    public void enableMovement() {
+        this.controllable = true;
+    }
+
+    /**
+     * Method to disable movement
+     */
+    public void disableMovement() {
+        this.controllable = false;
+        position.moving = false;
+    }
+
+    /**
+     * Show visually that the player took a hit
+     */
+    public void takeHit() {
+        int duration = 3000;
+        MultiBomb.startTimedAction(Game.WAIT_TIME, (deltaTime, totalTime) -> {
+            // Reset the opacity and respawn the player
+            if (totalTime > duration) {
+                opacity = 1f;
+                return false;
+            }
+
+            // Reduce the players opacity
+            opacity = (float) (0.3 * Math.cos(6 * Math.PI * (duration - totalTime) / duration)) + 0.5f ;
+            return true;
+        });
+    }
+
+    /**
+     * Let the player die
+     *
+     * @param respawn true if the player shall respawn
+     */
+    public void die(boolean respawn) {
+        SoundControl.playSoundEffect(SoundEffect.CHARACTER_DEATH);
+        disableMovement();
+
+        int duration = 2000;
+        MultiBomb.startTimedAction(Game.WAIT_TIME, (deltaTime, totalTime) -> {
+            // Reset the opacity and respawn the player
+            if (totalTime > duration) {
+                if (respawn) {
+                    setSpawn();
+                    enableMovement();
+                } else {
+                    state.health = 0;
+                }
+                opacity = 1f;
+                return false;
+            }
+
+            // Reduce the players opacity
+            opacity = (float) (duration - totalTime) / duration;
+            return true;
+        });
     }
 
     /**
@@ -205,15 +278,17 @@ public class Player {
      * @param direction of movement
      */
     private void startMoving(Direction direction) {
-        position.direction = direction;
-        position.moving = true;
+        if (controllable) {
+            position.direction = direction;
+            position.moving = true;
+        }
     }
 
     /**
      * Use the players current item
      */
     private void useItem() {
-        if (!usingItem) {
+        if (!usingItem && controllable) {
             usingItem = true;
             Lobby.sendMessage(new ItemAction(
                     item.name,
