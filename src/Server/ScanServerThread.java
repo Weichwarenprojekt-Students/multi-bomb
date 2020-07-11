@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.HashMap;
 
 public class ScanServerThread implements Runnable {
@@ -28,6 +29,13 @@ public class ScanServerThread implements Runnable {
      */
     public String type;
 
+    /**
+     * Constructor
+     *
+     * @param address    the address
+     * @param serverList the list to be filled
+     * @param type       server type (remote/local)
+     */
     public ScanServerThread(String address, HashMap<String, ServerInfo> serverList, String type) {
         this.serverAddress = address;
         this.serverList = serverList;
@@ -37,7 +45,7 @@ public class ScanServerThread implements Runnable {
     @Override
     public void run() {
         // Create http request for server info
-        HttpRequest request = HttpRequest.newBuilder().GET().uri(
+        HttpRequest request = HttpRequest.newBuilder().GET().timeout(Duration.ofSeconds(1)).uri(
                 URI.create("http://" + serverAddress + ":" + Server.HTTP_PORT + "/server")
         ).build();
 
