@@ -11,7 +11,7 @@ public class MBListView<T extends MBListView.Item> extends JPanel {
     /**
      * The list that contains the content
      */
-    private final TreeMap<String, T> items = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private final TreeMap<String, T> items = new TreeMap<>();
     /**
      * The order can be used to give the list a specific order
      */
