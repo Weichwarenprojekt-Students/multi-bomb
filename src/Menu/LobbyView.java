@@ -31,6 +31,10 @@ import static Menu.ServerView.REFRESH_TIME;
 public class LobbyView extends MBPanel {
 
     /**
+     * Max length for a player name
+     */
+    private static final int MAX_PLAYER_NAME = 12;
+    /**
      * Selected lobby
      */
     private static String selectedLobby = "";
@@ -122,7 +126,7 @@ public class LobbyView extends MBPanel {
         join.addActionListener(e -> {
             LobbyInfo.SingleLobbyInfo lobby = lobbyInfo.lobbies.get(selectedLobby);
             if (lobby != null) {
-                showDialog(new MBInputDialog("Enter your name", MB.settings.playerName, text -> {
+                showDialog(new MBInputDialog("Enter your name", MB.settings.playerName, MAX_PLAYER_NAME, text -> {
                     MB.activePanel.closeDialog();
                     MB.settings.playerName = text;
                     MB.settings.saveSettings();
@@ -150,7 +154,7 @@ public class LobbyView extends MBPanel {
                 MB.activePanel.closeDialog();
                 MB.settings.lobbyName = lobby;
                 MB.settings.saveSettings();
-                showDialog(new MBInputDialog("Enter your name", MB.settings.playerName, player -> {
+                showDialog(new MBInputDialog("Enter your name", MB.settings.playerName, MAX_PLAYER_NAME, player -> {
                     MB.activePanel.closeDialog();
                     MB.settings.playerName = player;
                     MB.settings.saveSettings();

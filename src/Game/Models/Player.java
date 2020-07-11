@@ -6,8 +6,7 @@ import Game.Items.Bomb;
 import Game.Items.Item;
 import Game.Lobby;
 import General.MultiBomb;
-import General.Shared.MBImage;
-import General.Shared.MBPanel;
+import General.Shared.*;
 import General.Sound.SoundControl;
 import General.Sound.SoundEffect;
 import Server.Messages.Socket.ItemAction;
@@ -28,6 +27,10 @@ public class Player {
      * The amount of time the player is protected after respawn
      */
     public static final int SPAWN_PROTECTION = 3000;
+    /**
+     * The font for the name
+     */
+    public static final Font nameFont = new Font(MBLabel.FONT_NAME, Font.BOLD, 14);
     /**
      * The maximum speed value for a player
      */
@@ -396,17 +399,36 @@ public class Player {
         int dy = (int) ((position.y - 32) * Battleground.ratio) + Battleground.offset;
         // Calculate the position of the sprite
         int[] spritePosition = Animation.getSpritePosition(position, color);
+
+        // Create the sub image
+        Image image = sprite.getSub(
+                (int) (spriteRatio * SCALE * spritePosition[1] * PLAYER_WIDTH),
+                (int) (spriteRatio * SCALE * spritePosition[0] * PLAYER_HEIGHT),
+                (int) (spriteRatio * SCALE * PLAYER_WIDTH),
+                (int) (spriteRatio * SCALE * PLAYER_HEIGHT)
+        );
+
         // Draw the image
-        g.drawImage(
-                sprite.getSub(
-                        (int) (spriteRatio * SCALE * spritePosition[1] * PLAYER_WIDTH),
-                        (int) (spriteRatio * SCALE * spritePosition[0] * PLAYER_HEIGHT),
-                        (int) (spriteRatio * SCALE * PLAYER_WIDTH),
-                        (int) (spriteRatio * SCALE * PLAYER_HEIGHT)
-                ),
-                dx,
-                dy,
-                null
+        g.drawImage(image, dx, dy, null);
+
+        // Fill rect
+        g.setFont(nameFont);
+        g.setColor(MBButton.BACKGROUND_COLOR);
+        g.fillRoundRect(
+                dx + (image.getWidth(null) - g.getFontMetrics().stringWidth(name)) / 2 - 2,
+                dy - 18,
+                g.getFontMetrics().stringWidth(name) + 4,
+                16,
+                MBBackground.CORNER_RADIUS,
+                MBBackground.CORNER_RADIUS
+        );
+
+        // Draw the name
+        g.setColor(Color.WHITE);
+        g.drawString(
+                name,
+                dx + (image.getWidth(null) - g.getFontMetrics().stringWidth(name)) / 2,
+                dy - 5
         );
     }
 }

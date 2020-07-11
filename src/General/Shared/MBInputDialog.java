@@ -27,6 +27,29 @@ public class MBInputDialog extends JPanel {
      * @param event       that is triggered whenever the confirm button is used
      */
     public MBInputDialog(String title, String defaultText, OnConfirm event) {
+        setupDialog(title, defaultText, MAX_LENGTH, event);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param title       of the dialog
+     * @param defaultText to be shown in the input field
+     * @param maxLength   max length of the name
+     * @param event       that is triggered whenever the confirm button is used
+     */
+    public MBInputDialog(String title, String defaultText, int maxLength, OnConfirm event) {
+        setupDialog(title, defaultText, maxLength, event);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param title       of the dialog
+     * @param defaultText to be shown in the input field
+     * @param event       that is triggered whenever the confirm button is used
+     */
+    public void setupDialog(String title, String defaultText, int maxLength, OnConfirm event) {
         setLayout(null);
         setBackground(Color.white);
         setBounds(0, 0, 3 * MARGIN + 2 * BUTTON_WIDTH, 50 + 2 * BUTTON_HEIGHT + MARGIN);
@@ -57,10 +80,10 @@ public class MBInputDialog extends JPanel {
             if (text.isEmpty()) {
                 MB.activePanel.toastError("Name is empty!");
                 return;
-            } else if (text.length() > MAX_LENGTH) {
+            } else if (text.length() > maxLength) {
                 MB.activePanel.toastError(
                         "This name exceeds the",
-                        "character limit of " + MAX_LENGTH + " by " + (text.length() - MAX_LENGTH) + "!"
+                        "character limit of " + maxLength + " by " + (text.length() - maxLength) + "!"
                 );
                 return;
             }
@@ -68,6 +91,8 @@ public class MBInputDialog extends JPanel {
         });
         add(confirm);
     }
+
+
 
     /**
      * Event that is triggered when confirm button is used
