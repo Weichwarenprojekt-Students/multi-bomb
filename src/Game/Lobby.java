@@ -318,6 +318,7 @@ public class Lobby {
      * Start the game by sending the selected map
      */
     public static void startGame() {
+        map.shuffleSpawns();
         out.println(map.toJson());
     }
 

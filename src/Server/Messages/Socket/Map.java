@@ -4,6 +4,10 @@ import Game.Items.Item;
 import Game.Models.Field;
 import Server.Messages.Message;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * The model for a map
  */
@@ -116,6 +120,15 @@ public class Map extends Message {
             }
         }
         return true;
+    }
+
+    /**
+     * Shuffle the map's spawns
+     */
+    public void shuffleSpawns() {
+        List<Position> spawnList = Arrays.asList(spawns);
+        Collections.shuffle(spawnList);
+        spawnList.toArray(spawns);
     }
 
     /**
