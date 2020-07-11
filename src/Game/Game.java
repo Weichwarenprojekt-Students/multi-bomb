@@ -132,7 +132,7 @@ public class Game extends MBPanel {
             Game.deltaTime = deltaTime;
 
             // Update the player and repaint
-            Lobby.players.get(Lobby.player).update();
+            Lobby.players.get(Lobby.player).move();
             MB.frame.revalidate();
             MB.frame.repaint();
 

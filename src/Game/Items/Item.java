@@ -41,6 +41,22 @@ public abstract class Item {
     }
 
     /**
+     * Check if an item is passable
+     *
+     * @param onItem true if the player is on an item
+     * @param item that is on that place
+     * @return true if item is passable
+     */
+    public static boolean isPassable(boolean onItem, Item item) {
+        if (item == null || onItem) {
+            return true;
+        } else if (item.name.equals(BOMB)) {
+            return false;
+        }
+        return false;
+     }
+
+    /**
      * Get an item by the name
      *
      * @param name of the item
@@ -50,6 +66,10 @@ public abstract class Item {
         return new Bomb();
     }
 
+    /**
+     * Check if an item is usable
+     */
+    public abstract boolean isUsable(int m, int n, Upgrades upgrades);
 
     /**
      * Handle the use of an item

@@ -392,6 +392,9 @@ public class Lobby {
      */
     private static void handleItemAction(ItemAction action) {
         players.get(action.playerId).handleItemAction(action.itemId, action.m, action.n);
+        for (Player player : players.values()) {
+            player.isOnItem(action.m, action.n);
+        }
     }
 
     /**

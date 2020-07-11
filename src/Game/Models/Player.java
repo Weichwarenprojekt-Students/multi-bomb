@@ -61,6 +61,10 @@ public class Player {
      */
     public Item item;
     /**
+     * True if the player is on an item
+     */
+    public boolean onItem = false;
+    /**
      * True if the player is controllable
      */
     private boolean controllable = true;
@@ -140,7 +144,6 @@ public class Player {
      */
     public void updateSpeed() {
         speed = (MAX_SPEED - MIN_SPEED) * state.upgrades.speed / Upgrades.MAX_SPEED + MIN_SPEED;
-        System.out.println(speed);
     }
 
     /**
@@ -300,14 +303,11 @@ public class Player {
      * Use the players current item
      */
     private void useItem() {
-        if (!usingItem && controllable) {
+        int m = (int) (position.y / Map.FIELD_SIZE);
+        int n = (int) (position.x / Map.FIELD_SIZE);
+        if (!usingItem && controllable && item.isUsable(m, n, state.upgrades)) {
             usingItem = true;
-            Lobby.sendMessage(new ItemAction(
-                    item.name,
-                    name,
-                    (int) (position.y / Map.FIELD_SIZE),
-                    (int) (position.x / Map.FIELD_SIZE)
-            ));
+            Lobby.sendMessage(new ItemAction(item.name, name, m, n));
         }
     }
 
@@ -325,9 +325,24 @@ public class Player {
     }
 
     /**
+     * Check if player is on item
+     *
+     * @param m position
+     * @param n position
+     */
+    public void isOnItem(int m, int n) {
+        // Calculate the item on the next field
+        int mPlayer = (int) (position.y) / Map.FIELD_SIZE;
+        int nPlayer = (int) (position.x) / Map.FIELD_SIZE;
+
+        // Check it
+        onItem = onItem || (mPlayer == m && nPlayer == n);
+    }
+
+    /**
      * Update the players position
      */
-    public void update() {
+    public void move() {
         // Calculate the next position
         float newX = position.x + position.direction.x * Game.deltaTime * speed;
         float newY = position.y + position.direction.y * Game.deltaTime * speed;
@@ -335,11 +350,17 @@ public class Player {
         // Calculate the item on the next field (with some offset for collision detection)
         int m = (int) (newY + position.direction.y * 10) / Map.FIELD_SIZE;
         int n = (int) (newX + position.direction.x * 10) / Map.FIELD_SIZE;
-
         // Check if character should move
-        if (position.moving && Field.getItem(Lobby.map.fields[m][n]).isPassable()) {
+        if (position.moving && Field.getItem(Lobby.map.fields[m][n]).isPassable()
+            && Item.isPassable(onItem, Map.items[m][n])) {
+            // Update the position
             position.x = newX;
             position.y = newY;
+
+            // Update on item state
+            m = (int) (position.y) / Map.FIELD_SIZE;
+            n = (int) (position.x) / Map.FIELD_SIZE;
+            onItem = Map.items[m][n] != null;
         }
     }
 

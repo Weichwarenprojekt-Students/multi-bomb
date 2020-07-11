@@ -14,6 +14,14 @@ import java.awt.*;
 
 public class Bomb extends Item {
     /**
+     * The time till the bomb detonates in seconds
+     */
+    public static float DETONATION_TIME = Server.Items.Bomb.DETONATION_TIME;
+    /**
+     * The total time in seconds
+     */
+    public static float TOTAL_TIME = Server.Items.Bomb.TOTAL_TIME;
+    /**
      * The horizontal sprite
      */
     private static MBImage horizontalImage;
@@ -41,14 +49,6 @@ public class Bomb extends Item {
      * The core sprite
      */
     private static MBImage coreImage;
-    /**
-     * The time till the bomb detonates in seconds
-     */
-    public static float DETONATION_TIME = Server.Items.Bomb.DETONATION_TIME;
-    /**
-     * The total time in seconds
-     */
-    public static float TOTAL_TIME = Server.Items.Bomb.TOTAL_TIME;
     /**
      * The bomb sprite
      */
@@ -108,6 +108,19 @@ public class Bomb extends Item {
     }
 
     /**
+     * Check if the player can use another bomb
+     *
+     * @param m        position
+     * @param n        position
+     * @param upgrades of the player
+     * @return true if player can use another bomb
+     */
+    @Override
+    public boolean isUsable(int m, int n, Upgrades upgrades) {
+        return upgrades.bombCount > 0 && Map.items[m][n] == null;
+    }
+
+    /**
      * Use the bomb
      *
      * @param m        position of the item use
@@ -120,29 +133,26 @@ public class Bomb extends Item {
         this.upgrades = upgrades;
         this.startTime = System.currentTimeMillis();
 
-        // Check if the player is able to place a bomb
-        if (upgrades.bombCount > 0 && Map.items[m][n] == null) {
+        // Add the item to the map so that the battleground can draw it
+        Map.items[m][n] = this;
 
-            // Add the item to the map so that the battleground can draw it
-            Map.items[m][n] = this;
+        // Plays the Sound when Bomb is set
+        SoundControl.playSoundEffect(SoundEffect.SET_BOMB);
 
-            //Plays the Sound when Bomb is set
-            SoundControl.playSoundEffect(SoundEffect.SET_BOMB);
+        // Plays the explosion sound when bomb detonates
+        new java.util.Timer().schedule(
+                new java.util.TimerTask() {
+                    @Override
+                    public void run() {
+                        SoundControl.playSoundEffect(SoundEffect.BOMB_EXPLOSION);
+                    }
+                },
+                (int) (DETONATION_TIME * 1000)
+        );
 
-            //Plays the explosion sound when bomb detonates
-            new java.util.Timer().schedule(
-                    new java.util.TimerTask() {
-                        @Override
-                        public void run() {
-                            SoundControl.playSoundEffect(SoundEffect.BOMB_EXPLOSION);
-                        }
-                    },
-                    (int) (DETONATION_TIME * 1000)
-            );
-
-            // Decrease the bomb count
-            upgrades.bombCount--;
-        }
+        // Decrease the bomb count
+        upgrades.bombCount--;
+            
         // Use the item
         return new Bomb();
     }
