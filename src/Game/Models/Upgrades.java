@@ -6,10 +6,6 @@ public class Upgrades {
      */
     public static final int MAX_BOMB_SIZE = 5;
     /**
-     * The maximum bomb count
-     */
-    public static final int MAX_BOMB_COUNT = 5;
-    /**
      * The maximum speed
      */
     public static final int MAX_SPEED = 5;

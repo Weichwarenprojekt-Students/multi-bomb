@@ -95,9 +95,7 @@ public class PlayerState extends Message {
         switch (item) {
             case BOMB:
                 // increment number of bombs the player can place
-                if (upgrades.bombCount < Upgrades.MAX_BOMB_COUNT) {
-                    upgrades.bombCount++;
-                }
+                upgrades.bombCount++;
                 break;
             case SPEED:
                 // increment speed of player
