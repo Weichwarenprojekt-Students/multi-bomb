@@ -1,11 +1,6 @@
 package General.Shared;
 
-import Editor.Editor;
-import Editor.MapManager;
 import General.MB;
-import General.Shared.MBButton;
-import General.Shared.MBInput;
-import General.Shared.MBLabel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +17,7 @@ public class MBInputDialog extends JPanel {
     /**
      * The maximum name length for a map
      */
-    private static final int MAX_LENGTH = 16;
+    private static final int MAX_LENGTH = 24;
 
     /**
      * Constructor
@@ -63,7 +58,10 @@ public class MBInputDialog extends JPanel {
                 MB.activePanel.toastError("Name is empty!");
                 return;
             } else if (text.length() > MAX_LENGTH) {
-                MB.activePanel.toastError("This name exceeds the", "character limit of " + MAX_LENGTH);
+                MB.activePanel.toastError(
+                        "This name exceeds the",
+                        "character limit of " + MAX_LENGTH + " by " + (text.length() - MAX_LENGTH) + "!"
+                );
                 return;
             }
             event.onConfirm(input.getText());
