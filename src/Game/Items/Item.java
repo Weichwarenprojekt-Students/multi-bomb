@@ -3,6 +3,7 @@ package Game.Items;
 import Game.Models.Field;
 import Game.Models.Upgrades;
 import General.Shared.MBPanel;
+import Server.Messages.Socket.Map;
 
 import java.awt.*;
 
@@ -43,18 +44,20 @@ public abstract class Item {
     /**
      * Check if an item is passable
      *
-     * @param onItem true if the player is on an item
-     * @param item that is on that place
+     * @param onItem the on item state of the player
+     * @param m      position
+     * @param n      position
      * @return true if item is passable
      */
-    public static boolean isPassable(boolean onItem, Item item) {
-        if (item == null || onItem) {
+    public static boolean isPassable(OnItem onItem, int m, int n) {
+        Item item = Map.items[m][n];
+        if (item == null || (onItem.onItem && onItem.m == m && onItem.n == n)) {
             return true;
         } else if (item.name.equals(BOMB)) {
             return false;
         }
         return false;
-     }
+    }
 
     /**
      * Get an item by the name
@@ -80,4 +83,29 @@ public abstract class Item {
      * Draw a used item
      */
     public abstract Item draw(Graphics2D g, int m, int n);
+
+    /**
+     * Class that describes the player's position on an item
+     */
+    public static class OnItem {
+        /**
+         * True if the player is on an item
+         */
+        public boolean onItem = false;
+        /**
+         * The position of the item the player's on
+         */
+        public int m, n;
+
+        /**
+         * Set the new position
+         *
+         * @param m position
+         * @param n position
+         */
+        public void setPosition(int m, int n) {
+            this.m = m;
+            this.n = n;
+        }
+    }
 }

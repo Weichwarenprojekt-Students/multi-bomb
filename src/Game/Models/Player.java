@@ -66,7 +66,7 @@ public class Player {
     /**
      * True if the player is on an item
      */
-    public boolean onItem = false;
+    private final Item.OnItem onItem = new Item.OnItem();
     /**
      * True if the player is controllable
      */
@@ -338,8 +338,12 @@ public class Player {
         int mPlayer = (int) (position.y) / Map.FIELD_SIZE;
         int nPlayer = (int) (position.x) / Map.FIELD_SIZE;
 
-        // Check it
-        onItem = onItem || (mPlayer == m && nPlayer == n);
+        // Check it and update position
+        boolean samePosition = (mPlayer == m && nPlayer == n);
+        onItem.onItem = onItem.onItem || samePosition;
+        if (samePosition) {
+            onItem.setPosition(m, n);
+        }
     }
 
     /**
@@ -355,7 +359,7 @@ public class Player {
         int n = (int) (newX + position.direction.x * 10) / Map.FIELD_SIZE;
         // Check if character should move
         if (position.moving && Field.getItem(Lobby.map.fields[m][n]).isPassable()
-            && Item.isPassable(onItem, Map.items[m][n])) {
+            && Item.isPassable(onItem, m, n)) {
             // Update the position
             position.x = newX;
             position.y = newY;
@@ -363,7 +367,7 @@ public class Player {
             // Update on item state
             m = (int) (position.y) / Map.FIELD_SIZE;
             n = (int) (position.x) / Map.FIELD_SIZE;
-            onItem = Map.items[m][n] != null;
+            onItem.onItem = Map.items[m][n] != null && onItem.m == m && onItem.n == n;
         }
     }
 
