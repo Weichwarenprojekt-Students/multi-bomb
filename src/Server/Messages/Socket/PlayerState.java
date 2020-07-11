@@ -3,8 +3,6 @@ package Server.Messages.Socket;
 import Game.Lobby;
 import Game.Models.Field;
 import Game.Models.Upgrades;
-import General.Sound.SoundControl;
-import General.Sound.SoundEffect;
 import Server.Messages.Message;
 
 public class PlayerState extends Message {
