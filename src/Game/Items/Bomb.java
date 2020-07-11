@@ -176,7 +176,7 @@ public class Bomb extends Item {
             g.drawImage(
                     bombImage.image,
                     n * Battleground.fieldSize + Battleground.offset - (int) (Battleground.ratio * 3),
-                    m * Battleground.fieldSize + Battleground.offset - (int) (Battleground.ratio * 8),
+                    m * Battleground.fieldSize + Battleground.offset - (int) (Battleground.ratio * 12),
                     null
             );
         } else if (counter < TOTAL_TIME) {

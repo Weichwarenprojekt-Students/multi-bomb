@@ -135,10 +135,10 @@ public class Sidebar extends MBPanel {
         addComponent(background, () -> background.setBounds(0, 0, getWidth(), getHeight()));
 
         // Fill the list
-        list.addItem(new ToolItem(Field.SOLID_0, "An unbreakable tree.", -2, "solid_0"));
-        list.addItem(new ToolItem(Field.SOLID_1, "An unbreakable fir.", 2, "solid_1"));
-        list.addItem(new ToolItem(Field.BREAKABLE_0, "A breakable mushroom.", -4, "breakable_0"));
-        list.addItem(new ToolItem(Field.BREAKABLE_1, "A breakable stack of wood.", -10, "breakable_1"));
+        list.addItem(new ToolItem(Field.SOLID_0, "An unbreakable tree.", 4, "solid_0"));
+        list.addItem(new ToolItem(Field.SOLID_1, "An unbreakable fir.", 6, "solid_1"));
+        list.addItem(new ToolItem(Field.BREAKABLE_0, "A breakable red mushroom.", -2, "breakable_0"));
+        list.addItem(new ToolItem(Field.BREAKABLE_1, "A breakable brown mushroom.", -2, "breakable_1"));
         list.addItem(new ToolItem(Field.SPAWN, "The map requires 8 spawns.", -12, "spawn"));
         list.setSpecificOrder(
                 Field.SOLID_0.name,
