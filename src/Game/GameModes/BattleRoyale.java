@@ -56,7 +56,7 @@ public class BattleRoyale extends GameMode {
             // notify all players about the hit
             result.add(player.playerState);
 
-            LOGGER.info(String.format("Player %s got hit by %s", player.name, from));
+            LOGGER.info(String.format("Player %s got hit by %s", player.name, from.name));
 
             if (!player.isAlive() && !player.name.equals(from.name)) {
                 // player died and the hit was from another player
@@ -64,7 +64,7 @@ public class BattleRoyale extends GameMode {
                 // notify players about the kill
                 result.add(from.playerState);
 
-                LOGGER.info(String.format("Player %s killed %s", from, player.name));
+                LOGGER.info(String.format("Player %s killed %s", from.name, player.name));
             }
         }
 

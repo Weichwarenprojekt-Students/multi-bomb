@@ -55,19 +55,19 @@ public class KillHunt extends GameMode {
             player.hit();
             result.add(player.playerState);
 
-            LOGGER.info(String.format("Player %s got hit by %s and lost 1 health", player.name, from));
+            LOGGER.info(String.format("Player %s got hit by %s and lost 1 health", player.name, from.name));
         } else {
             // player got hit and spawns again
             result.add(new Respawn(player.name));
 
-            LOGGER.info(String.format("Player %s got hit by %s and respawns", player.name, from));
+            LOGGER.info(String.format("Player %s got hit by %s and respawns", player.name, from.name));
 
             if (!player.name.equals(from.name)) {
                 // update kill for other player
                 from.playerState.kills++;
                 result.add(from.playerState);
 
-                LOGGER.info(String.format("Player %s killed %s", from, player.name));
+                LOGGER.info(String.format("Player %s killed %s", from.name, player.name));
             }
         }
 
