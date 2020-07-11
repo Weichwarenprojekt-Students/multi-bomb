@@ -459,6 +459,12 @@ public class Lobby {
      */
     private static void leaveGame(String winner) {
         new Thread(() -> {
+            // Disable player controls
+            for (Player player : players.values()) {
+                player.disableMovement();
+            }
+
+            // Show the winner
             MB.activePanel.toastSuccess(winner + " won the game!");
             MultiBomb.sleep(3000);
 
