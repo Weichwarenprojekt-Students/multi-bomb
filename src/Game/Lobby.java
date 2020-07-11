@@ -345,6 +345,9 @@ public class Lobby {
     private static void startCountdown(long timestamp) {
         // Wait until the game loop can start
         long timeDifference = timestamp - System.currentTimeMillis();
+        if (timeDifference > 3000) {
+            timeDifference = 3000;
+        }
         while (timeDifference > 0) {
             MB.activePanel.toastSuccess(
                     "Game starts in " + ((timestamp - System.currentTimeMillis()) / 1000 + 1) + "s!"
