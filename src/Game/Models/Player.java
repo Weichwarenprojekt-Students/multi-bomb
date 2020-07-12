@@ -60,7 +60,7 @@ public class Player {
     /**
      * The player's item
      */
-    public Item item;
+    public Item item = new Bomb();
     /**
      * True if the player is on an item
      */
@@ -94,10 +94,6 @@ public class Player {
     public void initialize(boolean controllable) {
         // Set the players position
         setSpawn();
-
-        // Initialize the item and the upgrades
-        item = new Bomb();
-        state = new PlayerState();
 
         // Load the sprite
         sprite = new MBImage("Characters/" + color + ".png", Lobby.game.battleground, () -> {
@@ -138,6 +134,16 @@ public class Player {
     public void disable() {
         this.controllable = false;
         position.moving = false;
+    }
+
+    /**
+     * @return the ammunition count matching the current item
+     */
+    public int getAmmunition() {
+        if (item.name.equals(Item.BOMB)) {
+            return state.upgrades.bombCount;
+        }
+        return item.ammunition;
     }
 
     /**

@@ -189,7 +189,7 @@ public class Sidebar extends MBPanel {
         /**
          * The upgrades
          */
-        private final MBImageButton heart, explosion, bolt, bomb;
+        private final MBImageButton heart, explosion, bolt, ammo;
         /**
          * The label showing the name
          */
@@ -237,8 +237,8 @@ public class Sidebar extends MBPanel {
             add(bolt);
 
             // Add the bomb image
-            bomb = new MBImageButton("Items/Consumable/bomb.png");
-            add(bomb);
+            ammo = new MBImageButton("Items/Consumable/ammo.png");
+            add(ammo);
         }
 
         @Override
@@ -251,7 +251,7 @@ public class Sidebar extends MBPanel {
             heart.setBounds(width - 2 * iconDistance, padding, iconSize, iconSize);
             explosion.setBounds(width - iconDistance, padding, iconSize, iconSize);
             bolt.setBounds(width - 2 * iconDistance, height - iconSize - padding, iconSize, iconSize);
-            bomb.setBounds(width - iconDistance, height - iconSize - padding, iconSize, iconSize);
+            ammo.setBounds(width - iconDistance, height - iconSize - padding, iconSize, iconSize);
         }
 
         @Override
@@ -278,7 +278,7 @@ public class Sidebar extends MBPanel {
             g.setFont(font);
             g.setColor(Color.WHITE);
 
-            // Draw the kills and the current item
+            // Draw the selection rectangle
             if (Lobby.player.equals(name)) {
                 g.setColor(Color.WHITE);
                 g.drawRoundRect(
@@ -290,7 +290,8 @@ public class Sidebar extends MBPanel {
                         MBBackground.CORNER_RADIUS
                 );
             }
-            // Draw the selection rectangle
+
+            // Draw the kills and the current item
             g.drawString(
                     "Kills: " + player.state.kills,
                     textStart,
@@ -301,7 +302,7 @@ public class Sidebar extends MBPanel {
                     textStart + 80,
                     height - padding - 6
             );
-            if (player.item != null) {
+            if (player.item.field.image != null) {
                 g.drawImage(
                         player.item.field.image.getSub(
                                 0,
@@ -310,7 +311,7 @@ public class Sidebar extends MBPanel {
                                 player.item.field.image.height
                         ),
                         textStart + 120,
-                        height - padding - iconSize - 6,
+                        height - padding - iconSize + 1,
                         30,
                         45,
                         null
@@ -335,7 +336,7 @@ public class Sidebar extends MBPanel {
                     height - padding - 6
             );
             g.drawString(
-                    Integer.toString(player.state.upgrades.bombCount),
+                    Integer.toString(player.getAmmunition()),
                     width - 2 * iconDistance + textDistance + iconDistance,
                     height - padding - 6
             );

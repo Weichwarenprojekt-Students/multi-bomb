@@ -24,6 +24,10 @@ public abstract class Item {
      * The field that matches the item
      */
     public final Field field;
+    /**
+     * The ammunition count of the item
+     */
+    public int ammunition;
 
     /**
      * Constructor

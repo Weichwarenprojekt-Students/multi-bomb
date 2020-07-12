@@ -44,10 +44,6 @@ public class Arrow extends Item {
      */
     private long startTime;
     /**
-     * The start ammunition of the arrow
-     */
-    private int ammunition = 20;
-    /**
      * The direction the player was looking when using the arrow's
      */
     private Direction direction;
@@ -57,6 +53,9 @@ public class Arrow extends Item {
      */
     public Arrow() {
         super(Item.ARROW, Field.ARROW);
+
+        // Set the default ammunition
+        ammunition = 3;
     }
 
     /**
