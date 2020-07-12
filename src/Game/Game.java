@@ -133,6 +133,11 @@ public class Game extends MBPanel {
 
             // Update the player and repaint
             Lobby.players.get(Lobby.player).move();
+
+            // End the game if gameOver is true
+            return !gameOver;
+        });
+        MultiBomb.startTimedAction(WAIT_TIME, (deltaTime, lastTime) -> {
             MB.frame.revalidate();
             MB.frame.repaint();
 
