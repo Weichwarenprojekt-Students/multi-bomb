@@ -2,6 +2,7 @@ package Server;
 
 import Game.GameModes.GameMode;
 import Game.Models.Field;
+import Server.Items.ServerArrow;
 import Server.Items.ServerBomb;
 import Server.Messages.Socket.*;
 import Server.Models.Player;
@@ -326,6 +327,14 @@ public class GameWorld extends Thread {
                                 player.playerState.upgrades.bombSize
                         );
                         break;
+                    case ServerArrow.NAME:
+                        ServerArrow.serverLogic(
+                                (hit_m, hit_n) -> handleHits(player.name, hit_m, hit_n, false),
+                                item_m,
+                                item_n,
+                                player.position.direction
+                        );
+
                 }
             });
         }

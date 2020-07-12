@@ -24,7 +24,7 @@ public class ServerBomb extends ServerItem {
      * Constructor
      */
     public ServerBomb() {
-        super(NAME, Field.BOMB);
+        super(NAME);
     }
 
     /**

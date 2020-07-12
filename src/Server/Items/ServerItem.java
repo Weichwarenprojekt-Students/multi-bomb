@@ -11,17 +11,12 @@ public abstract class ServerItem {
      * The name of the item
      */
     public final String name;
-    /**
-     * The field that matches the item
-     */
-    public final Field field;
 
     /**
      * Constructor
      */
-    public ServerItem(String name, Field field) {
+    public ServerItem(String name) {
         this.name = name;
-        this.field = field;
     }
 
     public interface ItemCallback {
