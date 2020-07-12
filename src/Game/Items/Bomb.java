@@ -84,13 +84,6 @@ public class Bomb extends Item {
      */
     public Bomb() {
         super(Item.BOMB, Field.BOMB);
-
-        // Initialize the bomb sprite
-        bombImage = new MBImage("Items/Bomb/bomb.png", Lobby.game.battleground, () -> {
-            bombImage.width = (int) (1.2 * Battleground.fieldSize);
-            bombImage.height = (int) (1.2 * Battleground.fieldSize);
-        });
-        bombImage.rescale((int) (1.2 * Battleground.fieldSize), (int) (1.2 * Battleground.fieldSize));
     }
 
     /**
@@ -106,6 +99,11 @@ public class Bomb extends Item {
         verticalImage = new MBImage("Items/Bomb/top.png", true, parent);
         topEndImage = new MBImage("Items/Bomb/top_end.png", true, parent);
         bottomEndImage = new MBImage("Items/Bomb/bottom_end.png", true, parent);
+        bombImage = new MBImage("Items/Bomb/bomb.png", parent, () -> {
+            bombImage.width = (int) (1.2 * Battleground.fieldSize);
+            bombImage.height = (int) (1.2 * Battleground.fieldSize);
+        });
+        bombImage.refresh();
     }
 
     /**
