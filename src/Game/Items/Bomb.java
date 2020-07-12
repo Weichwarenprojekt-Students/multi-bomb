@@ -8,6 +8,7 @@ import General.Shared.MBImage;
 import General.Shared.MBPanel;
 import General.Sound.SoundControl;
 import General.Sound.SoundEffect;
+import Server.Items.ServerBomb;
 import Server.Messages.Socket.Map;
 
 import java.awt.*;
@@ -16,11 +17,11 @@ public class Bomb extends Item {
     /**
      * The time till the bomb detonates in seconds
      */
-    public static float DETONATION_TIME = Server.Items.Bomb.DETONATION_TIME;
+    public static float DETONATION_TIME = ServerBomb.DETONATION_TIME;
     /**
      * The total time in seconds
      */
-    public static float TOTAL_TIME = Server.Items.Bomb.TOTAL_TIME;
+    public static float TOTAL_TIME = ServerBomb.TOTAL_TIME;
     /**
      * The horizontal sprite
      */

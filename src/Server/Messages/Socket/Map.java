@@ -51,7 +51,7 @@ public class Map extends Message {
     /**
      * The battleground
      */
-    public byte[][] fields = new byte[SIZE][SIZE];
+    public final byte[][] fields = new byte[SIZE][SIZE];
 
     /**
      * Constructor

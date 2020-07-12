@@ -5,7 +5,7 @@ import Game.Models.Field;
 /**
  * The base class for a usable item
  */
-public abstract class Item {
+public abstract class ServerItem {
 
     /**
      * The name of the item
@@ -19,7 +19,7 @@ public abstract class Item {
     /**
      * Constructor
      */
-    public Item(String name, Field field) {
+    public ServerItem(String name, Field field) {
         this.name = name;
         this.field = field;
     }

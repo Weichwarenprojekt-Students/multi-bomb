@@ -6,7 +6,7 @@ import java.util.logging.Level;
 
 import static General.MultiBomb.LOGGER;
 
-public class Bomb extends Item {
+public class ServerBomb extends ServerItem {
     /**
      * The name of the item
      */
@@ -23,7 +23,7 @@ public class Bomb extends Item {
     /**
      * Constructor
      */
-    public Bomb() {
+    public ServerBomb() {
         super(NAME, Field.BOMB);
     }
 
@@ -36,11 +36,11 @@ public class Bomb extends Item {
      * @param bombSize     the size of the bomb explosion
      */
     public static void serverLogic(ItemCallback itemCallback, int m, int n, int bombSize) {
-        LOGGER.config(String.format("Entering: %s %s", Bomb.class.getName(), "serverLogic()"));
+        LOGGER.config(String.format("Entering: %s %s", ServerBomb.class.getName(), "serverLogic()"));
 
         // Start new Thread so countdown doesn't block the server
         new Thread(() -> {
-            LOGGER.config(String.format("Entering: %s %s", Bomb.class.getName(), "BombThread"));
+            LOGGER.config(String.format("Entering: %s %s", ServerBomb.class.getName(), "BombThread"));
 
             try {
                 // wait for the detonation time
@@ -75,9 +75,9 @@ public class Bomb extends Item {
                 if (!hit_west) hit_west = itemCallback.callback(m, n - r);
             }
 
-            LOGGER.config(String.format("Exiting: %s %s", Bomb.class.getName(), "BombThread"));
+            LOGGER.config(String.format("Exiting: %s %s", ServerBomb.class.getName(), "BombThread"));
         }).start();
 
-        LOGGER.config(String.format("Exiting: %s %s", Bomb.class.getName(), "serverLogic()"));
+        LOGGER.config(String.format("Exiting: %s %s", ServerBomb.class.getName(), "serverLogic()"));
     }
 }

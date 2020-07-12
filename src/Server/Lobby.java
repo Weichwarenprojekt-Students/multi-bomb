@@ -50,7 +50,7 @@ public class Lobby {
     /**
      * Indicates if lobby is closed or if players can join
      */
-    private boolean closed = false;
+    private volatile boolean closed = false;
     /**
      * Map chosen by the host
      */
@@ -150,13 +150,22 @@ public class Lobby {
      *
      * @param msg the message to send
      */
-    public synchronized void sendToAllPlayers(Message msg) {
-        LOGGER.config(String.format("Entering: %s %s", Lobby.class.getName(), "sendToAllPlayers(" + msg.type + ")"));
+    public void sendToAllPlayers(Message msg) {
+        if (!msg.type.equals(Message.POSITION_TYPE)) {
+            LOGGER.info(String.format("Entering: %s %s", Lobby.class.getName(), "sendToAllPlayers(" + msg.type + ")"));
 
-        LOGGER.config(String.format("Message(%s): %s", msg.type, msg.toJson()));
-        players.values().forEach(p -> p.send(msg));
+            LOGGER.info(String.format("Message(%s): %s", msg.type, msg.toJson()));
 
-        LOGGER.config(String.format("Exiting: %s %s", Lobby.class.getName(), "sendToAllPlayers(" + msg.type + ")"));
+            synchronized (players) {
+                LOGGER.info("Message " + msg.type + " sent");
+                players.values().forEach(p -> p.send(msg));
+            }
+            LOGGER.info(String.format("Exiting: %s %s", Lobby.class.getName(), "sendToAllPlayers(" + msg.type + ")"));
+        } else {
+            synchronized (players) {
+                players.values().forEach(p -> p.send(msg));
+            }
+        }
     }
 
     /**
@@ -231,7 +240,9 @@ public class Lobby {
 
             players.values().forEach(p -> {
                 p.preparationReady = false;
-                p.itemActions.clear();
+                synchronized (p.itemActions) {
+                    p.itemActions.clear();
+                }
                 p.lastPosition = null;
             });
 
@@ -299,9 +310,11 @@ public class Lobby {
      *
      * @return boolean indicating if lobby is full
      */
-    public synchronized boolean isFull() {
+    public boolean isFull() {
         LOGGER.config(String.format("Calling: %s %s", Lobby.class.getName(), "isFull()"));
-        return players.size() >= 8;
+        synchronized (players) {
+            return players.size() >= 8;
+        }
     }
 
     /**
@@ -309,7 +322,7 @@ public class Lobby {
      *
      * @return boolean indicating if lobby is open
      */
-    public synchronized boolean isOpen() {
+    public boolean isOpen() {
         LOGGER.config(String.format("Calling: %s %s", Lobby.class.getName(), "isOpen()"));
         return !closed;
     }

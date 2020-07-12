@@ -46,7 +46,7 @@ public class PlayerConnection extends Thread {
     /**
      * The last position update the server received
      */
-    public Position lastPosition;
+    public volatile Position lastPosition;
     /**
      * If the client is prepared and ready to start the game
      */
@@ -120,8 +120,10 @@ public class PlayerConnection extends Thread {
      *
      * @param msg message to handle
      */
-    private void handleMessage(Message msg) {
-        LOGGER.config(String.format("Entering: %s %s", PlayerConnection.class.getName(), "handleMessage(" + msg.type + ")"));
+    private synchronized void handleMessage(Message msg) {
+        if (!msg.type.equals(Message.POSITION_TYPE)) {
+            LOGGER.config(String.format("Entering: %s %s", PlayerConnection.class.getName(), "handleMessage(" + msg.type + ")"));
+        }
 
         switch (msg.type) {
             case Message.LOBBY_STATE_TYPE:
@@ -175,7 +177,9 @@ public class PlayerConnection extends Thread {
                 break;
         }
 
-        LOGGER.config(String.format("Exiting: %s %s", PlayerConnection.class.getName(), "handleMessage(" + msg.type + ")"));
+        if (!msg.type.equals(Message.POSITION_TYPE)) {
+            LOGGER.config(String.format("Exiting: %s %s", PlayerConnection.class.getName(), "handleMessage(" + msg.type + ")"));
+        }
     }
 
     /**
