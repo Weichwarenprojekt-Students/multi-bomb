@@ -128,7 +128,7 @@ public class Battleground extends MBPanel {
         for (int m = 0; m < Map.SIZE; m++) {
             for (int n = 0; n < Map.SIZE; n++) {
                 // Identify the field item
-                Field field = Field.getItem(map.fields[m][n]);
+                Field field = Field.getItem(map.getField(m, n));
 
                 // Check if item doesn't exist or is ground
                 if (field != null && field.id != Field.GROUND.id) {
@@ -153,8 +153,9 @@ public class Battleground extends MBPanel {
                 }
 
                 // Draw item above player
-                if (Map.items[m][n] != null) {
-                    Map.items[m][n] = Map.items[m][n].draw((Graphics2D) g, m, n);
+                Item item = Map.getItem(m, n);
+                if (item != null) {
+                    Map.setItem(m, n, item.draw((Graphics2D) g, m, n));
                 }
             }
         }

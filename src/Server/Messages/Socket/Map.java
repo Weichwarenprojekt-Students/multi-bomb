@@ -31,7 +31,11 @@ public class Map extends Message {
     /**
      * The items on the battleground
      */
-    public static Item[][] items = new Item[SIZE][SIZE];
+    private static Item[][] items = new Item[SIZE][SIZE];
+    /**
+     * The battleground
+     */
+    private final byte[][] fields = new byte[SIZE][SIZE];
     /**
      * The name of the map
      */
@@ -48,10 +52,6 @@ public class Map extends Message {
      * The theme of the map
      */
     public String theme = "Forest";
-    /**
-     * The battleground
-     */
-    public final byte[][] fields = new byte[SIZE][SIZE];
 
     /**
      * Constructor
@@ -101,6 +101,80 @@ public class Map extends Message {
         copy.name = map.name;
 
         return copy;
+    }
+
+    /**
+     * Check if a given position is out of bounds
+     *
+     * @param m position
+     * @param n position
+     * @return true if the position is out of bounds
+     */
+    private static boolean outOfBounds(int m, int n) {
+        return m < 0 || m >= SIZE || n < 0 || n >= SIZE;
+    }
+
+    /**
+     * Set the value of a field
+     *
+     * @param m    position
+     * @param n    position
+     * @param item the new value for the field
+     */
+    public static synchronized void setItem(int m, int n, Item item) {
+        if (outOfBounds(m, n)) {
+            return;
+        }
+        items[m][n] = item;
+    }
+
+    /**
+     * Get the value of a field in the items matrix
+     *
+     * @param m position
+     * @param n position
+     * @return the value of the field
+     */
+    public static synchronized Item getItem(int m, int n) {
+        if (outOfBounds(m, n)) {
+            return null;
+        }
+        return items[m][n];
+    }
+
+    /**
+     * Reset the items
+     */
+    public static synchronized void resetItems() {
+        items = new Item[SIZE][SIZE];
+    }
+
+    /**
+     * Set the value of a field
+     *
+     * @param m     position
+     * @param n     position
+     * @param value of the field
+     */
+    public synchronized void setField(int m, int n, byte value) {
+        if (outOfBounds(m, n)) {
+            return;
+        }
+        fields[m][n] = value;
+    }
+
+    /**
+     * Get the value of a field
+     *
+     * @param m position
+     * @param n position
+     * @return the value of the field
+     */
+    public synchronized byte getField(int m, int n) {
+        if (outOfBounds(m, n)) {
+            return Field.SOLID_0.id;
+        }
+        return fields[m][n];
     }
 
     /**

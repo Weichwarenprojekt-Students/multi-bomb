@@ -27,11 +27,6 @@ public class KillHunt extends GameMode {
     }
 
     @Override
-    public void updateClientState() {
-
-    }
-
-    @Override
     public synchronized Optional<String> calculateWinner() {
         LOGGER.config(String.format("Entering: %s %s", KillHunt.class.getName(), "calculateWinner()"));
 

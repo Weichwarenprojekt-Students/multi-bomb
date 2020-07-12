@@ -160,12 +160,12 @@ public class Editor extends MBPanel {
 
             // Check if it was a right click
             if (right) {
-                map.fields[m][n] = Field.GROUND.id;
+                map.setField(m, n, Field.GROUND.id);
             } else {
                 // Check if the user want's to place a spawn
                 if (selectedId == Field.SPAWN.id) {
                     if (map.setSpawn(m, n)) {
-                        map.fields[m][n] = 0;
+                        map.setField(m, n, (byte) 0);
                     } else if (notification) {
                         MB.activePanel.toastError(
                                 "You can't place more spawns!",
@@ -173,7 +173,7 @@ public class Editor extends MBPanel {
                         );
                     }
                 } else {
-                    map.fields[m][n] = selectedId;
+                    map.setField(m, n, selectedId);
                 }
             }
         }

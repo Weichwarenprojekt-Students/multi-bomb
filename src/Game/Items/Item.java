@@ -1,6 +1,7 @@
 package Game.Items;
 
 import Game.Models.Field;
+import Game.Models.Player;
 import Game.Models.Upgrades;
 import General.Shared.MBPanel;
 import Server.Messages.Socket.Map;
@@ -14,7 +15,7 @@ public abstract class Item {
     /**
      * The available items
      */
-    public static final String BOMB = "Bomb";
+    public static final String BOMB = "Bomb", ARROW = "Arrow";
     /**
      * The name of the item
      */
@@ -39,6 +40,7 @@ public abstract class Item {
      */
     public static void loadTextures(MBPanel parent) {
         Bomb.loadTextures(parent);
+        Arrow.loadTextures(parent);
     }
 
     /**
@@ -50,13 +52,14 @@ public abstract class Item {
      * @return true if item is passable
      */
     public static boolean isPassable(OnItem onItem, int m, int n) {
-        Item item = Map.items[m][n];
+        Item item = Map.getItem(m, n);
         if (item == null || (onItem.onItem && onItem.m == m && onItem.n == n)) {
             return true;
         } else if (item.name.equals(BOMB)) {
             return false;
+        } else {
+            return item.name.equals(ARROW);
         }
-        return false;
     }
 
     /**
@@ -66,6 +69,9 @@ public abstract class Item {
      * @return the corresponding item
      */
     public static Item getItem(String name) {
+        if (name.equals(ARROW)) {
+            return new Arrow();
+        }
         return new Bomb();
     }
 
@@ -77,7 +83,7 @@ public abstract class Item {
     /**
      * Handle the use of an item
      */
-    public abstract Item use(int m, int n, Upgrades upgrades);
+    public abstract Item use(int m, int n, Player player);
 
     /**
      * Draw a used item

@@ -3,6 +3,7 @@ package Game.Items;
 import Game.Battleground;
 import Game.Lobby;
 import Game.Models.Field;
+import Game.Models.Player;
 import Game.Models.Upgrades;
 import General.Shared.MBImage;
 import General.Shared.MBPanel;
@@ -116,24 +117,24 @@ public class Bomb extends Item {
      */
     @Override
     public boolean isUsable(int m, int n, Upgrades upgrades) {
-        return upgrades.bombCount > 0 && Map.items[m][n] == null;
+        return upgrades.bombCount > 0 && Map.getItem(m, n) == null;
     }
 
     /**
      * Use the bomb
      *
-     * @param m        position of the item use
-     * @param n        position of the item use
-     * @param upgrades of the player
+     * @param m      position of the item use
+     * @param n      position of the item use
+     * @param player who used the item
      * @return a new bomb
      */
     @Override
-    public Item use(int m, int n, Upgrades upgrades) {
-        this.upgrades = upgrades;
+    public Item use(int m, int n, Player player) {
+        this.upgrades = player.state.upgrades;
         this.startTime = System.currentTimeMillis();
 
         // Add the item to the map so that the battleground can draw it
-        Map.items[m][n] = this;
+        Map.setItem(m, n, this);
 
         // Plays the Sound when Bomb is set
         SoundControl.playSoundEffect(SoundEffect.SET_BOMB);
@@ -151,7 +152,7 @@ public class Bomb extends Item {
 
         // Decrease the bomb count
         upgrades.bombCount--;
-            
+
         // Use the item
         return new Bomb();
     }
@@ -240,12 +241,13 @@ public class Bomb extends Item {
         int[] dx = calculateEndpoints(n, percentage, percentageWest, percentageEast);
 
         // Check if a solid block is reached
-        boolean reachedSolid = dx[0] < 0 || !Field.getItem(Lobby.map.fields[m][dx[0] / Map.FIELD_SIZE]).isPassable();
+        boolean reachedSolid = dx[0] < 0
+                || !Field.getItem(Lobby.map.getField(m, dx[0] / Map.FIELD_SIZE)).isPassable();
         if (percentageWest >= 1 && reachedSolid) {
             percentageWest = percentage;
         }
         reachedSolid = dx[1] / Map.FIELD_SIZE > Map.SIZE ||
-                !Field.getItem(Lobby.map.fields[m][dx[1] / Map.FIELD_SIZE]).isPassable();
+                !Field.getItem(Lobby.map.getField(m, dx[1] / Map.FIELD_SIZE)).isPassable();
         if (percentageEast >= 1 && reachedSolid) {
             percentageEast = percentage;
 
@@ -289,12 +291,13 @@ public class Bomb extends Item {
         int[] dy = calculateEndpoints(m, percentage, percentageNorth, percentageSouth);
 
         // Check if a solid block is reached
-        boolean reachedSolid = dy[0] < 0 || !Field.getItem(Lobby.map.fields[dy[0] / Map.FIELD_SIZE][n]).isPassable();
+        boolean reachedSolid = dy[0] < 0
+                || !Field.getItem(Lobby.map.getField(dy[0] / Map.FIELD_SIZE, n)).isPassable();
         if (percentageNorth >= 1 && reachedSolid) {
             percentageNorth = percentage;
         }
         reachedSolid = dy[1] / Map.FIELD_SIZE > Map.SIZE ||
-                !Field.getItem(Lobby.map.fields[dy[1] / Map.FIELD_SIZE][n]).isPassable();
+                !Field.getItem(Lobby.map.getField(dy[1] / Map.FIELD_SIZE, n)).isPassable();
         if (percentageSouth >= 1 && reachedSolid) {
             percentageSouth = percentage;
 

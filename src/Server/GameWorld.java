@@ -182,25 +182,23 @@ public class GameWorld extends Thread {
         // if pos is inside map
         if (m < Map.SIZE && m >= 0 && n < Map.SIZE && n >= 0) {
             boolean hitBreakable = false;
-            synchronized (map.fields) {
-                // get the field of the position
-                Field field = Field.getItem(map.fields[m][n]);
+            // get the field of the position
+            Field field = Field.getItem(map.getField(m, n));
 
-                if (!field.isPassable() && field != Field.SPAWN) {
-                    // field is solid or breakable, so it's a hit
-                    hitSomething = true;
+            if (!field.isPassable() && field != Field.SPAWN) {
+                // field is solid or breakable, so it's a hit
+                hitSomething = true;
 
-                    if (field == Field.BREAKABLE_0 || field == Field.BREAKABLE_1) {
-                        LOGGER.info("Field broken at m=" + m + ", n=" + n + " by " + from);
+                if (field == Field.BREAKABLE_0 || field == Field.BREAKABLE_1) {
+                    LOGGER.info("Field broken at m=" + m + ", n=" + n + " by " + from);
 
-                        hitBreakable = true;
+                    hitBreakable = true;
 
-                        // set the field to ground
-                        map.fields[m][n] = Field.GROUND.id;
+                    // set the field to ground
+                    map.setField(m, n, Field.GROUND.id);
 
-                        // randomly spawn a new item at the fields position
-                        spawnItem(m, n, true);
-                    }
+                    // randomly spawn a new item at the fields position
+                    spawnItem(m, n, true);
                 }
             }
 
@@ -260,18 +258,16 @@ public class GameWorld extends Thread {
                 int n = (int) (player.position.x / Map.FIELD_SIZE);
 
                 Field field;
-                synchronized (map.fields) {
-                    // Collect items
-                    field = Field.getItem(map.fields[m][n]);
-                    if (field.id < 0) {
-                        // item is collectible
-                        map.fields[m][n] = Field.GROUND.id;
-                        currentItems--;
-                        // handle the collected item
-                        player.playerState.collectItem(field, true);
+                // Collect items
+                field = Field.getItem(map.getField(m, n));
+                if (field.id < 0) {
+                    // item is collectible
+                    map.setField(m, n, Field.GROUND.id);
+                    decrementCurrentItems();
+                    // handle the collected item
+                    player.playerState.collectItem(field, true);
 
-                        LOGGER.info(player.name + " collected " + field.name);
-                    }
+                    LOGGER.info(player.name + " collected " + field.name);
                 }
                 synchronized (lobby) {
                     if (field.id < 0) {
@@ -286,6 +282,20 @@ public class GameWorld extends Thread {
             }
         }
         LOGGER.config(String.format("Exiting: %s %s", GameWorld.class.getName(), "handlePlayerEvents(" + player.name + ")"));
+    }
+
+    /**
+     * Decrement the counter for the current items
+     */
+    private synchronized void decrementCurrentItems() {
+        currentItems--;
+    }
+
+    /**
+     * Increment the counter for the current items
+     */
+    private synchronized void incrementCurrentItems() {
+        currentItems++;
     }
 
     /**
@@ -356,32 +366,29 @@ public class GameWorld extends Thread {
             alivePlayers = players.values().stream().filter(Player::isAlive).count();
         }
 
-        synchronized (map.fields) {
-            if (currentItems < MAX_ITEMS) {
-                float random_threshold;
-                if (currentItems < alivePlayers || fromBreakable) {
-                    random_threshold = RANDOM_THRESHOLD;
-                } else {
-                    random_threshold = RANDOM_THRESHOLD / Server.ticksPerSecond / 10;
-                }
+        if (currentItems < MAX_ITEMS) {
+            float random_threshold;
+            if (currentItems < alivePlayers || fromBreakable) {
+                random_threshold = RANDOM_THRESHOLD;
+            } else {
+                random_threshold = RANDOM_THRESHOLD / Server.ticksPerSecond / 10;
+            }
 
-                if (random.nextFloat() < random_threshold
-                        && map.fields[m][n] == Field.GROUND.id) {
+            if (random.nextFloat() < random_threshold && map.getField(m, n) == Field.GROUND.id) {
 
-                    // get random new item
-                    int index = random.nextInt(gameMode.items.length);
+                // get random new item
+                int index = random.nextInt(gameMode.items.length);
 
-                    LOGGER.info(String.format("Set new item %s at m=%d, n=%d",
-                            Field.getItem(gameMode.items[index]).name, m, n));
+                LOGGER.info(String.format("Set new item %s at m=%d, n=%d",
+                        Field.getItem(gameMode.items[index]).name, m, n));
 
-                    // set new item on map
-                    map.fields[m][n] = gameMode.items[index];
+                // set new item on map
+                map.setField(m, n, gameMode.items[index]);
 
-                    currentItems++;
+                incrementCurrentItems();
 
-                    // notify all players about new item
-                    lobby.sendToAllPlayers(new NewItem(Field.getItem(gameMode.items[index]), m, n));
-                }
+                // notify all players about new item
+                lobby.sendToAllPlayers(new NewItem(Field.getItem(gameMode.items[index]), m, n));
             }
         }
         LOGGER.config(String.format("Exiting: %s %s", GameWorld.class.getName(), "spawnItem(m, n)"));
@@ -400,7 +407,7 @@ public class GameWorld extends Thread {
             int n = random.nextInt(Map.SIZE - 2) + 1;
 
             // check if location is ground on the map
-            if (map.fields[m][n] == Field.GROUND.id) {
+            if (map.getField(m, n) == Field.GROUND.id) {
                 // spawn new item at position
                 spawnItem(m, n, false);
                 // break loop because field with ground was found

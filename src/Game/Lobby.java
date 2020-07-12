@@ -3,7 +3,6 @@ package Game;
 import Editor.MapManager;
 import Game.GameModes.BattleRoyale;
 import Game.GameModes.GameMode;
-import Game.Items.Item;
 import Game.Models.Field;
 import Game.Models.Player;
 import General.MB;
@@ -22,8 +21,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import static Server.Messages.Socket.Map.SIZE;
 
 public class Lobby {
     /**
@@ -421,11 +418,10 @@ public class Lobby {
         }
 
         // Update the map
-        map.fields[item.m][item.n] = Field.GROUND.id;
+        map.setField(item.m, item.n, Field.GROUND.id);
 
         // Update the state
-        players.get(item.playerId).state.collectItem(item.item, false);
-        players.get(item.playerId).updateSpeed();
+        players.get(item.playerId).handleItemCollection(item);
     }
 
     /**
@@ -434,7 +430,7 @@ public class Lobby {
      * @param item that should be added
      */
     private static void addNewItem(NewItem item) {
-        map.fields[item.m][item.n] = item.item.id;
+        map.setField(item.m, item.n, item.item.id);
     }
 
     /**
@@ -443,7 +439,7 @@ public class Lobby {
      * @param action of the server
      */
     private static void removeField(FieldDestroyed action) {
-        map.fields[action.m][action.n] = Field.GROUND.id;
+        map.setField(action.m, action.n, Field.GROUND.id);
     }
 
     /**
@@ -462,7 +458,7 @@ public class Lobby {
         new Thread(() -> {
             // Disable player controls
             for (Player player : players.values()) {
-                player.disableMovement();
+                player.disable();
             }
 
             // Show the winner
@@ -481,7 +477,7 @@ public class Lobby {
             } else {
                 map = MapManager.maps.get("X-Factor");
             }
-            Map.items = new Item[SIZE][SIZE];
+            Map.resetItems();
 
             // Reset the mode
             mode = GameMode.getMode(mode.name);

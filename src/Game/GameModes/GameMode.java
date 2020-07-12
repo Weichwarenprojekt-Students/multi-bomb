@@ -62,11 +62,6 @@ public abstract class GameMode {
     }
 
     /**
-     * React to game state changes (client side)
-     */
-    public abstract void updateClientState();
-
-    /**
      * Calculate the winner of the game on the server
      *
      * @return Optional containing the playerId of the winner, empty Optional if there is no winner

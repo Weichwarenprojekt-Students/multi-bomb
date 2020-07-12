@@ -2,6 +2,7 @@ package Game.Models;
 
 import Game.Battleground;
 import Game.Game;
+import Game.Items.Arrow;
 import Game.Items.Bomb;
 import Game.Items.Item;
 import Game.Lobby;
@@ -9,10 +10,7 @@ import General.MultiBomb;
 import General.Shared.*;
 import General.Sound.SoundControl;
 import General.Sound.SoundEffect;
-import Server.Messages.Socket.ItemAction;
-import Server.Messages.Socket.Map;
-import Server.Messages.Socket.PlayerState;
-import Server.Messages.Socket.Position;
+import Server.Messages.Socket.*;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -130,14 +128,14 @@ public class Player {
     /**
      * Method to disable movement
      */
-    public void enableMovement() {
+    public void enable() {
         this.controllable = true;
     }
 
     /**
      * Method to disable movement
      */
-    public void disableMovement() {
+    public void disable() {
         this.controllable = false;
         position.moving = false;
     }
@@ -145,7 +143,7 @@ public class Player {
     /**
      * Update the speed of the player
      */
-    public void updateSpeed() {
+    private void updateSpeed() {
         speed = (MAX_SPEED - MIN_SPEED) * state.upgrades.speed / Upgrades.MAX_SPEED + MIN_SPEED;
     }
 
@@ -174,7 +172,7 @@ public class Player {
      */
     public void die(boolean respawn) {
         SoundControl.playSoundEffect(SoundEffect.CHARACTER_DEATH);
-        disableMovement();
+        disable();
 
         int duration = 2000;
         MultiBomb.startTimedAction(Game.WAIT_TIME, (deltaTime, totalTime) -> {
@@ -182,7 +180,7 @@ public class Player {
             if (totalTime > duration) {
                 if (respawn) {
                     setSpawn();
-                    enableMovement();
+                    enable();
                 } else {
                     state.health = 0;
                 }
@@ -323,8 +321,24 @@ public class Player {
         if (!name.equals(item.name)) {
             item = Item.getItem(name);
         }
-        item = item.use(m, n, state.upgrades);
+        item = item.use(m, n, this);
         usingItem = false;
+    }
+
+    /**
+     * Handle an item collection
+     *
+     * @param item that was collected
+     */
+    public void handleItemCollection(ItemCollected item) {
+        // Check if the player state should be updated
+        state.collectItem(item.item, false);
+        updateSpeed();
+
+        // Check if the player collected a weapon
+        if (item.item.name.equals(Field.ARROW.name)) {
+            this.item = new Arrow();
+        }
     }
 
     /**
@@ -358,7 +372,7 @@ public class Player {
         int m = (int) (newY + position.direction.y * 10) / Map.FIELD_SIZE;
         int n = (int) (newX + position.direction.x * 10) / Map.FIELD_SIZE;
         // Check if character should move
-        if (position.moving && Field.getItem(Lobby.map.fields[m][n]).isPassable()
+        if (position.moving && Field.getItem(Lobby.map.getField(m, n)).isPassable()
             && Item.isPassable(onItem, m, n)) {
             // Update the position
             position.x = newX;
@@ -367,7 +381,7 @@ public class Player {
             // Update on item state
             m = (int) (position.y) / Map.FIELD_SIZE;
             n = (int) (position.x) / Map.FIELD_SIZE;
-            onItem.onItem = Map.items[m][n] != null && onItem.m == m && onItem.n == n;
+            onItem.onItem = Map.getItem(m, n) != null && onItem.m == m && onItem.n == n;
         }
     }
 

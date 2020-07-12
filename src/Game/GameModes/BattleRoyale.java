@@ -26,11 +26,6 @@ public class BattleRoyale extends GameMode {
     }
 
     @Override
-    public void updateClientState() {
-
-    }
-
-    @Override
     public synchronized Optional<String> calculateWinner() {
         LOGGER.config(String.format("Entering: %s %s", BattleRoyale.class.getName(), "calculateWinner()"));
 
