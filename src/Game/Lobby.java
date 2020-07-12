@@ -189,7 +189,7 @@ public class Lobby {
 
             // Parse the message
             Message message = Message.fromJson(data);
-            handleMessage(message);
+            new Thread(() -> handleMessage(message)).start();
         }
 
         // Disconnect
