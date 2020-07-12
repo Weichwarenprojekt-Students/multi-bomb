@@ -2,14 +2,28 @@ package General;
 
 import Server.Server;
 
-import java.util.logging.Level;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class MultiBomb {
     /**
      * Logger
      */
-    public static final Logger LOGGER = Logger.getLogger(MultiBomb.class.getName());
+    public static final Logger LOGGER;
+
+    static {
+        InputStream stream = MultiBomb.class.getResourceAsStream("logging.properties");
+
+        try {
+            LogManager.getLogManager().readConfiguration(stream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        LOGGER = Logger.getLogger(MultiBomb.class.getName());
+    }
 
     /**
      * Start Multi-Bomb and parse command line args
@@ -18,7 +32,6 @@ public class MultiBomb {
      */
     public static void main(String[] args) {
         if (args.length > 0) {
-            LOGGER.setLevel(Level.ALL);
 
             if (!"-s".equals(args[0]) || args.length < 4) {
                 System.out.println("To start only the server use the following syntax:");
@@ -48,8 +61,8 @@ public class MultiBomb {
     /**
      * Start a timed action
      *
-     * @param waitTime  for each iteration
-     * @param action    to be executed
+     * @param waitTime for each iteration
+     * @param action   to be executed
      */
     public static void startTimedAction(long waitTime, TimedAction action) {
         new Thread(() -> {

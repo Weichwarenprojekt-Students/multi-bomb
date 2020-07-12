@@ -12,6 +12,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import static General.MultiBomb.LOGGER;
+
 public class PlayerConnection extends Thread {
     /**
      * Name of the player
@@ -119,6 +121,8 @@ public class PlayerConnection extends Thread {
      * @param msg message to handle
      */
     private void handleMessage(Message msg) {
+        LOGGER.config(String.format("Entering: %s %s", PlayerConnection.class.getName(), "handleMessage(" + msg.type + ")"));
+
         switch (msg.type) {
             case Message.LOBBY_STATE_TYPE:
                 synchronized (lobby) {
@@ -170,6 +174,8 @@ public class PlayerConnection extends Thread {
                 }
                 break;
         }
+
+        LOGGER.config(String.format("Exiting: %s %s", PlayerConnection.class.getName(), "handleMessage(" + msg.type + ")"));
     }
 
     /**

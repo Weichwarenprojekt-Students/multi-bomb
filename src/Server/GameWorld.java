@@ -72,6 +72,7 @@ public class GameWorld extends Thread {
      * @param startTime the time at which the game loop should start
      */
     public GameWorld(Lobby lobby, Map map, long startTime) {
+        LOGGER.config(String.format("Entering: %s %s", GameWorld.class.getName(), "GameWorld()"));
         this.lobby = lobby;
         this.map = map;
         this.startTime = startTime;
@@ -92,10 +93,12 @@ public class GameWorld extends Thread {
             // put the player's PlayerState object in the gameMode
             gameMode.players.put(pc.name, player.playerState);
         });
+        LOGGER.config(String.format("Exiting: %s %s", GameWorld.class.getName(), "GameWorld()"));
     }
 
     @Override
     public void run() {
+        LOGGER.config(String.format("Entering: %s %s", GameWorld.class.getName(), "run()"));
         try {
             // wait until the game loop can start
             Thread.sleep(startTime - System.currentTimeMillis());
@@ -136,6 +139,7 @@ public class GameWorld extends Thread {
 
         // end the game
         lobby.endGame(winner);
+        LOGGER.config(String.format("Exiting: %s %s", GameWorld.class.getName(), "run()"));
     }
 
     /**
@@ -144,18 +148,22 @@ public class GameWorld extends Thread {
      * @param name name of the player
      */
     public synchronized void removePlayer(String name) {
+        LOGGER.config(String.format("Entering: %s %s", GameWorld.class.getName(), "removePlayer(" + name + ")"));
         // disconnected players are dead
         players.get(name).kill();
 
         // send update about dead player to all players
         lobby.sendToAllPlayers(players.get(name).playerState);
+        LOGGER.config(String.format("Exiting: %s %s", GameWorld.class.getName(), "removePlayer(" + name + ")"));
     }
 
     /**
      * Stop the game loop
      */
     public synchronized void stopGame() {
+        LOGGER.config(String.format("Entering: %s %s", GameWorld.class.getName(), "stopGame()"));
         isRunning = false;
+        LOGGER.config(String.format("Exiting: %s %s", GameWorld.class.getName(), "stopGame()"));
     }
 
     /**
@@ -168,6 +176,7 @@ public class GameWorld extends Thread {
      * @return indication if something was hit
      */
     public synchronized boolean handleHits(String from, int m, int n, boolean throughPlayers) {
+        LOGGER.config(String.format("Entering: %s %s", GameWorld.class.getName(), "handleHits(" + from + ")"));
         boolean hitSomething = false;
 
         // if pos is inside map
@@ -208,6 +217,7 @@ public class GameWorld extends Thread {
                 });
             }
         }
+        LOGGER.config(String.format("Exiting: %s %s", GameWorld.class.getName(), "handleHits(" + from + ")"));
         return hitSomething;
     }
 
@@ -217,6 +227,7 @@ public class GameWorld extends Thread {
      * @param player the player
      */
     private synchronized void handlePlayerEvents(Player player) {
+        LOGGER.config(String.format("Entering: %s %s", GameWorld.class.getName(), "handlePlayerEvents(" + player.name + ")"));
         if (player.isAlive()) {
             // get the PlayerConnection for the player
             PlayerConnection playerConnection = lobby.players.get(player.name);
@@ -243,18 +254,16 @@ public class GameWorld extends Thread {
 
                     LOGGER.info(player.name + " collected " + field.name);
 
-                    synchronized (lobby) {
-                        // notify all players about the collected item and the new player state
-                        lobby.sendToAllPlayers(new ItemCollected(player.name, field, m, n));
-                        lobby.sendToAllPlayers(player.playerState);
-                    }
+                    // notify all players about the collected item and the new player state
+                    lobby.sendToAllPlayers(new ItemCollected(player.name, field, m, n));
+                    lobby.sendToAllPlayers(player.playerState);
                 }
 
                 // handle item actions of the player
                 handleItemActions(player, playerConnection);
             }
         }
-
+        LOGGER.config(String.format("Exiting: %s %s", GameWorld.class.getName(), "handlePlayerEvents(" + player.name + ")"));
     }
 
     /**
@@ -264,6 +273,7 @@ public class GameWorld extends Thread {
      * @param playerConnection the corresponding PlayerConnection object
      */
     private synchronized void handleItemActions(Player player, PlayerConnection playerConnection) {
+        LOGGER.config(String.format("Entering: %s %s", GameWorld.class.getName(), "handleItemActions(" + player.name + ")"));
         // position on the map
         if (player.isAlive()) {
             int item_m = (int) (player.position.y / Map.FIELD_SIZE);
@@ -294,6 +304,7 @@ public class GameWorld extends Thread {
                 playerConnection.itemActions.clear();
             }
         }
+        LOGGER.config(String.format("Exiting: %s %s", GameWorld.class.getName(), "handleItemActions(" + player.name + ")"));
     }
 
     /**
@@ -303,6 +314,7 @@ public class GameWorld extends Thread {
      * @param n coordinate on the map
      */
     private synchronized void spawnItem(int m, int n) {
+        LOGGER.config(String.format("Entering: %s %s", GameWorld.class.getName(), "spawnItem(m, n)"));
         if (currentItems < MAX_ITEMS
                 && random.nextFloat() < RANDOM_THRESHOLD
                 && map.fields[m][n] == Field.GROUND.id) {
@@ -319,12 +331,14 @@ public class GameWorld extends Thread {
             // notify all players about new item
             lobby.sendToAllPlayers(new NewItem(Field.getItem(gameMode.items[index]), m, n));
         }
+        LOGGER.config(String.format("Exiting: %s %s", GameWorld.class.getName(), "spawnItem(m, n)"));
     }
 
     /**
      * Randomly spawn a new item on a random location on the map
      */
     private synchronized void spawnItem() {
+        LOGGER.config(String.format("Entering: %s %s", GameWorld.class.getName(), "spawnItem()"));
         // set number for maximum number of tries a new random position is generated
         int maxTries = 20;
         for (int i = 0; i < maxTries; i++) {
@@ -340,5 +354,6 @@ public class GameWorld extends Thread {
                 break;
             }
         }
+        LOGGER.config(String.format("Exiting: %s %s", GameWorld.class.getName(), "spawnItem()"));
     }
 }

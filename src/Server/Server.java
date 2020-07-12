@@ -1,6 +1,7 @@
 package Server;
 
 import General.MB;
+import Server.Items.Bomb;
 import Server.Messages.ErrorMessage;
 import Server.Messages.Socket.CloseConnection;
 
@@ -73,6 +74,8 @@ public class Server implements Runnable {
      * @param maxLobbies     maximum number of lobbies
      */
     public Server(String name, int ticksPerSecond, int maxLobbies) {
+        LOGGER.config(String.format("Entering: %s %s", Server.class.getName(), "Server()"));
+
         running = true;
         this.name = name;
         Server.ticksPerSecond = ticksPerSecond;
@@ -83,6 +86,8 @@ public class Server implements Runnable {
 
         lobbies = new HashMap<>();
         preparedPlayers = new HashMap<>();
+
+        LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "Server()"));
     }
 
     /**
@@ -98,6 +103,8 @@ public class Server implements Runnable {
      * Close the server
      */
     public void closeServer() {
+        LOGGER.config(String.format("Entering: %s %s", Server.class.getName(), "closeServer()"));
+
         try {
             serverSocket.close();
         } catch (IOException e) {
@@ -107,6 +114,8 @@ public class Server implements Runnable {
         running = false;
         httpThread.close();
         discoveryThread.close();
+
+        LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "closeServer()"));
     }
 
     /**
@@ -114,6 +123,8 @@ public class Server implements Runnable {
      */
     @Override
     public void run() {
+        LOGGER.config(String.format("Entering: %s %s", Server.class.getName(), "run()"));
+
         // start UDP DiscoveryThread
         discoveryThread.start();
 
@@ -127,6 +138,7 @@ public class Server implements Runnable {
             e.printStackTrace();
         }
 
+        LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "run()"));
     }
 
     /**
@@ -135,7 +147,8 @@ public class Server implements Runnable {
      * @param serverSocket server socket which listens for new connections
      */
     public void clientSocketLoop(ServerSocket serverSocket) {
-        LOGGER.info("Server-Loop started");
+        LOGGER.config(String.format("Entering: %s %s", Server.class.getName(), "clientSocketLoop()"));
+
         while (running) {
             Socket clientSocket;
             try {
@@ -206,6 +219,8 @@ public class Server implements Runnable {
             }
 
         }
+
+        LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "clientSocketLoop()"));
     }
 
     /**
@@ -214,6 +229,7 @@ public class Server implements Runnable {
      * @return a list of open lobbies
      */
     public synchronized List<Lobby> getLobbies() {
+        LOGGER.config(String.format("Called: %s %s", Server.class.getName(), "getLobbies()"));
         return lobbies.values().stream().filter(l -> l.isOpen()).collect(Collectors.toList());
     }
 
@@ -223,7 +239,9 @@ public class Server implements Runnable {
      * @param lobbyName name of the lobby to remove
      */
     public synchronized void removeLobby(String lobbyName) {
+        LOGGER.config(String.format("Entering: %s %s", Server.class.getName(), "removeLobby()"));
         lobbies.remove(lobbyName);
+        LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "removeLobby()"));
     }
 
     /**
@@ -235,6 +253,8 @@ public class Server implements Runnable {
      * @return ErrorMessage in case of failure, null in case of success
      */
     public synchronized ErrorMessage prepareNewPlayer(String ipAddress, String lobbyName, String playerID) {
+        LOGGER.config(String.format("Entering: %s %s", Server.class.getName(), "prepareNewPlayer()"));
+
         if (lobbies.containsKey(lobbyName)) {
 
             Lobby lobby = lobbies.get(lobbyName);
@@ -255,6 +275,7 @@ public class Server implements Runnable {
             }
         }
 
+        LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "prepareNewPlayer()"));
         return new ErrorMessage("The requested lobby doesn't exist");
     }
 
@@ -265,12 +286,17 @@ public class Server implements Runnable {
      * @return ErrorMessage in case of failure, null in case of success
      */
     public synchronized ErrorMessage createLobby(String lobbyName) {
+        LOGGER.config(String.format("Entering: %s %s", Server.class.getName(), "createLobby()"));
+
         if (lobbies.containsKey(lobbyName) && lobbies.get(lobbyName).isOpen()) {
+            LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "createLobby()"));
             return new ErrorMessage("Lobby already exists");
         } else if (getLobbies().size() >= maxLobbies) {
+            LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "createLobby()"));
             return new ErrorMessage("Maximum number of lobbies reached!");
         } else {
             lobbies.put(lobbyName, new Lobby(lobbyName, this));
+            LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "createLobby()"));
             return null;
         }
     }
@@ -281,11 +307,14 @@ public class Server implements Runnable {
      * @param lobbyName name of the lobby
      */
     public synchronized void closeLobby(String lobbyName) {
+        LOGGER.config(String.format("Entering: %s %s", Server.class.getName(), "closeLobby()"));
+        
         if (lobbies.containsKey(lobbyName)) {
             Lobby lobby = lobbies.get(lobbyName);
             lobbies.remove(lobbyName);
             lobby.close();
         }
+        LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "closeLobby()"));
     }
 
     private static class LobbyTimestamp {

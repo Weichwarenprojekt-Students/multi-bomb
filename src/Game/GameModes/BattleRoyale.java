@@ -32,6 +32,8 @@ public class BattleRoyale extends GameMode {
 
     @Override
     public synchronized Optional<String> calculateWinner() {
+        LOGGER.config(String.format("Entering: %s %s", BattleRoyale.class.getName(), "calculateWinner()"));
+
         // Get list of all players that are alive
         List<PlayerState> alivePlayers = players.values().stream().filter(PlayerState::isAlive)
                 .collect(Collectors.toList());
@@ -42,12 +44,15 @@ public class BattleRoyale extends GameMode {
             return alivePlayers.stream().findFirst().map(ps -> ps.playerId);
         }
 
+        LOGGER.config(String.format("Exiting: %s %s", BattleRoyale.class.getName(), "calculateWinner()"));
         // Return empty Optional because there is no winner yet
         return Optional.empty();
     }
 
     @Override
     public synchronized List<Message> handleHit(Player player, Player from) {
+        LOGGER.config(String.format("Entering: %s %s", BattleRoyale.class.getName(), "handleHit()"));
+
         List<Message> result = new ArrayList<>();
 
         if (player.isAlive()) {
@@ -68,6 +73,7 @@ public class BattleRoyale extends GameMode {
             }
         }
 
+        LOGGER.config(String.format("Exiting: %s %s", BattleRoyale.class.getName(), "handleHit()"));
         return result;
     }
 }

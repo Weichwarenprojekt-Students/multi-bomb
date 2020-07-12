@@ -33,6 +33,8 @@ public class KillHunt extends GameMode {
 
     @Override
     public synchronized Optional<String> calculateWinner() {
+        LOGGER.config(String.format("Entering: %s %s", KillHunt.class.getName(), "calculateWinner()"));
+
         // Get list of all players that are alive
         List<PlayerState> alivePlayers = players.values().stream().filter(PlayerState::isAlive)
                 .collect(Collectors.toList());
@@ -42,12 +44,15 @@ public class KillHunt extends GameMode {
             return alivePlayers.stream().findFirst().map(ps -> ps.playerId);
         }
 
+        LOGGER.config(String.format("Exiting: %s %s", KillHunt.class.getName(), "calculateWinner()"));
         // Return the playerId of the first player to reach 10 kills, empty Optional if no player has 10 kills yet
         return alivePlayers.stream().filter(ps -> ps.kills >= 10).findFirst().map(ps -> ps.playerId);
     }
 
     @Override
     public synchronized List<Message> handleHit(Player player, Player from) {
+        LOGGER.config(String.format("Exiting: %s %s", KillHunt.class.getName(), "handleHit()"));
+
         List<Message> result = new ArrayList<>();
 
         if (player.playerState.health > 1) {
@@ -71,6 +76,7 @@ public class KillHunt extends GameMode {
             }
         }
 
+        LOGGER.config(String.format("Exiting: %s %s", KillHunt.class.getName(), "handleHit()"));
         return result;
     }
 }

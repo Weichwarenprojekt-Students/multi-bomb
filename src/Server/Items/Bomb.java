@@ -36,8 +36,12 @@ public class Bomb extends Item {
      * @param bombSize     the size of the bomb explosion
      */
     public static void serverLogic(ItemCallback itemCallback, int m, int n, int bombSize) {
+        LOGGER.config(String.format("Entering: %s %s", Bomb.class.getName(), "serverLogic()"));
+
         // Start new Thread so countdown doesn't block the server
         new Thread(() -> {
+            LOGGER.config(String.format("Entering: %s %s", Bomb.class.getName(), "BombThread"));
+
             try {
                 // wait for the detonation time
                 Thread.sleep((long) (DETONATION_TIME * 1000));
@@ -70,6 +74,10 @@ public class Bomb extends Item {
                 if (!hit_east) hit_east = itemCallback.callback(m, n + r);
                 if (!hit_west) hit_west = itemCallback.callback(m, n - r);
             }
+
+            LOGGER.config(String.format("Exiting: %s %s", Bomb.class.getName(), "BombThread"));
         }).start();
+
+        LOGGER.config(String.format("Exiting: %s %s", Bomb.class.getName(), "serverLogic()"));
     }
 }

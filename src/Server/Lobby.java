@@ -66,6 +66,8 @@ public class Lobby {
      * @param name name of the lobby
      */
     public Lobby(String name, Server server) {
+        LOGGER.config(String.format("Entering: %s %s", Lobby.class.getName(), "Lobby(" + name + ")"));
+
         this.name = name;
         this.gameMode = GameMode.BATTLE_ROYALE;
         this.state = WAITING;
@@ -74,6 +76,8 @@ public class Lobby {
 
         players = new HashMap<>();
         freeColors = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7));
+
+        LOGGER.config(String.format("Exiting: %s %s", Lobby.class.getName(), "Lobby(" + name + ")"));
     }
 
     /**
@@ -83,6 +87,8 @@ public class Lobby {
      * @return boolean indicating the success of this operation
      */
     public synchronized boolean addPlayer(PlayerConnection playerConnection) {
+        LOGGER.config(String.format("Entering: %s %s", Lobby.class.getName(), "addPlayer(" + playerConnection.name + ")"));
+
         // this.isFull() does not need to be checked, because it can't have changed since the check in Server.java
         // this.isOpen() on the other hand might have changed because the last player has left
         if (isOpen() && state == WAITING) {
@@ -96,9 +102,13 @@ public class Lobby {
                 playerConnection.color = getFreeColor();
 
                 sendToAllPlayers(new LobbyState(this));
+
+                LOGGER.config(String.format("Exiting: %s %s", Lobby.class.getName(), "addPlayer(" + playerConnection.name + ")"));
                 return true;
             }
         }
+        LOGGER.config(String.format("Exiting: %s %s", Lobby.class.getName(), "addPlayer(" + playerConnection.name + ")"));
+
         // players can't join
         return false;
     }
@@ -109,6 +119,8 @@ public class Lobby {
      * @param playerConnection the player to remove
      */
     public synchronized void removePlayer(PlayerConnection playerConnection) {
+        LOGGER.config(String.format("Entering: %s %s", Lobby.class.getName(), "removePlayer(" + playerConnection.name + ")"));
+
         players.remove(playerConnection.name);
         setFreeColor(playerConnection.color);
 
@@ -130,6 +142,7 @@ public class Lobby {
 
             sendToAllPlayers(new LobbyState(this));
         }
+        LOGGER.config(String.format("Exiting: %s %s", Lobby.class.getName(), "removePlayer(" + playerConnection.name + ")"));
     }
 
     /**
@@ -138,8 +151,12 @@ public class Lobby {
      * @param msg the message to send
      */
     public synchronized void sendToAllPlayers(Message msg) {
-        LOGGER.finer(msg.toJson());
+        LOGGER.config(String.format("Entering: %s %s", Lobby.class.getName(), "sendToAllPlayers(" + msg.type + ")"));
+
+        LOGGER.config(String.format("Message(%s): %s", msg.type, msg.toJson()));
         players.values().forEach(p -> p.send(msg));
+
+        LOGGER.config(String.format("Exiting: %s %s", Lobby.class.getName(), "sendToAllPlayers(" + msg.type + ")"));
     }
 
     /**
@@ -148,10 +165,14 @@ public class Lobby {
      * @return integer representing the color
      */
     public synchronized int getFreeColor() {
+        LOGGER.config(String.format("Entering: %s %s", Lobby.class.getName(), "getFreeColor()"));
+
         int i = random.nextInt(freeColors.size());
 
         int color = freeColors.toArray(Integer[]::new)[i];
         freeColors.remove(color);
+
+        LOGGER.config(String.format("Exiting: %s %s", Lobby.class.getName(), "getFreeColor()"));
         return color;
     }
 
@@ -161,9 +182,11 @@ public class Lobby {
      * @param color the free color
      */
     public synchronized void setFreeColor(int color) {
+        LOGGER.config(String.format("Entering: %s %s", Lobby.class.getName(), "setFreeColor()"));
         if (color >= 0 && color < 8) {
             freeColors.add(color);
         }
+        LOGGER.config(String.format("Exiting: %s %s", Lobby.class.getName(), "setFreeColor()"));
     }
 
     /**
@@ -172,8 +195,12 @@ public class Lobby {
      * @return map of players to their colors
      */
     public synchronized HashMap<String, Integer> getPlayerColors() {
+        LOGGER.config(String.format("Entering: %s %s", Lobby.class.getName(), "getPlayerColors()"));
+
         HashMap<String, Integer> colors = new HashMap<>();
         players.forEach((k, v) -> colors.put(k, v.color));
+
+        LOGGER.config(String.format("Exiting: %s %s", Lobby.class.getName(), "getPlayerColors()"));
         return colors;
     }
 
@@ -183,9 +210,13 @@ public class Lobby {
      * @param lobbyState lobby state message
      */
     public synchronized void updateLobbyState(LobbyState lobbyState) {
+        LOGGER.config(String.format("Entering: %s %s", Lobby.class.getName(), "updateLobbyState()"));
+
         host = players.get(lobbyState.hostId);
         gameMode = lobbyState.gameMode;
         sendToAllPlayers(new LobbyState(this));
+
+        LOGGER.config(String.format("Exiting: %s %s", Lobby.class.getName(), "updateLobbyState()"));
     }
 
     /**
@@ -194,6 +225,7 @@ public class Lobby {
      * @param map game map
      */
     public synchronized void prepareGame(Map map) {
+        LOGGER.config(String.format("Entering: %s %s", Lobby.class.getName(), "prepareGame()"));
         if (players.size() > 1) {
             state = GAME_STARTING;
 
@@ -206,12 +238,15 @@ public class Lobby {
             sendToAllPlayers(map);
             this.map = map;
         }
+        LOGGER.config(String.format("Exiting: %s %s", Lobby.class.getName(), "prepareGame()"));
     }
 
     /**
      * Start game if all players are ready
      */
     public synchronized void startGame() {
+        LOGGER.config(String.format("Entering: %s %s", Lobby.class.getName(), "startGame()"));
+
         // If all players are ready to start
         if (players.values().stream().allMatch(p -> p.preparationReady)) {
             state = IN_GAME;
@@ -221,6 +256,8 @@ public class Lobby {
             this.gameWorld = new GameWorld(this, map, timestamp + 3000);
             this.gameWorld.start();
         }
+
+        LOGGER.config(String.format("Exiting: %s %s", Lobby.class.getName(), "startGame()"));
     }
 
     /**
@@ -229,17 +266,23 @@ public class Lobby {
      * @param winner winner of the game
      */
     public synchronized void endGame(String winner) {
+        LOGGER.config(String.format("Entering: %s %s", Lobby.class.getName(), "endGame()"));
+
         // Send message that game finished with name of winner to all players
         sendToAllPlayers(GameState.finished(winner));
 
         // set lobby into waiting state again, so next game can begin
         state = WAITING;
+
+        LOGGER.config(String.format("Exiting: %s %s", Lobby.class.getName(), "endGame()"));
     }
 
     /**
      * Close lobby
      */
     public synchronized void close() {
+        LOGGER.config(String.format("Entering: %s %s", Lobby.class.getName(), "close()"));
+
         closed = true;
 
         // close all remaining sockets
@@ -247,6 +290,8 @@ public class Lobby {
 
         // remove lobby from the lobby list of the server
         server.removeLobby(name);
+
+        LOGGER.config(String.format("Exiting: %s %s", Lobby.class.getName(), "close()"));
     }
 
     /**
@@ -255,6 +300,7 @@ public class Lobby {
      * @return boolean indicating if lobby is full
      */
     public synchronized boolean isFull() {
+        LOGGER.config(String.format("Calling: %s %s", Lobby.class.getName(), "isFull()"));
         return players.size() >= 8;
     }
 
@@ -264,6 +310,7 @@ public class Lobby {
      * @return boolean indicating if lobby is open
      */
     public synchronized boolean isOpen() {
+        LOGGER.config(String.format("Calling: %s %s", Lobby.class.getName(), "isOpen()"));
         return !closed;
     }
 }
