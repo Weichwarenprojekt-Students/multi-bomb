@@ -18,13 +18,9 @@ import static General.MultiBomb.LOGGER;
 
 public class GameWorld extends Thread {
     /**
-     * The maximum number of items that can be spawned on the map
-     */
-    private static final int MAX_ITEMS = 17;
-    /**
      * A threshold for random values to handle the rate at which items are spawned on the map
      */
-    private static final float RANDOM_THRESHOLD = 0.1f;
+    private static final float RANDOM_THRESHOLD = 0.2f;
     /**
      * Random object for random spawning of items
      */
@@ -422,17 +418,21 @@ public class GameWorld extends Thread {
         LOGGER.config(String.format("Entering: %s %s", GameWorld.class.getName(), "spawnItem(m, n)"));
 
         long alivePlayers;
+        float randomOffset = 0;
         synchronized (players) {
             alivePlayers = players.values().stream().filter(Player::isAlive).count();
+            if (alivePlayers > 2) {
+                randomOffset = (alivePlayers - 2) * 0.05f;
+            }
         }
 
         synchronized (map) {
-            if (currentItems < MAX_ITEMS) {
+            if (currentItems < alivePlayers + 2) {
                 float random_threshold;
-                if (currentItems < alivePlayers || fromBreakable) {
-                    random_threshold = RANDOM_THRESHOLD;
+                if (fromBreakable) {
+                    random_threshold = RANDOM_THRESHOLD * 2;
                 } else {
-                    random_threshold = RANDOM_THRESHOLD / Server.ticksPerSecond / 10;
+                    random_threshold = (RANDOM_THRESHOLD + randomOffset) / Server.ticksPerSecond;
                 }
 
                 if (random.nextFloat() < random_threshold && map.getField(m, n) == Field.GROUND.id) {
@@ -462,11 +462,22 @@ public class GameWorld extends Thread {
     private synchronized void spawnItem() {
         LOGGER.config(String.format("Entering: %s %s", GameWorld.class.getName(), "spawnItem()"));
         // set number for maximum number of tries a new random position is generated
-        int maxTries = 20;
+        int maxTries = 40;
         for (int i = 0; i < maxTries; i++) {
             // generate random position that is not on the border of the map
             int m = random.nextInt(Map.SIZE - 2) + 1;
             int n = random.nextInt(Map.SIZE - 2) + 1;
+
+            synchronized (players) {
+                if (players.values().stream().anyMatch(p -> {
+                    int pm = (int) (p.position.y / Map.FIELD_SIZE);
+                    int pn = (int) (p.position.x / Map.FIELD_SIZE);
+
+                    return Math.abs(m - pm) + Math.abs(n - pn) < 3;
+                })) {
+                    continue;
+                }
+            }
 
             // check if location is ground on the map
             if (map.getField(m, n) == Field.GROUND.id) {
