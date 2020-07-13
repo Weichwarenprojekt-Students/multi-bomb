@@ -65,6 +65,10 @@ public class MB {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(1060, 720));
 
+        // Change the icon
+        ImageIcon icon = new ImageIcon(MB.class.getResource("/Resources/General/icon.png"));
+        frame.setIconImage(icon.getImage());
+
         // Listen for window measurement changes and save them
         frame.addComponentListener(new ComponentAdapter() {
             @Override
