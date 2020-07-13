@@ -54,8 +54,10 @@ public abstract class MBPanel extends JPanel {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                for (ComponentResize component : components) {
-                    component.resize();
+                synchronized (components) {
+                    for (ComponentResize component : components) {
+                        component.resize();
+                    }
                 }
                 resize();
             }
@@ -66,8 +68,10 @@ public abstract class MBPanel extends JPanel {
      * Toggle the resize events
      */
     public void resize() {
-        for (ComponentResize resize : events) {
-            resize.resize();
+        synchronized (events) {
+            for (ComponentResize resize : events) {
+                resize.resize();
+            }
         }
     }
 
@@ -81,7 +85,9 @@ public abstract class MBPanel extends JPanel {
      */
     public void addComponent(JComponent component, ComponentResize componentSizer) {
         componentSizer.resize();
-        components.add(componentSizer);
+        synchronized (components) {
+            components.add(componentSizer);
+        }
         add(component);
     }
 
@@ -91,7 +97,9 @@ public abstract class MBPanel extends JPanel {
      * @param resize event to be added
      */
     public void addResizeEvent(ComponentResize resize) {
-        events.add(resize);
+        synchronized (events) {
+            events.add(resize);
+        }
     }
 
     /**
