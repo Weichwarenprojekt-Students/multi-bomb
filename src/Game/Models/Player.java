@@ -187,6 +187,10 @@ public class Player {
                 if (respawn) {
                     setSpawn();
                     enable();
+
+                    // Reduce the opacity
+                    opacity = 0.5f;
+                    MultiBomb.sleep(ServerProtection.STANDARD_DURATION);
                 } else {
                     state.health = 0;
                 }
