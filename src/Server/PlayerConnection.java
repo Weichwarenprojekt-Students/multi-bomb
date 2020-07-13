@@ -46,7 +46,7 @@ public class PlayerConnection extends Thread {
     /**
      * The last position update the server received
      */
-    public volatile Position lastPosition;
+    public volatile Position lastPosition = new Position(-5, -5);
     /**
      * If the client is prepared and ready to start the game
      */

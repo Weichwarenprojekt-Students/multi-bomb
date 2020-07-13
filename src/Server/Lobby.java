@@ -5,6 +5,7 @@ import Server.Messages.Message;
 import Server.Messages.Socket.GameState;
 import Server.Messages.Socket.LobbyState;
 import Server.Messages.Socket.Map;
+import Server.Messages.Socket.Position;
 
 import java.util.*;
 
@@ -243,7 +244,7 @@ public class Lobby {
                 synchronized (p.itemActions) {
                     p.itemActions.clear();
                 }
-                p.lastPosition = null;
+                p.lastPosition = new Position(-5, -5);
             });
 
             sendToAllPlayers(map);
