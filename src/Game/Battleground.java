@@ -83,7 +83,7 @@ public class Battleground extends MBPanel {
         // Load the item textures and repaint
         Field.loadTextures(map.theme, this);
         Item.loadTextures(this);
-        MB.activePanel.resize();
+        MB.activePanel.toggleResizeEvents();
         startDrawing = true;
     }
 

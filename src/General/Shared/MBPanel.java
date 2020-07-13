@@ -55,9 +55,16 @@ public abstract class MBPanel extends JPanel {
             @Override
             public void componentResized(ComponentEvent e) {
                 components.forEach(ComponentResize::resize);
-                events.forEach(ComponentResize::resize);
+                toggleResizeEvents();
             }
         });
+    }
+
+    /**
+     * Toggle the manually added resize events
+     */
+    public void toggleResizeEvents() {
+        events.forEach(ComponentResize::resize);
     }
 
     /**
