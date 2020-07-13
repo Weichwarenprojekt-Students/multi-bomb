@@ -144,6 +144,8 @@ public class Bomb extends Item {
                 new java.util.TimerTask() {
                     @Override
                     public void run() {
+                        // Increase the bomb count
+                        upgrades.bombCount++;
                         SoundControl.playSoundEffect(SoundEffect.BOMB_EXPLOSION);
                     }
                 },
@@ -193,7 +195,6 @@ public class Bomb extends Item {
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
             drawCore(g, m, n, percentage);
         } else {
-            upgrades.bombCount++;
             return null;
         }
         return this;
