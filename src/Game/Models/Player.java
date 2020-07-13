@@ -2,9 +2,7 @@ package Game.Models;
 
 import Game.Battleground;
 import Game.Game;
-import Game.Items.Arrow;
-import Game.Items.Item;
-import Game.Items.Sword;
+import Game.Items.*;
 import Game.Lobby;
 import General.MultiBomb;
 import General.Shared.*;
@@ -70,7 +68,7 @@ public class Player {
     /**
      * The player's item
      */
-    public Item item = new Sword();
+    public Item item = new Bomb();
     /**
      * True if the player is fading out
      */

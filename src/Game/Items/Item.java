@@ -19,7 +19,8 @@ public abstract class Item {
     /**
      * The available items
      */
-    public static final String BOMB = ServerBomb.NAME, ARROW = ServerArrow.NAME, SWORD = ServerSword.NAME;
+    public static final String BOMB = ServerBomb.NAME, ARROW = ServerArrow.NAME, SWORD = ServerSword.NAME,
+                               TELEPORT = "Teleport";
     /**
      * The name of the item
      */
@@ -64,12 +65,8 @@ public abstract class Item {
         Item item = Map.getItem(m, n);
         if (item == null || (onItem.onItem && onItem.m == m && onItem.n == n)) {
             return true;
-        } else if (item.name.equals(BOMB)) {
-            return false;
-        } else if (item.name.equals(SWORD)){
-            return true;
         }
-        return item.name.equals(ARROW);
+        return !item.name.equals(BOMB);
     }
 
     /**
@@ -79,12 +76,19 @@ public abstract class Item {
      * @return the corresponding item
      */
     public static Item getItem(String name) {
-        if (name.equals(ARROW)) {
-            return new Arrow();
-        } else if (name.equals(SWORD)) {
-            return new Sword();
+        switch (name) {
+            case ARROW:
+                return new Arrow();
+
+            case SWORD:
+                return new Sword();
+
+            case TELEPORT:
+                return new Teleport();
+
+            default:
+                return new Bomb();
         }
-        return new Bomb();
     }
 
     /**
