@@ -18,11 +18,11 @@ public class Bomb extends Item {
     /**
      * The time till the bomb detonates in seconds
      */
-    public static float DETONATION_TIME = ServerBomb.DETONATION_TIME;
+    public static long DETONATION_TIME = ServerBomb.DETONATION_TIME;
     /**
      * The total time in seconds
      */
-    public static float TOTAL_TIME = ServerBomb.TOTAL_TIME;
+    public static long TOTAL_TIME = ServerBomb.TOTAL_TIME;
     /**
      * The horizontal sprite
      */
@@ -147,7 +147,7 @@ public class Bomb extends Item {
                         SoundControl.playSoundEffect(SoundEffect.BOMB_EXPLOSION);
                     }
                 },
-                (int) (DETONATION_TIME * 1000)
+                DETONATION_TIME
         );
 
         // Decrease the bomb count
@@ -168,7 +168,7 @@ public class Bomb extends Item {
     @Override
     public Item draw(Graphics2D g, int m, int n) {
         // Update the counter
-        float counter = (float) (System.currentTimeMillis() - startTime) / 1000;
+        long counter = System.currentTimeMillis() - startTime;
 
         // Check if bomb is still there
         if (counter < DETONATION_TIME) {
@@ -181,7 +181,7 @@ public class Bomb extends Item {
             );
         } else if (counter < TOTAL_TIME) {
             // Calculate the percentage and change the opacity
-            float percentage = (counter - DETONATION_TIME) / (TOTAL_TIME - DETONATION_TIME);
+            float percentage = (float) (counter - DETONATION_TIME) / (TOTAL_TIME - DETONATION_TIME);
             AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (1 - percentage));
             g.setComposite(ac);
 

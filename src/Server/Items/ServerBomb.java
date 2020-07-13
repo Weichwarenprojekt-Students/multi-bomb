@@ -14,11 +14,11 @@ public class ServerBomb extends ServerItem {
     /**
      * The time till the bomb detonates in seconds
      */
-    public static float DETONATION_TIME = 3f;
+    public static long DETONATION_TIME = 3000;
     /**
      * The total time in seconds
      */
-    public static float TOTAL_TIME = 3.3f;
+    public static long TOTAL_TIME = 3300;
 
     /**
      * Constructor
@@ -44,7 +44,7 @@ public class ServerBomb extends ServerItem {
 
             try {
                 // wait for the detonation time
-                Thread.sleep((long) (DETONATION_TIME * 1000));
+                Thread.sleep(DETONATION_TIME);
             } catch (InterruptedException e) {
                 LOGGER.log(Level.WARNING, "Bomb countdown interrupted", e);
                 e.printStackTrace();
@@ -60,7 +60,7 @@ public class ServerBomb extends ServerItem {
             boolean hit_east = false;
             boolean hit_west = false;
 
-            long delay = (long) ((TOTAL_TIME - DETONATION_TIME) * 1000 / bombSize);
+            long delay = (TOTAL_TIME - DETONATION_TIME) / bombSize;
 
             for (int r = 1; r <= bombSize; r++) {
                 try {

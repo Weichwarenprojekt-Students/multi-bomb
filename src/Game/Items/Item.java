@@ -4,6 +4,8 @@ import Game.Models.Field;
 import Game.Models.Player;
 import Game.Models.Upgrades;
 import General.Shared.MBPanel;
+import Server.Items.ServerArrow;
+import Server.Items.ServerBomb;
 import Server.Messages.Socket.Map;
 
 import java.awt.*;
@@ -15,7 +17,7 @@ public abstract class Item {
     /**
      * The available items
      */
-    public static final String BOMB = "Bomb", ARROW = "Arrow";
+    public static final String BOMB = ServerBomb.NAME, ARROW = ServerArrow.NAME;
     /**
      * The name of the item
      */

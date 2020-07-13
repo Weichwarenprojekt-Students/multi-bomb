@@ -11,11 +11,11 @@ public class ServerArrow extends ServerItem {
     /**
      * The time the player needs to stay still and aim the arrow
      */
-    public static float AIM_TIME = 1f;
+    public static long AIM_TIME = 1000;
     /**
      * The time the arrow needs to pass one field
      */
-    public static float DELTA_TIME = 0.05f;
+    public static long DELTA_TIME = 50;
 
     /**
      * Constructor
@@ -29,10 +29,10 @@ public class ServerArrow extends ServerItem {
             boolean flying = true;
 
             // Time for aiming
-            MultiBomb.sleep((long) (AIM_TIME * 1000));
+            MultiBomb.sleep(AIM_TIME);
 
             for (int i = 1; flying; i++) {
-                MultiBomb.sleep((long) (DELTA_TIME * 1000));
+                MultiBomb.sleep(DELTA_TIME);
 
                 flying = !itemCallback.callback(m + (direction.y * i), n + (direction.x * i));
             }

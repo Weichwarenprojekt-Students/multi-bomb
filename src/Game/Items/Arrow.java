@@ -18,11 +18,11 @@ public class Arrow extends Item {
     /**
      * The time the player needs to stay still and aim the arrow
      */
-    public static float AIM_TIME = ServerArrow.AIM_TIME;
+    public static long AIM_TIME = ServerArrow.AIM_TIME;
     /**
      * The time the arrow needs to pass one field
      */
-    public static float DELTA_TIME = ServerArrow.DELTA_TIME;
+    public static long DELTA_TIME = ServerArrow.DELTA_TIME;
     /**
      * The left end sprite
      */
@@ -128,12 +128,12 @@ public class Arrow extends Item {
     @Override
     public Item draw(Graphics2D g, int m, int n) {
         // Update the counter
-        float counter = (float) (System.currentTimeMillis() - startTime) / 1000;
+        long counter = System.currentTimeMillis() - startTime;
 
         // Check if player is still in aim phase
         MBImage image = getImage();
         if (counter < AIM_TIME) {
-            float percentage = counter / AIM_TIME;
+            float percentage = (float) counter / AIM_TIME;
             int offset = (int) (Battleground.fieldSize * (1 - percentage) / 2);
             g.drawImage(
                     image.image,
@@ -145,7 +145,7 @@ public class Arrow extends Item {
             );
         } else {
             // Calculate the arrow's progress
-            float progress = (counter - AIM_TIME) / DELTA_TIME;
+            float progress = (float) (counter - AIM_TIME) / DELTA_TIME;
 
             // Calculate the start position
             int x = Battleground.offset + Battleground.fieldSize * n;
