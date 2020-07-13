@@ -346,8 +346,8 @@ public class Lobby {
 
         // Wait until the players can start to control
         long timeDifference = timestamp - System.currentTimeMillis();
-        if (timeDifference >= 3000) {
-            timeDifference = 2999;
+        if (timeDifference >= 5000 || timeDifference < 0) {
+            timeDifference = 4999;
         }
         while (timeDifference > 0) {
             MB.activePanel.toastSuccess(

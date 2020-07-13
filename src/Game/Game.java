@@ -91,6 +91,7 @@ public class Game extends MBPanel {
 
         // Add the battleground
         battleground = new Battleground(Lobby.map, true, false);
+        battleground.setVisible(false);
         addComponent(battleground, () -> {
             battleground.setBounds(
                     (int) (getWidth() / 2 - 0.25 * getHeight()) + 2 * MARGIN,
@@ -110,11 +111,11 @@ public class Game extends MBPanel {
                 getHeight() - 2 * MARGIN
         ));
         sidebar.afterVisible();
+        battleground.afterVisible();
 
         // Show the battleground
-        MultiBomb.sleep(1000);
         spinner.setVisible(false);
-        battleground.afterVisible();
+        battleground.setVisible(true);
         MB.frame.repaint();
         MB.frame.revalidate();
     }
