@@ -161,7 +161,7 @@ public class GameWorld extends Thread {
     }
 
     /**
-     * Handle hit on a field
+     * Handle hit on a field, the player that is using the item can be hit
      *
      * @param from               the player that used the item
      * @param m                  coordinate on the map
@@ -243,6 +243,8 @@ public class GameWorld extends Thread {
     /**
      * Handle hit of players in a certain distance to a middle point of a field
      *
+     * The player that is using the item does not get hit
+     *
      * @param from   the player that used the item
      * @param x      pixel position of the circle center
      * @param y      pixel position of the circle center
@@ -258,7 +260,8 @@ public class GameWorld extends Thread {
                 double distance = Math.sqrt(Math.pow(px - x, 2) + Math.pow(py - y, 2));
 
                 if (p.isAlive()
-                        && distance <= radius) {
+                        && distance <= radius
+                        && !p.name.equals(from)) {
                     // hit player
                     gameMode.handleHit(p, players.get(from)).forEach(lobby::sendToAllPlayers);
                 }
@@ -383,6 +386,7 @@ public class GameWorld extends Thread {
                                 item_n,
                                 iA.direction
                         );
+                        break;
                     case ServerSword.NAME:
                         ServerSword.serverLogic(
                                 (m, n) -> {
@@ -401,6 +405,7 @@ public class GameWorld extends Thread {
                                 item_m,
                                 item_n
                         );
+                        break;
                 }
             });
         }
