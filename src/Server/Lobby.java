@@ -13,9 +13,13 @@ import static General.MultiBomb.LOGGER;
 
 public class Lobby {
     /**
+     * The wait time until the game starts
+     */
+    public static long WAIT_TIME = 5000;
+    /**
      * Possible states of the lobby
      */
-    public static final int WAITING = 0, GAME_STARTING = 1, IN_GAME = 2, GAME_ENDING = 3;
+    public static final int WAITING = 0, GAME_STARTING = 1, IN_GAME = 2;
     /**
      * List of all players inside the lobby
      */
@@ -263,9 +267,9 @@ public class Lobby {
         if (players.values().stream().allMatch(p -> p.preparationReady)) {
             state = IN_GAME;
             // Send game start message with timestamp to start countdown
-            long timestamp = System.currentTimeMillis();
+            long timestamp = System.currentTimeMillis() + WAIT_TIME;
             sendToAllPlayers(GameState.running(timestamp));
-            this.gameWorld = new GameWorld(this, map, timestamp + 3000);
+            this.gameWorld = new GameWorld(this, map, timestamp);
             this.gameWorld.start();
         }
 

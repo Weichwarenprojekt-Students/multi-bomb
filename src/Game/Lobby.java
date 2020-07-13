@@ -22,6 +22,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static Server.Lobby.WAIT_TIME;
+
 public class Lobby {
     /**
      * The players
@@ -328,7 +330,7 @@ public class Lobby {
         Lobby.gameState = gameState;
         switch (gameState.state) {
             case GameState.RUNNING:
-                new Thread(() -> startCountdown(gameState.timestamp + 3000)).start();
+                new Thread(() -> startCountdown(gameState.timestamp)).start();
                 break;
 
             case GameState.FINISHED:
@@ -346,7 +348,7 @@ public class Lobby {
 
         // Wait until the players can start to control
         long timeDifference = timestamp - System.currentTimeMillis();
-        if (timeDifference >= 5000 || timeDifference < 0) {
+        if (timeDifference >= WAIT_TIME || timeDifference < 0) {
             timeDifference = 4999;
         }
         while (timeDifference > 0) {
