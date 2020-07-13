@@ -114,6 +114,7 @@ public class Lobby {
         Lobby.player = player;
         Lobby.ipAddress = ipAddress;
         Lobby.lobby = lobby;
+        leave = false;
 
         // Try to build up the connection
         socket = new Socket(ipAddress, Server.GAME_PORT);
@@ -206,6 +207,7 @@ public class Lobby {
             gameState.state = GameState.FINISHED;
         }
         players.clear();
+        reset();
         leave = true;
         try {
             socket.close();
@@ -365,6 +367,7 @@ public class Lobby {
 
         // Start sending positions
         int waitTime = 1000 / tickRate;
+        System.out.println(waitTime);
         MultiBomb.startTimedAction(waitTime, ((deltaTime, totalTime) -> {
             out.println(players.get(player).position.toJson());
             return gameState.state == GameState.RUNNING && players.get(player).state.isAlive();
@@ -474,27 +477,33 @@ public class Lobby {
             // Show the winner
             MB.activePanel.toastSuccess(winner + " won the game!");
             MultiBomb.sleep(3000);
+            reset();
 
             // End the game loop
             Game.gameOver = true;
 
-            // Reset the players
-            players.replaceAll((k, v) -> new Player(k, v.color));
-
-            // Reset the map
-            if (MapManager.maps.containsKey(map.name)) {
-                map = MapManager.maps.get(map.name);
-            } else {
-                map = MapManager.maps.get("X-Factor");
-            }
-            Map.resetItems();
-
-            // Reset the mode
-            mode = GameMode.getMode(mode.name);
-
             // Show the lobby view
             MB.show(lobby, true);
         }).start();
+    }
+
+    /**
+     * Reset the lobby
+     */
+    private static void reset() {
+        // Reset the players
+        players.replaceAll((k, v) -> new Player(k, v.color));
+
+        // Reset the map
+        if (MapManager.maps.containsKey(map.name)) {
+            map = MapManager.maps.get(map.name);
+        } else {
+            map = MapManager.maps.get("X-Factor");
+        }
+        Map.resetItems();
+
+        // Reset the mode
+        mode = GameMode.getMode(mode.name);
     }
 
     /**
