@@ -1,6 +1,7 @@
 package Game.GameModes;
 
 import Game.Models.Field;
+import Server.Items.ServerProtection;
 import Server.Messages.Message;
 import Server.Messages.Socket.PlayerState;
 import Server.Messages.Socket.Respawn;
@@ -50,15 +51,10 @@ public class KillHunt extends GameMode {
 
         List<Message> result = new ArrayList<>();
 
-        if (player.playerState.health > 1) {
-            // player got hit and loses one health
-            player.hit();
-            result.add(player.playerState);
-
-            LOGGER.info(String.format("Player %s got hit by %s and lost 1 health", player.name, from.name));
-        } else {
+        if (!player.isProtected) {
             // player got hit and spawns again
             result.add(new Respawn(player.name));
+            ServerProtection.serverLogic(ServerProtection.STANDARD_DURATION + ServerProtection.DIE_DURATION, player);
 
             LOGGER.info(String.format("Player %s got hit by %s and respawns", player.name, from.name));
 

@@ -1,5 +1,6 @@
 package Server.Models;
 
+import Server.Items.ServerProtection;
 import Server.Messages.Socket.PlayerState;
 import Server.Messages.Socket.Position;
 
@@ -16,6 +17,10 @@ public class Player {
      * State of the player
      */
     public PlayerState playerState;
+    /**
+     * Protection state of player
+     */
+    public boolean isProtected;
 
     /**
      * Constructor
@@ -39,7 +44,19 @@ public class Player {
      * Hit the player
      */
     public synchronized void hit() {
-        playerState.health -= 1;
+        if (!isProtected) {
+            playerState.health -= 1;
+            ServerProtection.serverLogic(ServerProtection.HIT_DURATION, this);
+        }
+    }
+
+    /**
+     * Protect the player from hit
+     *
+     * @param value set the protection to true or false
+     */
+    public synchronized void protect(boolean value) {
+        isProtected = value;
     }
 
     /**

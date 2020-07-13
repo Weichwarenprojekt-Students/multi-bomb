@@ -10,6 +10,7 @@ import General.MultiBomb;
 import General.Shared.*;
 import General.Sound.SoundControl;
 import General.Sound.SoundEffect;
+import Server.Items.ServerProtection;
 import Server.Messages.Socket.*;
 
 import java.awt.*;
@@ -77,6 +78,14 @@ public class Player {
      * True if the player is currently using an item
      */
     private boolean usingItem = false;
+    /**
+     * The time the player fades out after dying
+     */
+    public static final long DIE_DURATION = ServerProtection.DIE_DURATION;
+    /**
+     * The time the player is protected after a hit
+     */
+    public static final long HIT_DURATION = ServerProtection.HIT_DURATION;
 
     /**
      * Constructor
@@ -150,16 +159,15 @@ public class Player {
      * Show visually that the player took a hit
      */
     public void takeHit() {
-        int duration = 3000;
         MultiBomb.startTimedAction(Game.WAIT_TIME, (deltaTime, totalTime) -> {
             // Reset the opacity and respawn the player
-            if (totalTime > duration) {
+            if (totalTime > HIT_DURATION) {
                 opacity = 1f;
                 return false;
             }
 
             // Reduce the players opacity
-            opacity = (float) (0.3 * Math.cos(6 * Math.PI * (duration - totalTime) / duration)) + 0.5f;
+            opacity = (float) (0.3 * Math.cos(6 * Math.PI * (HIT_DURATION - totalTime) / HIT_DURATION)) + 0.5f;
             return true;
         });
     }
@@ -173,10 +181,9 @@ public class Player {
         SoundControl.playSoundEffect(SoundEffect.CHARACTER_DEATH);
         disable();
 
-        int duration = 2000;
         MultiBomb.startTimedAction(Game.WAIT_TIME, (deltaTime, totalTime) -> {
             // Reset the opacity and respawn the player
-            if (totalTime > duration) {
+            if (totalTime > DIE_DURATION) {
                 if (respawn) {
                     setSpawn();
                     enable();
@@ -188,7 +195,7 @@ public class Player {
             }
 
             // Reduce the players opacity
-            opacity = (float) (duration - totalTime) / duration;
+            opacity = (float) (DIE_DURATION - totalTime) / DIE_DURATION;
             return true;
         });
     }
