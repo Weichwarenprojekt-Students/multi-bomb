@@ -442,7 +442,9 @@ public class Lobby {
      * @param action of the server
      */
     private static void removeField(FieldDestroyed action) {
-        map.setField(action.m, action.n, Field.GROUND.id);
+        if (Field.getItem(map.getField(action.m, action.n)).isBreakable()) {
+            map.setField(action.m, action.n, Field.GROUND.id);
+        }
     }
 
     /**
