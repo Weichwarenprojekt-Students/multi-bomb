@@ -61,10 +61,19 @@ public class KillHunt extends GameMode {
             if (!player.name.equals(from.name)) {
                 // update kill for other player
                 from.playerState.kills++;
+
+                // notify players about the kill
                 result.add(from.playerState);
 
-                LOGGER.info(String.format("Player %s killed %s", from.name, player.name));
+            } else if (from.playerState.kills > 0) {
+                // decrement kills of player because he hit himself
+                from.playerState.kills--;
+
+                // notify players about the kill
+                result.add(from.playerState);
             }
+
+            LOGGER.info(String.format("Player %s killed %s", from.name, player.name));
         }
 
         LOGGER.config(String.format("Exiting: %s %s", KillHunt.class.getName(), "handleHit()"));
