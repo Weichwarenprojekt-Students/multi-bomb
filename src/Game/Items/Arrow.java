@@ -9,6 +9,7 @@ import Game.Models.Upgrades;
 import General.Shared.MBImage;
 import General.Shared.MBPanel;
 import Server.Items.ServerArrow;
+import Server.Messages.Socket.ItemAction;
 import Server.Messages.Socket.Map;
 
 import java.awt.*;
@@ -96,20 +97,19 @@ public class Arrow extends Item {
     /**
      * Use the arrow
      *
-     * @param m      position
-     * @param n      position
+     * @param action item action
      * @param player who used the item
      * @return the same item if there's ammunition left, otherwise a bomb
      */
     @Override
-    public Item use(int m, int n, Player player) {
+    public Item use(ItemAction action, Player player) {
         this.startTime = System.currentTimeMillis();
 
-        // Save the player's direction
-        direction = player.position.direction;
+        // Save the direction of the usage
+        direction = action.direction;
 
         // Add the item to the map so that the battleground can draw it
-        Map.setItem(m, n, this);
+        Map.setItem(action.m, action.n, this);
 
         // Decrease the ammunition
         ammunition--;

@@ -1,11 +1,13 @@
 package Game.Items;
 
+import Game.Models.Direction;
 import Game.Models.Field;
 import Game.Models.Player;
 import Game.Models.Upgrades;
 import General.Shared.MBPanel;
 import Server.Items.ServerArrow;
 import Server.Items.ServerBomb;
+import Server.Messages.Socket.ItemAction;
 import Server.Messages.Socket.Map;
 
 import java.awt.*;
@@ -89,7 +91,7 @@ public abstract class Item {
     /**
      * Handle the use of an item
      */
-    public abstract Item use(int m, int n, Player player);
+    public abstract Item use(ItemAction action, Player player);
 
     /**
      * Draw a used item

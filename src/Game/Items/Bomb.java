@@ -10,6 +10,7 @@ import General.Shared.MBPanel;
 import General.Sound.SoundControl;
 import General.Sound.SoundEffect;
 import Server.Items.ServerBomb;
+import Server.Messages.Socket.ItemAction;
 import Server.Messages.Socket.Map;
 
 import java.awt.*;
@@ -123,18 +124,17 @@ public class Bomb extends Item {
     /**
      * Use the bomb
      *
-     * @param m      position of the item use
-     * @param n      position of the item use
+     * @param action item action
      * @param player who used the item
      * @return a new bomb
      */
     @Override
-    public Item use(int m, int n, Player player) {
+    public Item use(ItemAction action, Player player) {
         this.upgrades = player.state.upgrades;
         this.startTime = System.currentTimeMillis();
 
         // Add the item to the map so that the battleground can draw it
-        Map.setItem(m, n, this);
+        Map.setItem(action.m, action.n, this);
 
         // Plays the Sound when Bomb is set
         SoundControl.playSoundEffect(SoundEffect.SET_BOMB);

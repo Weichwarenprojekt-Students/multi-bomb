@@ -395,7 +395,7 @@ public class Lobby {
      * @param action of the server
      */
     private static void handleItemAction(ItemAction action) {
-        players.get(action.playerId).handleItemAction(action.itemId, action.m, action.n);
+        players.get(action.playerId).handleItemAction(action);
         for (Player player : players.values()) {
             player.isOnItem(action.m, action.n);
         }

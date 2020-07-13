@@ -314,13 +314,13 @@ public class Player {
     /**
      * Handle an item action
      *
-     * @param name of the item
+     * @param action the item action
      */
-    public void handleItemAction(String name, int m, int n) {
-        if (!name.equals(item.name)) {
-            item = Item.getItem(name);
+    public void handleItemAction(ItemAction action) {
+        if (!action.itemId.equals(item.name)) {
+            item = Item.getItem(action.itemId);
         }
-        item = item.use(m, n, this);
+        item = item.use(action, this);
         usingItem = false;
     }
 
