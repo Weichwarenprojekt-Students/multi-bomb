@@ -57,8 +57,8 @@ public class Sidebar extends MBPanel {
      */
     public void setupLayout() {
         // The name of the mode
-        MBLabel mode = new MBLabel(MBLabel.H2, Lobby.mode.name);
-        addComponent(mode, () -> mode.setBounds(2 * PADDING + 32, PADDING, 200, 32));
+        MBLabel mode = new MBLabel(MBLabel.H2, Lobby.mode.name + " \u2022 " + Lobby.map.name);
+        addComponent(mode, () -> mode.setBounds(2 * PADDING + 32, PADDING, getHeight() / 2, 32));
 
         // Add the settings button
         int startY = 2 * PADDING + 32, height = 40, margin = 16;
