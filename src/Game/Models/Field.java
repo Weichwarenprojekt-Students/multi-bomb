@@ -5,6 +5,9 @@ import General.Shared.MBImage;
 import General.Shared.MBPanel;
 import Server.Messages.Socket.Map;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * This class contains the information about the items (blocks and consumables)
  */
@@ -121,13 +124,11 @@ public enum Field {
     /**
      * @return all consumable items
      */
-    public static byte[] getAllItems() {
-        return new byte[] {
-                BOMB.id,
-                HEART.id,
-                SPEED.id,
-                EXPLOSION.id,
-                ARROW.id
-        };
+    public static byte[] getAllItems(boolean withHeart) {
+        if (withHeart) {
+            return new byte[] {HEART.id, BOMB.id, SPEED.id, EXPLOSION.id, ARROW.id};
+        } else {
+            return new byte[] {BOMB.id, SPEED.id, EXPLOSION.id, ARROW.id};
+        }
     }
 }

@@ -23,7 +23,7 @@ public class KillHunt extends GameMode {
      * Constructor
      */
     public KillHunt() {
-        super(GameMode.KILL_HUNT, DESCRIPTION, Field.getAllItems());
+        super(GameMode.KILL_HUNT, DESCRIPTION, Field.getAllItems(false));
     }
 
     @Override

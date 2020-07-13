@@ -22,7 +22,7 @@ public class BattleRoyale extends GameMode {
      * Constructor
      */
     public BattleRoyale() {
-        super(GameMode.BATTLE_ROYALE, DESCRIPTION, Field.getAllItems());
+        super(GameMode.BATTLE_ROYALE, DESCRIPTION, Field.getAllItems(true));
     }
 
     @Override
