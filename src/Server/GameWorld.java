@@ -5,6 +5,7 @@ import Game.Models.Field;
 import General.MultiBomb;
 import Server.Items.ServerArrow;
 import Server.Items.ServerBomb;
+import Server.Items.ServerSword;
 import Server.Messages.Socket.*;
 import Server.Models.Player;
 
@@ -169,47 +170,17 @@ public class GameWorld extends Thread {
      * @param from               the player that used the item
      * @param m                  coordinate on the map
      * @param n                  coordinate on the map
-     * @param stoppedByBreakable item goes through players
+     * @param stoppedByBreakable item is stopped by breakable
      * @return indication if something was hit
      */
-    public boolean handleHits(String from, int m, int n, boolean stoppedByBreakable) {
+    private boolean handleHits(String from, int m, int n, boolean stoppedByBreakable) {
         LOGGER.config(String.format("Entering: %s %s", GameWorld.class.getName(), "handleHits(" + from + ")"));
         boolean hitSomething = false;
 
         // if pos is inside map
         if (m < Map.SIZE && m >= 0 && n < Map.SIZE && n >= 0) {
-            boolean hitBreakable = false;
-            synchronized (map) {
-                // get the field of the position
-                Field field = Field.getItem(map.getField(m, n));
-
-                if (!field.isPassable() && field != Field.SPAWN) {
-                    // field is solid or breakable, so it's a hit
-                    hitSomething = true;
-
-                    if (field == Field.BREAKABLE_0 || field == Field.BREAKABLE_1) {
-                        LOGGER.info("Field broken at m=" + m + ", n=" + n + " by " + from);
-
-                        hitBreakable = true;
-
-                        // if stopped by breakable, register hit
-                        hitSomething = stoppedByBreakable;
-
-                        // set the field to ground
-                        map.setField(m, n, Field.GROUND.id);
-
-                        // randomly spawn a new item at the fields position
-                        spawnItem(m, n, true);
-                    }
-                }
-            }
-
-            if (hitBreakable) {
-                synchronized (lobby) {
-                    // field is destroyed, notify players
-                    lobby.sendToAllPlayers(new FieldDestroyed(m, n));
-                }
-            }
+            // handle hits on the map
+            hitSomething = handleMapHit(m, n, stoppedByBreakable);
 
             synchronized (players) {
                 // a hit occurs if any of the players are on the hit's position
@@ -226,6 +197,77 @@ public class GameWorld extends Thread {
         }
         LOGGER.config(String.format("Exiting: %s %s", GameWorld.class.getName(), "handleHits(" + from + ")"));
         return hitSomething;
+    }
+
+    /**
+     * Handle hit from an item to a field
+     *
+     * @param m                  coordinate on the map
+     * @param n                  coordinate on the map
+     * @param stoppedByBreakable item is stopped by breakable
+     * @return indication if something was hit
+     */
+    private boolean handleMapHit(int m, int n, boolean stoppedByBreakable) {
+        boolean hitSomething = false;
+        boolean hitBreakable = false;
+        synchronized (map) {
+            // get the field of the position
+            Field field = Field.getItem(map.getField(m, n));
+
+            if (!field.isPassable() && field != Field.SPAWN) {
+                // field is solid or breakable, so it's a hit
+                hitSomething = true;
+
+                if (field == Field.BREAKABLE_0 || field == Field.BREAKABLE_1) {
+                    LOGGER.info("Field broken at m=" + m + ", n=" + n);
+
+                    hitBreakable = true;
+
+                    // if stopped by breakable, register hit
+                    hitSomething = stoppedByBreakable;
+
+                    // set the field to ground
+                    map.setField(m, n, Field.GROUND.id);
+
+                    // randomly spawn a new item at the fields position
+                    spawnItem(m, n, true);
+                }
+            }
+        }
+
+        if (hitBreakable) {
+            synchronized (lobby) {
+                // field is destroyed, notify players
+                lobby.sendToAllPlayers(new FieldDestroyed(m, n));
+            }
+        }
+        return hitSomething;
+    }
+
+    /**
+     * Handle hit of players in a certain distance to a middle point of a field
+     *
+     * @param from   the player that used the item
+     * @param x      pixel position of the circle center
+     * @param y      pixel position of the circle center
+     * @param radius the radius around the item
+     */
+    private void handlePlayerHitCircle(String from, float x, float y, float radius) {
+        synchronized (players) {
+            // a hit occurs if any of the players are on the hit's position
+            players.values().forEach(p -> {
+                float px = p.position.x;
+                float py = p.position.y;
+
+                double distance = Math.sqrt(Math.pow(px - x, 2) + Math.pow(py - y, 2));
+
+                if (p.isAlive()
+                        && distance <= radius) {
+                    // hit player
+                    gameMode.handleHit(p, players.get(from)).forEach(lobby::sendToAllPlayers);
+                }
+            });
+        }
     }
 
     /**
@@ -345,7 +387,24 @@ public class GameWorld extends Thread {
                                 item_n,
                                 iA.direction
                         );
+                    case ServerSword.NAME:
+                        ServerSword.serverLogic(
+                                (m, n) -> {
+                                    float x = (float) n * Map.FIELD_SIZE + Map.FIELD_SIZE * 0.5f;
+                                    float y = (float) m * Map.FIELD_SIZE + Map.FIELD_SIZE * 0.5f;
 
+                                    handleMapHit(m, n, false);
+                                    handleMapHit(m + 1, n, false);
+                                    handleMapHit(m, n + 1, false);
+                                    handleMapHit(m - 1, n, false);
+                                    handleMapHit(m, n - 1, false);
+
+                                    handlePlayerHitCircle(player.name, x, y, Map.FIELD_SIZE * 1.5f);
+                                    return false;
+                                },
+                                item_m,
+                                item_n
+                        );
                 }
             });
         }
