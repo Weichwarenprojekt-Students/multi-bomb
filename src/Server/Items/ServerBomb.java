@@ -21,13 +21,6 @@ public class ServerBomb extends ServerItem {
     public static long TOTAL_TIME = 3300;
 
     /**
-     * Constructor
-     */
-    public ServerBomb() {
-        super(NAME);
-    }
-
-    /**
      * Run the item logic on the server
      *
      * @param itemCallback callback function that gets passed all fields in a row that might be hit

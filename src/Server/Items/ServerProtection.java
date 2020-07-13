@@ -20,12 +20,6 @@ public class ServerProtection extends ServerItem {
      * Standard protection time
      */
     public static long STANDARD_DURATION = 3000;
-    /**
-     * Constructor
-     */
-    public ServerProtection() {
-        super(NAME);
-    }
 
     public static void serverLogic(long time, Player player) {
         new Thread(() -> {

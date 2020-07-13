@@ -17,13 +17,6 @@ public class ServerArrow extends ServerItem {
      */
     public static long DELTA_TIME = 50;
 
-    /**
-     * Constructor
-     */
-    public ServerArrow() {
-        super(NAME);
-    }
-
     public static void serverLogic(ItemCallback itemCallback, int m, int n, Direction direction) {
         new Thread(() -> {
             boolean flying = true;
