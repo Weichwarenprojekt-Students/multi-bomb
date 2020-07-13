@@ -367,7 +367,6 @@ public class Lobby {
 
         // Start sending positions
         int waitTime = 1000 / tickRate;
-        System.out.println(waitTime);
         MultiBomb.startTimedAction(waitTime, ((deltaTime, totalTime) -> {
             out.println(players.get(player).position.toJson());
             return gameState.state == GameState.RUNNING && players.get(player).state.isAlive();
