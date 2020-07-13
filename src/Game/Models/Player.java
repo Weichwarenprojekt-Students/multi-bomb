@@ -349,6 +349,10 @@ public class Player {
         // Check if the player collected a weapon
         if (item.item.name.equals(Field.ARROW.name)) {
             this.item = new Arrow();
+        } else if (item.item.name.equals(Field.SWORD.name)) {
+            this.item = new Sword();
+        } else if (item.item.name.equals(Field.TELEPORT.name)) {
+            this.item = new Teleport();
         }
     }
 
