@@ -157,7 +157,7 @@ public class Lobby {
      */
     public static void promoteHost(String player) {
         LobbyState state = new LobbyState(player, mode.name);
-        out.println(state.toJson());
+        sendMessage(state);
     }
 
     /**
@@ -165,7 +165,7 @@ public class Lobby {
      */
     public static void changeMode(GameMode mode) {
         LobbyState state = new LobbyState(host, mode.name);
-        out.println(state.toJson());
+        sendMessage(state);
     }
 
     /**
@@ -308,7 +308,7 @@ public class Lobby {
         Lobby.map = map;
         game = new Game();
         new Thread(() -> MB.show(game, false)).start();
-        out.println(GameState.preparing().toJson());
+        sendMessage(GameState.preparing());
     }
 
     /**
@@ -316,7 +316,7 @@ public class Lobby {
      */
     public static void startGame() {
         map.shuffleSpawns();
-        out.println(map.toJson());
+        sendMessage(map);
     }
 
     /**
@@ -364,7 +364,7 @@ public class Lobby {
         // Start sending positions
         int waitTime = 1000 / tickRate;
         MultiBomb.startTimedAction(waitTime, ((deltaTime, totalTime) -> {
-            sendMessage(players.get(player).position);
+            out.println(players.get(player).position.toJson());
             return gameState.state == GameState.RUNNING && players.get(player).state.isAlive();
         }));
     }
@@ -375,7 +375,7 @@ public class Lobby {
      * @param message to be sent
      */
     public static void sendMessage(Message message) {
-        out.println(message.toJson());
+        new Thread(() -> out.println(message.toJson())).start();
     }
 
     /**
