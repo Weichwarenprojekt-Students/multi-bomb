@@ -6,6 +6,7 @@ import Game.Models.Player;
 import Game.Models.Upgrades;
 import General.Shared.MBImage;
 import General.Shared.MBPanel;
+import Server.Items.ServerSword;
 import Server.Messages.Socket.ItemAction;
 import Server.Messages.Socket.Map;
 
@@ -16,13 +17,9 @@ import java.awt.image.BufferedImage;
 public class Sword extends Item {
 
     /**
-     * Time for fade in of the sword
-     */
-    public static final long FADE_IN_TIME = 400;
-    /**
      * Time the sword is spinning for
      */
-    public static final long SPINNING_TIME = 800;
+    public static final long SPINNING_TIME = ServerSword.SPINNING_TIME;
     /**
      * The sword image
      */
@@ -85,7 +82,7 @@ public class Sword extends Item {
                         }
                     }
                 },
-                FADE_IN_TIME + SPINNING_TIME
+                SPINNING_TIME
         );
 
         // Add the item to the map so that the battleground can draw it
@@ -102,21 +99,11 @@ public class Sword extends Item {
         // Update the counter
         long counter = System.currentTimeMillis() - startTime;
 
-        if (counter < FADE_IN_TIME) {
-            float opacity = (float) counter / FADE_IN_TIME;
-            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
-            g.drawImage(
-                    sword.image,
-                    Battleground.offset + n * Battleground.fieldSize + Battleground.fieldSize / 2 - sword.width / 2,
-                    Battleground.offset + m * Battleground.fieldSize + Battleground.fieldSize / 2 - sword.height / 2,
-                    null
-            );
-            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
-        } else if (counter > (FADE_IN_TIME + SPINNING_TIME)){
+        if (counter > SPINNING_TIME){
             return null;
         } else {
             // Calculate the new rotation
-            float angle = (float) (counter - FADE_IN_TIME) / 100;
+            float angle = (float) counter / 80;
 
             // Create the rotated picture
             BufferedImage rotatedSword = new BufferedImage(sword.width, sword.height, BufferedImage.TYPE_INT_ARGB);
