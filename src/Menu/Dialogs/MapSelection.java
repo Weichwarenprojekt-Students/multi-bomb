@@ -29,7 +29,7 @@ public class MapSelection extends JPanel {
     public MapSelection(MBButton button) {
         setLayout(null);
         setBackground(Color.white);
-        setBounds(0, 0, 400, 488);
+        setBounds(0, 0, 500, 588);
 
         // Get the maps
         maps = new ArrayList<>(MapManager.maps.values());
@@ -43,7 +43,7 @@ public class MapSelection extends JPanel {
         // The battleground
         int margin = 16;
         Battleground battleground = new Battleground(maps.get(selectedId), false, true);
-        battleground.setBounds(margin, 54, 400 - 2 * margin, 400 - 2 * margin);
+        battleground.setBounds(margin, 54, 500 - 2 * margin, 500 - 2 * margin);
         battleground.calculateSize();
         add(battleground);
         battleground.afterVisible();
@@ -53,7 +53,7 @@ public class MapSelection extends JPanel {
 
         // The previous button
         MBButton previous = new MBButton("Previous");
-        previous.setBounds(margin, 440, width, height);
+        previous.setBounds(margin, 540, width, height);
         previous.addActionListener(e -> {
             if (selectedId <= 0) {
                 selectedId = maps.size() - 1;
@@ -68,7 +68,7 @@ public class MapSelection extends JPanel {
 
         // The confirm button
         MBButton confirm = new MBButton("Confirm");
-        confirm.setBounds((getWidth() - width) / 2, 440, width, height);
+        confirm.setBounds((getWidth() - width) / 2, 540, width, height);
         confirm.addActionListener(e -> {
             Lobby.map = maps.get(selectedId);
             MB.activePanel.closeDialog();
@@ -78,7 +78,7 @@ public class MapSelection extends JPanel {
 
         // The next button
         MBButton next = new MBButton("Next");
-        next.setBounds(getWidth() - width - margin, 440, width, height);
+        next.setBounds(getWidth() - width - margin, 540, width, height);
         next.addActionListener(e -> {
             if (selectedId >= maps.size() - 1) {
                 selectedId = 0;
