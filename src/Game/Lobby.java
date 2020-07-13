@@ -346,15 +346,15 @@ public class Lobby {
 
         // Wait until the players can start to control
         long timeDifference = timestamp - System.currentTimeMillis();
-        if (timeDifference > 3000) {
-            timeDifference = 3000;
+        if (timeDifference >= 3000) {
+            timeDifference = 2999;
         }
         while (timeDifference > 0) {
             MB.activePanel.toastSuccess(
-                    "Game starts in " + ((timestamp - System.currentTimeMillis()) / 1000 + 1) + "s!"
+                    "Game starts in " + ((timeDifference / 1000) + 1)+ "s!"
             );
-            MultiBomb.sleep(timeDifference % 1000 + 1);
-            timeDifference = timestamp - System.currentTimeMillis();
+            MultiBomb.sleep(1000);
+            timeDifference -= 1000;
         }
         MB.activePanel.toastSuccess("GO!");
 
