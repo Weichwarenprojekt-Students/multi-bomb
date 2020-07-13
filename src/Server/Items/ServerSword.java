@@ -15,6 +15,9 @@ public class ServerSword extends ServerItem {
      * Time the sword is spinning for
      */
     public static final long SPINNING_TIME = 500;
+    /**
+     * Time distance between hit detections
+     */
     private static final long DELTA_TIME = 100;
 
     public static void serverLogic(ItemCallback itemCallback, int m, int n) {
