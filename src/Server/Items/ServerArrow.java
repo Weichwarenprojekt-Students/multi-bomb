@@ -36,6 +36,6 @@ public class ServerArrow extends ServerItem {
 
                 flying = !itemCallback.callback(m + (direction.y * i), n + (direction.x * i));
             }
-        });
+        }).start();
     }
 }
