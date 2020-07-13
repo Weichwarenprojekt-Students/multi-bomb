@@ -169,13 +169,13 @@ public class GameWorld extends Thread {
     /**
      * Handle hit on a field
      *
-     * @param from           the player that used the item
-     * @param m              coordinate on the map
-     * @param n              coordinate on the map
-     * @param throughPlayers item goes through players
+     * @param from               the player that used the item
+     * @param m                  coordinate on the map
+     * @param n                  coordinate on the map
+     * @param stoppedByBreakable item goes through players
      * @return indication if something was hit
      */
-    public boolean handleHits(String from, int m, int n, boolean throughPlayers) {
+    public boolean handleHits(String from, int m, int n, boolean stoppedByBreakable) {
         LOGGER.config(String.format("Entering: %s %s", GameWorld.class.getName(), "handleHits(" + from + ")"));
         boolean hitSomething = false;
 
@@ -195,6 +195,9 @@ public class GameWorld extends Thread {
 
                         hitBreakable = true;
 
+                        // if stopped by breakable, register hit
+                        hitSomething = stoppedByBreakable;
+
                         // set the field to ground
                         map.setField(m, n, Field.GROUND.id);
 
@@ -211,20 +214,17 @@ public class GameWorld extends Thread {
                 }
             }
 
-            // a hit occurs if any of the players are on the hit's position
-            hitSomething = players.values().stream().anyMatch(p -> {
-                if (p.isAlive()
-                        && (int) (p.position.y / Map.FIELD_SIZE) == m
-                        && (int) (p.position.x / Map.FIELD_SIZE) == n) {
-                    // hit player
-                    gameMode.handleHit(p, players.get(from)).forEach(lobby::sendToAllPlayers);
-
-                    // if item doesn't go through players, return true to register hit
-                    return !throughPlayers;
-                }
-                // hit no player
-                return false;
-            }) | hitSomething;
+            synchronized (players) {
+                // a hit occurs if any of the players are on the hit's position
+                players.values().forEach(p -> {
+                    if (p.isAlive()
+                            && (int) (p.position.y / Map.FIELD_SIZE) == m
+                            && (int) (p.position.x / Map.FIELD_SIZE) == n) {
+                        // hit player
+                        gameMode.handleHit(p, players.get(from)).forEach(lobby::sendToAllPlayers);
+                    }
+                });
+            }
 
         }
         LOGGER.config(String.format("Exiting: %s %s", GameWorld.class.getName(), "handleHits(" + from + ")"));
@@ -346,7 +346,7 @@ public class GameWorld extends Thread {
                                 (hit_m, hit_n) -> handleHits(player.name, hit_m, hit_n, false),
                                 item_m,
                                 item_n,
-                                player.position.direction
+                                iA.direction
                         );
 
                 }
