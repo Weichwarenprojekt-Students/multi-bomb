@@ -100,10 +100,7 @@ public class DetailedLobbyView extends MBPanel {
         Lobby.setLobbyChangeEvent(new Lobby.LobbyChangeEvent() {
             @Override
             public void playerJoined(String name, int color) {
-                list.addItem(new PlayerItem(name, color));
-                if (!firstStart) {
-                    toastSuccess(name + " joined the lobby!");
-                }
+                addPlayer(name, color);
             }
 
             @Override
@@ -133,6 +130,19 @@ public class DetailedLobbyView extends MBPanel {
                 }
             }
         });
+    }
+
+    /**
+     * Add a player
+     *
+     * @param name  of the player
+     * @param color of the player
+     */
+    public void addPlayer(String name, int color) {
+        list.addItem(new PlayerItem(name, color));
+        if (!firstStart) {
+            toastSuccess(name + " joined the lobby!");
+        }
     }
 
     /**
@@ -269,7 +279,7 @@ public class DetailedLobbyView extends MBPanel {
         mode.enabled = enabled;
     }
 
-    private class PlayerItem extends MBListView.Item {
+    public class PlayerItem extends MBListView.Item {
         /**
          * The label showing the name
          */

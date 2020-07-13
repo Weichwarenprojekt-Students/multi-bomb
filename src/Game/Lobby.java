@@ -459,6 +459,9 @@ public class Lobby {
      */
     private static void leaveGame(String winner) {
         new Thread(() -> {
+            // Setup the events for the lobby
+            lobby.setupLobbyEvents();
+
             // Disable player controls
             for (Player player : players.values()) {
                 player.disable();
@@ -487,7 +490,6 @@ public class Lobby {
 
             // Show the lobby view
             MB.show(lobby, true);
-            lobby.setupLobbyEvents();
         }).start();
     }
 

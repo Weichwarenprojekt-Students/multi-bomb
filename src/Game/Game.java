@@ -5,6 +5,7 @@ import General.MB;
 import General.MultiBomb;
 import General.Shared.MBPanel;
 import General.Shared.MBSpinner;
+import Menu.DetailedLobbyView;
 
 /**
  * This class displays and handles the game
@@ -52,6 +53,7 @@ public class Game extends MBPanel {
         Lobby.setLobbyChangeEvent(new Lobby.LobbyChangeEvent() {
             @Override
             public void playerJoined(String name, int color) {
+                Lobby.lobby.addPlayer(name, color);
             }
 
             @Override
