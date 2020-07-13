@@ -307,7 +307,7 @@ public class Player {
         int n = (int) (position.x / Map.FIELD_SIZE);
         if (!usingItem && controllable && item.isUsable(m, n, state.upgrades)) {
             usingItem = true;
-            Lobby.sendMessage(new ItemAction(item.name, name, m, n));
+            Lobby.sendMessage(new ItemAction(item.name, name, position.direction, m, n));
         }
     }
 

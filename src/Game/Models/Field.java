@@ -113,6 +113,13 @@ public enum Field {
     }
 
     /**
+     * @return true if the item is solid
+     */
+    public boolean isSolid() {
+        return id == SOLID_0.id || id == SOLID_1.id;
+    }
+
+    /**
      * Check if item is passable
      *
      * @return True if the item is passable

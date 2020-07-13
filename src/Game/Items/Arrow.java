@@ -161,7 +161,7 @@ public class Arrow extends Item {
             int offsetX = direction.x >= 0 ? 0 : Battleground.fieldSize;
             int mArrow = (y + offsetY) / Battleground.fieldSize;
             int nArrow = (x + offsetX) / Battleground.fieldSize;
-            if (!Field.getItem(Lobby.map.getField(mArrow, nArrow)).isPassable()) {
+            if (Field.getItem(Lobby.map.getField(mArrow, nArrow)).isSolid()) {
                 return null;
             }
 
