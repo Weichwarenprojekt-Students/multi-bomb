@@ -23,12 +23,9 @@ public class ServerProtection extends ServerItem {
 
     public static void serverLogic(long time, Player player) {
         new Thread(() -> {
-            System.out.println("PROTECT!!!");
             player.protect(true);
-            System.out.println(("PROTECT???"));
             MultiBomb.sleep(time);
             player.protect(false);
-            System.out.println("PROTECTEND");
         }).start();
     }
 
