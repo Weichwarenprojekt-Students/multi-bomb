@@ -5,9 +5,6 @@ import General.Shared.MBImage;
 import General.Shared.MBPanel;
 import Server.Messages.Socket.Map;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 /**
  * This class contains the information about the items (blocks and consumables)
  */
@@ -117,6 +114,13 @@ public enum Field {
      */
     public boolean isSolid() {
         return id == SOLID_0.id || id == SOLID_1.id;
+    }
+
+    /**
+     * @return true if the item is solid
+     */
+    public boolean isBreakable() {
+        return id == BREAKABLE_0.id || id == BREAKABLE_1.id;
     }
 
     /**
