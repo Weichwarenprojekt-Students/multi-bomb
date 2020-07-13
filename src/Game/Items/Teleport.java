@@ -30,11 +30,17 @@ public class Teleport extends Item {
         ammunition = 1;
     }
 
+    /**
+     * @return true because the teleport is always usable
+     */
     @Override
     public boolean isUsable(int m, int n, Upgrades upgrades) {
-        return false;
+        return true;
     }
 
+    /**
+     * Use the teleport
+     */
     @Override
     public Item use(ItemAction action, Player player) {
         // Start to fade out the player
