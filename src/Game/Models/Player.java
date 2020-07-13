@@ -3,8 +3,8 @@ package Game.Models;
 import Game.Battleground;
 import Game.Game;
 import Game.Items.Arrow;
-import Game.Items.Bomb;
 import Game.Items.Item;
+import Game.Items.Sword;
 import Game.Lobby;
 import General.MultiBomb;
 import General.Shared.*;
@@ -22,10 +22,7 @@ import static Game.Models.Animation.*;
  * The basic player model
  */
 public class Player {
-    /**
-     * The amount of time the player is protected after respawn
-     */
-    public static final int SPAWN_PROTECTION = 3000;
+
     /**
      * The font for the name
      */
@@ -34,6 +31,18 @@ public class Player {
      * The maximum speed value for a player
      */
     public static final float MAX_SPEED = 0.1f, MIN_SPEED = 0.06f;
+    /**
+     * The time the player fades out after dying
+     */
+    public static final long DIE_DURATION = ServerProtection.DIE_DURATION;
+    /**
+     * The time the player is protected after a hit
+     */
+    public static final long HIT_DURATION = ServerProtection.HIT_DURATION;
+    /**
+     * True if the player is on an item
+     */
+    private final Item.OnItem onItem = new Item.OnItem();
     /**
      * The current speed value for a player
      */
@@ -61,11 +70,11 @@ public class Player {
     /**
      * The player's item
      */
-    public Item item = new Bomb();
+    public Item item = new Sword();
     /**
-     * True if the player is on an item
+     * True if the player is fading out
      */
-    private final Item.OnItem onItem = new Item.OnItem();
+    public boolean fadingOut = false;
     /**
      * True if the player is controllable
      */
@@ -78,14 +87,6 @@ public class Player {
      * True if the player is currently using an item
      */
     private boolean usingItem = false;
-    /**
-     * The time the player fades out after dying
-     */
-    public static final long DIE_DURATION = ServerProtection.DIE_DURATION;
-    /**
-     * The time the player is protected after a hit
-     */
-    public static final long HIT_DURATION = ServerProtection.HIT_DURATION;
 
     /**
      * Constructor
@@ -179,6 +180,7 @@ public class Player {
      */
     public void die(boolean respawn) {
         SoundControl.playSoundEffect(SoundEffect.CHARACTER_DEATH);
+        fadingOut = true;
         disable();
 
         MultiBomb.startTimedAction(Game.WAIT_TIME, (deltaTime, totalTime) -> {
@@ -187,6 +189,7 @@ public class Player {
                 if (respawn) {
                     setSpawn();
                     enable();
+                    fadingOut = false;
 
                     // Reduce the opacity
                     opacity = 0.5f;
@@ -383,7 +386,7 @@ public class Player {
         int n = (int) (newX + position.direction.x * 10) / Map.FIELD_SIZE;
         // Check if character should move
         if (position.moving && Field.getItem(Lobby.map.getField(m, n)).isPassable()
-            && Item.isPassable(onItem, m, n)) {
+                && Item.isPassable(onItem, m, n)) {
             // Update the position
             position.x = newX;
             position.y = newY;

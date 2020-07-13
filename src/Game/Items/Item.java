@@ -1,12 +1,12 @@
 package Game.Items;
 
-import Game.Models.Direction;
 import Game.Models.Field;
 import Game.Models.Player;
 import Game.Models.Upgrades;
 import General.Shared.MBPanel;
 import Server.Items.ServerArrow;
 import Server.Items.ServerBomb;
+import Server.Items.ServerSword;
 import Server.Messages.Socket.ItemAction;
 import Server.Messages.Socket.Map;
 
@@ -19,7 +19,7 @@ public abstract class Item {
     /**
      * The available items
      */
-    public static final String BOMB = ServerBomb.NAME, ARROW = ServerArrow.NAME;
+    public static final String BOMB = ServerBomb.NAME, ARROW = ServerArrow.NAME, SWORD = ServerSword.NAME;
     /**
      * The name of the item
      */
@@ -49,6 +49,7 @@ public abstract class Item {
     public static void loadTextures(MBPanel parent) {
         Bomb.loadTextures(parent);
         Arrow.loadTextures(parent);
+        Sword.loadTextures(parent);
     }
 
     /**
@@ -65,9 +66,10 @@ public abstract class Item {
             return true;
         } else if (item.name.equals(BOMB)) {
             return false;
-        } else {
-            return item.name.equals(ARROW);
+        } else if (item.name.equals(SWORD)){
+            return true;
         }
+        return item.name.equals(ARROW);
     }
 
     /**
@@ -79,6 +81,8 @@ public abstract class Item {
     public static Item getItem(String name) {
         if (name.equals(ARROW)) {
             return new Arrow();
+        } else if (name.equals(SWORD)) {
+            return new Sword();
         }
         return new Bomb();
     }

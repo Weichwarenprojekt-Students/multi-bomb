@@ -20,7 +20,8 @@ public enum Field {
     SPEED(-2, "Speed", false, true),
     HEART(-3, "Heart", false, true),
     EXPLOSION(-4, "Explosion", false, true),
-    ARROW(-5, "Arrow", false, true);
+    ARROW(-5, "Arrow", false, true),
+    SWORD(-6, "Sword", false, true);
 
     /**
      * The width of a field (the actual width would be 300px but the value is slightly increased to avoid white gaps)
@@ -92,6 +93,7 @@ public enum Field {
         HEART.image = new MBImage("Items/Consumable/bubble_heart.png", false, parent);
         EXPLOSION.image = new MBImage("Items/Consumable/bubble_explosion.png", false, parent);
         ARROW.image = new MBImage("Items/Consumable/bubble_arrow.png", false, parent);
+        SWORD.image = new MBImage("Items/Consumable/bubble_sword.png", false, parent);
     }
 
     /**
@@ -137,9 +139,9 @@ public enum Field {
      */
     public static byte[] getAllItems(boolean withHeart) {
         if (withHeart) {
-            return new byte[] {HEART.id, BOMB.id, SPEED.id, EXPLOSION.id, ARROW.id};
+            return new byte[] {HEART.id, BOMB.id, SPEED.id, EXPLOSION.id, ARROW.id, SWORD.id};
         } else {
-            return new byte[] {BOMB.id, SPEED.id, EXPLOSION.id, ARROW.id};
+            return new byte[] {BOMB.id, SPEED.id, EXPLOSION.id, ARROW.id, SWORD.id};
         }
     }
 }
