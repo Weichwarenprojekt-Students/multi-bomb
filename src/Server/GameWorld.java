@@ -2,6 +2,7 @@ package Server;
 
 import Game.GameModes.GameMode;
 import Game.Models.Field;
+import General.MultiBomb;
 import Server.Items.ServerArrow;
 import Server.Items.ServerBomb;
 import Server.Messages.Socket.*;
@@ -129,11 +130,7 @@ public class GameWorld extends Thread {
             long delta = System.currentTimeMillis() - startTime;
 
             if (delta < waitTime) {
-                try {
-                    Thread.sleep(waitTime - delta);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                MultiBomb.sleep(waitTime - delta);
             }
         }
 
