@@ -123,7 +123,7 @@ public class Game extends MBPanel {
     public void startGame() {
         // Initialize the player
         for (java.util.Map.Entry<String, Player> player : Lobby.players.entrySet()) {
-            player.getValue().initialize(Lobby.player.equals(player.getKey()));
+            player.getValue().initialize();
         }
 
         // Start the game loop

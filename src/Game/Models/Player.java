@@ -88,10 +88,8 @@ public class Player {
 
     /**
      * Initialize the players position and controls
-     *
-     * @param controllable true if the player should be controllable
      */
-    public void initialize(boolean controllable) {
+    public void initialize() {
         // Set the players position
         setSpawn();
 
@@ -105,11 +103,6 @@ public class Player {
             sprite.height = (int) (spriteRatio * SCALE * 4 * PLAYER_HEIGHT);
         });
         sprite.refresh();
-
-        // Setup the players controls
-        if (controllable) {
-            setupControls(Lobby.game);
-        }
     }
 
     /**
@@ -205,7 +198,7 @@ public class Player {
      *
      * @param panel that is active
      */
-    private void setupControls(MBPanel panel) {
+    public void setupControls(MBPanel panel) {
         // Move upwards
         panel.addKeybinding(
                 false,

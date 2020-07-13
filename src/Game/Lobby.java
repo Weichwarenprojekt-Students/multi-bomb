@@ -341,7 +341,10 @@ public class Lobby {
      * Start the game countdown and enable controls when finished
      */
     private static void startCountdown(long timestamp) {
-        // Wait until the game loop can start
+        // Start game in new thread
+        new Thread(game::startGame).start();
+
+        // Wait until the players can start to control
         long timeDifference = timestamp - System.currentTimeMillis();
         if (timeDifference > 3000) {
             timeDifference = 3000;
@@ -355,8 +358,8 @@ public class Lobby {
         }
         MB.activePanel.toastSuccess("GO!");
 
-        // Start game in new thread
-        new Thread(game::startGame).start();
+        // Make the player controllable
+        players.get(player).setupControls(game);
 
         // Start sending positions
         int waitTime = 1000 / tickRate;
