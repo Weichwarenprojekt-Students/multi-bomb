@@ -74,7 +74,7 @@ public class Teleport extends Item {
             return true;
         }));
 
-        return new Teleport();
+        return new Bomb();
     }
 
     /**

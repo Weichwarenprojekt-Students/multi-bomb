@@ -37,7 +37,7 @@ public class Sword extends Item {
      */
     public Sword() {
         super(Item.SWORD, Field.SWORD);
-        ammunition = 20;
+        ammunition = 3;
     }
 
     /**
