@@ -11,6 +11,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import static General.MultiBomb.LOGGER;
 
@@ -55,6 +57,10 @@ public class PlayerConnection extends Thread {
      * Indicate if PlayerConnection is still alive
      */
     private boolean alive;
+    /**
+     * Queue for outgoing messages
+     */
+    private final BlockingQueue<Message> messageQueue = new LinkedBlockingQueue<>(1000);
 
     /**
      * Constructor
@@ -87,6 +93,21 @@ public class PlayerConnection extends Thread {
         if (!alive && lobby.getPlayerColors().containsKey(name)) {
             send(new ErrorMessage("Name already taken, please choose a different one!"));
         }
+
+        new Thread(() -> {
+            Message msg;
+            while (alive) {
+                try {
+                    msg = messageQueue.take();
+
+                    synchronized (out) {
+                        out.println(msg.toJson());
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
         String jsonMessage;
         while (alive) {
@@ -188,8 +209,8 @@ public class PlayerConnection extends Thread {
      * @param message message to send
      */
     public void send(Message message) {
-        synchronized (out) {
-            out.println(message.toJson());
+        if (!messageQueue.offer(message)) {
+            close();
         }
     }
 
@@ -198,5 +219,10 @@ public class PlayerConnection extends Thread {
      */
     public void close() {
         alive = false;
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
