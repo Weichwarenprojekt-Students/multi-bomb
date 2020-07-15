@@ -34,6 +34,7 @@ public class MapManager {
         loadStandardMap("Labyrinth");
         loadStandardMap("Breakable");
         loadStandardMap("Cage-Fight");
+        loadStandardMap("Krais");
     }
 
     /**
