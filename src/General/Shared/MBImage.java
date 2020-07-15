@@ -6,6 +6,8 @@ import General.MB;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -32,12 +34,32 @@ public class MBImage {
     public Image original;
 
     /**
+     * Constructor for global images that are used all over the project.
+     * That's why the resize event is registered to the frame instead of the active panel.
+     *
+     * @param relativePath to the picture
+     */
+    public MBImage(String relativePath) {
+        this.resize = () -> {
+            if ((float) MB.frame.getWidth() / MB.frame.getHeight() > 21f / 9) {
+                this.width = MB.frame.getWidth();
+                this.height = (int) (9f / 21 * MB.frame.getWidth());
+            } else {
+                this.height = MB.frame.getHeight();
+                this.width = (int) (21f / 9 * MB.frame.getHeight());
+            }
+        };
+        initialize(relativePath, true, null);
+    }
+
+    /**
      * Constructor
      *
      * @param relativePath to the image
-     * @param square true if the image is a square
+     * @param square       true if the image is a square
+     * @param parent       the image's size depends on
      */
-    public MBImage(String relativePath, boolean square) {
+    public MBImage(String relativePath, boolean square, MBPanel parent) {
         if (square) {
             this.resize = () -> {
                 this.width = Battleground.fieldSize;
@@ -49,24 +71,25 @@ public class MBImage {
                 height = (int) ((Field.HEIGHT) * Battleground.ratio);
             };
         }
-        initialize(relativePath);
+        initialize(relativePath, false, parent);
     }
 
     /**
      * Constructor
      *
      * @param relativePath to the image
-     * @param resize the handler
+     * @param parent       the image's size depends on
+     * @param resize       the handler
      */
-    public MBImage(String relativePath, MBPanel.ComponentResize resize) {
+    public MBImage(String relativePath, MBPanel parent, MBPanel.ComponentResize resize) {
         this.resize = resize;
-        initialize(relativePath);
+        initialize(relativePath, false, parent);
     }
 
     /**
      * Initialize the image
      */
-    private void initialize(String relativePath) {
+    private void initialize(String relativePath, boolean onFrame, MBPanel parent) {
         // Load the image
         try {
             this.original = ImageIO.read(MBImage.class.getResource("/Resources/" + relativePath));
@@ -76,14 +99,27 @@ public class MBImage {
         this.image = this.original;
 
         // Listen for resize events
-        MB.activePanel.addResizeEvent(this::refresh);
+        if (onFrame) {
+            MB.frame.addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    refresh();
+                }
+            });
+        } else {
+            if (parent != null) {
+                parent.addResizeEvent(this::refresh);
+            } else {
+                MB.activePanel.addResizeEvent(this::refresh);
+            }
+        }
         refresh();
     }
 
     /**
      * Resize and rescale the image
      */
-    private void refresh() {
+    public void refresh() {
         try {
             // Recalculate the measurements
             resize.resize();

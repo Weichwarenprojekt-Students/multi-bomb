@@ -1,6 +1,5 @@
 package Server.Messages;
 
-import Game.Models.Map;
 import Server.Messages.REST.CreateLobby;
 import Server.Messages.REST.JoinLobby;
 import Server.Messages.REST.LobbyInfo;
@@ -68,6 +67,12 @@ public class MBJsonDeserializer implements JsonDeserializer<Message> {
                 break;
             case Message.CLOSE_CONNECTION_TYPE:
                 typeModel = context.deserialize(json, CloseConnection.class);
+                break;
+            case Message.NEW_ITEM_TYPE:
+                typeModel = context.deserialize(json, NewItem.class);
+                break;
+            case Message.RESPAWN_TYPE:
+                typeModel = context.deserialize(json, Respawn.class);
                 break;
             default:
                 typeModel = new Message(Message.INVALID_TYPE) {};

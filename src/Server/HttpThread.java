@@ -1,6 +1,7 @@
 package Server;
 
-import Server.Messages.*;
+import Server.Messages.ErrorMessage;
+import Server.Messages.Message;
 import Server.Messages.REST.CreateLobby;
 import Server.Messages.REST.JoinLobby;
 import Server.Messages.REST.LobbyInfo;
@@ -17,11 +18,17 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import static General.MultiBomb.LOGGER;
+
 public class HttpThread extends Thread {
     /**
      * Instance of the game server
      */
     public final Server server;
+    /**
+     * The actual http server
+     */
+    private HttpServer httpServer;
 
     /**
      * Constructor
@@ -37,9 +44,11 @@ public class HttpThread extends Thread {
      */
     @Override
     public void run() {
+        LOGGER.config(String.format("Entering: %s %s", HttpThread.class.getName(), "run()"));
+
         try {
             // create new HttpServer
-            HttpServer httpServer = HttpServer.create(new InetSocketAddress("0.0.0.0", Server.HTTP_PORT), 0);
+            httpServer = HttpServer.create(new InetSocketAddress("0.0.0.0", Server.HTTP_PORT), 0);
 
             // create new ThreadPoolExecutor for the HttpServer
             ThreadPoolExecutor threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
@@ -57,12 +66,25 @@ public class HttpThread extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        LOGGER.config(String.format("Exiting: %s %s", HttpThread.class.getName(), "run()"));
+    }
+
+    /**
+     * Close the http server
+     */
+    public void close() {
+        LOGGER.config(String.format("Entering: %s %s", HttpThread.class.getName(), "close()"));
+        httpServer.stop(0);
+        LOGGER.config(String.format("Exiting: %s %s", HttpThread.class.getName(), "close()"));
     }
 
     public class ServerRequestHandler implements HttpHandler {
 
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
+            LOGGER.config(String.format("Entering: %s %s", ServerRequestHandler.class.getName(), "handle()"));
+
             int code;
             String responseString;
 
@@ -83,6 +105,8 @@ public class HttpThread extends Thread {
             OutputStream os = httpExchange.getResponseBody();
             os.write(response);
             os.close();
+
+            LOGGER.config(String.format("Exiting: %s %s", ServerRequestHandler.class.getName(), "handle()"));
         }
     }
 
@@ -91,6 +115,8 @@ public class HttpThread extends Thread {
 
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
+            LOGGER.config(String.format("Entering: %s %s", LobbyRequestHandler.class.getName(), "handle()"));
+
             this.httpExchange = httpExchange;
 
             if (httpExchange.getRequestMethod().equals("GET")) {
@@ -100,12 +126,16 @@ public class HttpThread extends Thread {
             } else {
                 sendResponse(405, new ErrorMessage("Method Not Allowed").toJson());
             }
+
+            LOGGER.config(String.format("Exiting: %s %s", LobbyRequestHandler.class.getName(), "handle()"));
         }
 
         /**
          * Handle post requests to /lobby
          */
         private void handlePost() throws IOException {
+            LOGGER.config(String.format("Entering: %s %s", LobbyRequestHandler.class.getName(), "handlePost()"));
+
             BufferedReader reqBody = new BufferedReader(new InputStreamReader(httpExchange.getRequestBody()));
 
             Message msg = Message.fromJson(reqBody.readLine());
@@ -121,6 +151,8 @@ public class HttpThread extends Thread {
             } else {
                 sendResponse(400, new ErrorMessage("JSON message not recognized").toJson());
             }
+
+            LOGGER.config(String.format("Exiting: %s %s", LobbyRequestHandler.class.getName(), "handlePost()"));
         }
 
         /**
@@ -129,6 +161,8 @@ public class HttpThread extends Thread {
          * @param joinLobby message from the POST request body
          */
         private void handleJoin(JoinLobby joinLobby) throws IOException {
+            LOGGER.config(String.format("Entering: %s %s", LobbyRequestHandler.class.getName(), "handleJoin()"));
+
             String lobbyName = joinLobby.lobbyName;
             String playerID = joinLobby.playerID;
 
@@ -144,6 +178,8 @@ public class HttpThread extends Thread {
             } else {
                 sendResponse(400, errorMessage.toJson()); // Bad Request
             }
+
+            LOGGER.config(String.format("Exiting: %s %s", LobbyRequestHandler.class.getName(), "handleJoin()"));
         }
 
         /**
@@ -152,6 +188,8 @@ public class HttpThread extends Thread {
          * @param createLobby message from the POST request body
          */
         private void handleCreate(CreateLobby createLobby) throws IOException {
+            LOGGER.config(String.format("Entering: %s %s", LobbyRequestHandler.class.getName(), "handleCreate()"));
+
             String lobbyName = createLobby.lobbyName;
             String playerID = createLobby.playerID;
 
@@ -179,6 +217,8 @@ public class HttpThread extends Thread {
                 }
 
             }
+
+            LOGGER.config(String.format("Exiting: %s %s", LobbyRequestHandler.class.getName(), "handleCreate()"));
         }
 
         /**
@@ -188,12 +228,16 @@ public class HttpThread extends Thread {
          * @param responseString body of the response
          */
         private void sendResponse(int code, String responseString) throws IOException {
+            LOGGER.config(String.format("Entering: %s %s", LobbyRequestHandler.class.getName(), "sendResponse()"));
+
             byte[] response = responseString.getBytes();
             httpExchange.sendResponseHeaders(code, response.length);
 
             OutputStream os = httpExchange.getResponseBody();
             os.write(response);
             os.close();
+
+            LOGGER.config(String.format("Exiting: %s %s", LobbyRequestHandler.class.getName(), "sendResponse()"));
         }
     }
 }

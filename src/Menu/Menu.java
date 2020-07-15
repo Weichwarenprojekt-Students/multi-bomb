@@ -1,14 +1,10 @@
 package Menu;
 
-import Editor.Editor;
+import Editor.MapSelection;
 import General.MB;
 import General.Shared.MBButton;
-import General.Shared.MBLabel;
 import General.Shared.MBPanel;
-import General.SettingsOverview;
-import Server.ServerView;
-
-import javax.swing.*;
+import General.Shared.MBTitle;
 
 /**
  * This class provides a menu for navigating through the game
@@ -16,9 +12,19 @@ import javax.swing.*;
 public class Menu extends MBPanel {
 
     /**
+     * The general margin value for the outer components
+     */
+    public static int MARGIN = 64;
+    /**
+     * The start position for the buttons
+     */
+    public static int START_Y = 180;
+
+    /**
      * Constructor
      */
     public Menu() {
+        super(true);
         setupLayout();
     }
 
@@ -27,28 +33,49 @@ public class Menu extends MBPanel {
      */
     public void setupLayout() {
         // The title
-        MBLabel title = new MBLabel("Multi Bomb", SwingConstants.CENTER, MBLabel.H1);
-        addComponent(title, () -> title.setBounds(getWidth() / 2 - 100, 50, 200, 40));
+        MBTitle title = new MBTitle("Multi Bomb");
+        addComponent(title, () -> title.setBounds(
+                (getWidth() - title.getWidth()) / 2,
+                MARGIN,
+                title.getWidth(),
+                title.getHeight())
+        );
 
         // The button for opening a lobby overview
+        int width = 250, height = 40, margin = 16;
         MBButton play = new MBButton("Play");
         play.addActionListener(e -> MB.show(new ServerView(), false));
-        addComponent(play, () -> play.setBounds(getWidth() / 2 - 70, 100, 140, 40));
+        addComponent(play, () -> play.setBounds((getWidth() - width) / 2, START_Y, width, height));
 
         // The button for opening the map editor
         MBButton editor = new MBButton("Editor");
-        editor.addActionListener(e -> MB.show(new Editor(), false));
-        addComponent(editor, () -> editor.setBounds(getWidth() / 2 - 70, 150, 140, 40));
+        editor.addActionListener(e -> MB.show(new MapSelection(), false));
+        addComponent(editor, () -> editor.setBounds(
+                (getWidth() - width) / 2,
+                START_Y + height + margin,
+                width,
+                height
+        ));
 
         // The button for opening the settings
         MBButton settings = new MBButton("Settings");
         settings.addActionListener(e -> MB.show(new SettingsOverview(this), false));
-        addComponent(settings, () -> settings.setBounds(getWidth() / 2 - 70, 200, 140, 40));
+        addComponent(settings, () -> settings.setBounds(
+                (getWidth() - width) / 2,
+                START_Y + 2 * (height + margin),
+                width,
+                height
+        ));
 
         // The button for opening a lobby overview
         MBButton exit = new MBButton("Exit");
         exit.addActionListener(e -> System.exit(0));
-        addComponent(exit, () -> exit.setBounds(getWidth() / 2 - 70, 250, 140, 40));
+        addComponent(exit, () -> exit.setBounds(
+                (getWidth() - width) / 2,
+                START_Y + 3 * (height + margin),
+                width,
+                height
+        ));
 
         // Setup a button group for navigation
         addButtonGroup(play, editor, settings, exit);

@@ -23,6 +23,10 @@ public class Position extends Message {
      * The player ID
      */
     public String playerId;
+    /**
+     * True if the player is moving in the corresponding direction
+     */
+    public boolean moving = false;
 
     /**
      * Constructor
@@ -30,5 +34,18 @@ public class Position extends Message {
     public Position() {
         // Initialize message with type
         super(Message.POSITION_TYPE);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param x coordinate
+     * @param y coordinate
+     */
+    public Position(float x, float y) {
+        // Initialize message with type
+        super(Message.POSITION_TYPE);
+        this.x = x;
+        this.y = y;
     }
 }

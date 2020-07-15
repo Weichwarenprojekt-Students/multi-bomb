@@ -1,12 +1,18 @@
 package General;
 
 
+import Editor.MapManager;
+import General.Shared.MBImage;
 import General.Shared.MBPanel;
+import General.Sound.SoundControl;
+import General.Sound.SoundEffect;
+import Menu.Menu;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
 
 public class MB {
 
@@ -22,14 +28,25 @@ public class MB {
      * The shown panel
      */
     public static MBPanel activePanel;
+    /**
+     * The game background
+     */
+    public static MBImage background;
+    /**
+     * A players sprite
+     */
+    private static MBImage playerSprite;
 
     /**
      * Setup the JFrame and show the menu
      */
     public static void startGame() {
         MB.settings.loadSettings();
+        SoundControl.playMusic(SoundEffect.MENU_SOUND);
+        MapManager.loadMaps();
+        background = new MBImage("General/background.png");
         setupFrame();
-        show(new Intro(), false);
+        MB.show(new Menu(), false);
 
         // Set fullscreen if necessary
         if (settings.fullscreen) {
@@ -46,6 +63,11 @@ public class MB {
         frame.setLayout(null);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setMinimumSize(new Dimension(1060, 720));
+
+        // Change the icon
+        ImageIcon icon = new ImageIcon(MB.class.getResource("/Resources/General/icon.png"));
+        frame.setIconImage(icon.getImage());
 
         // Listen for window measurement changes and save them
         frame.addComponentListener(new ComponentAdapter() {
@@ -83,5 +105,23 @@ public class MB {
         if (!known) {
             panel.afterVisible();
         }
+        // Make sure the background is drawn
+        panel.repaint();
+    }
+
+    /**
+     * @return all player sprites
+     */
+    public static ArrayList<MBImage> getPlayerSprites() {
+        ArrayList<MBImage> playerSprites = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            playerSprite = new MBImage("Characters/" + i + ".png", null, () -> {
+                playerSprite.width = 96;
+                playerSprite.height = 144;
+            });
+            playerSprite.refresh();
+            playerSprites.add(playerSprite);
+        }
+        return playerSprites;
     }
 }

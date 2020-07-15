@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import java.awt.*;
 import java.io.*;
+import java.util.HashSet;
 
 public class Settings {
 
@@ -23,11 +24,35 @@ public class Settings {
     /**
      * True if anti aliasing is active
      */
-    public boolean antiAliasing = true;
+    public boolean antiAliasing = false;
     /**
      * The refresh rate the game should target
      */
     public int refreshRate = 60;
+    /**
+     * Default player name
+     */
+    public String playerName = "";
+    /**
+     * Default lobby name
+     */
+    public String lobbyName = "";
+    /**
+     * Default server name
+     */
+    public String serverName = "";
+    /**
+     * Remote server
+     */
+    public HashSet<String> remoteServers = new HashSet<>();
+    /**
+     * The music volume in dB
+     */
+    public float musicVolume = -30;
+    /**
+     * The sound volume in dB
+     */
+    public float soundVolume = -20;
 
     /**
      * Load the settings
@@ -38,8 +63,8 @@ public class Settings {
             MB.settings = gson.fromJson(new FileReader(PATH + "Settings.json"), Settings.class);
         } catch (FileNotFoundException e) {
             // Create the file and make the directories if necessary
-            File file = new File(PATH + "Settings.json");
-            if (file.getParentFile().mkdirs()) {
+            File file = new File(PATH + "Maps");
+            if (file.mkdirs()) {
                 saveSettings();
             } else {
                 System.out.println("ERROR! Couldn't setup the directory for the game data!");
@@ -74,7 +99,7 @@ public class Settings {
             Graphics2D g2d = (Graphics2D) g;
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
             g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         }
     }
 }

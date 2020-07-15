@@ -1,11 +1,11 @@
 package Menu.Dialogs;
 
 import Game.GameModes.GameMode;
+import Game.Lobby;
 import General.MB;
-import General.Shared.MBButton;
+import General.Shared.MBBackground;
 import General.Shared.MBLabel;
 import General.Shared.MBListView;
-import Menu.Models.Lobby;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,25 +13,15 @@ import java.awt.*;
 public class ModeSelection extends JPanel {
 
     /**
-     * The lobby to be modified
-     */
-    private final Lobby lobby;
-    /**
-     * The button to be modified
-     */
-    private final MBButton button;
-
-    /**
      * Constructor
      */
-    public ModeSelection(Lobby lobby, MBButton button) {
-        this.lobby = lobby;
-        this.button = button;
+    public ModeSelection() {
         setLayout(null);
         setBounds(0, 0, 400, 300);
 
         // The title
         MBLabel title = new MBLabel("Choose a mode", SwingConstants.CENTER, MBLabel.H2);
+        title.setFontColor(Color.BLACK);
         title.setBounds(0, 20, getWidth(), 20);
         add(title);
 
@@ -47,7 +37,7 @@ public class ModeSelection extends JPanel {
         setSize(getWidth(), list.getY() + list.getHeight() + 8);
     }
 
-    private class ModeItem extends MBListView.Item {
+    private static class ModeItem extends MBListView.Item {
         /**
          * Label to display the name of the mode
          */
@@ -60,6 +50,7 @@ public class ModeSelection extends JPanel {
          * The mode
          */
         private final GameMode mode;
+
         /**
          * Constructor
          */
@@ -69,7 +60,9 @@ public class ModeSelection extends JPanel {
 
             // Add the components
             nameLabel = new MBLabel(MBLabel.NORMAL, name);
+            nameLabel.setFontColor(Color.BLACK);
             descriptionLabel = new MBLabel(MBLabel.DESCRIPTION, mode.description);
+            descriptionLabel.setFontColor(Color.BLACK);
             add(nameLabel);
             add(descriptionLabel);
         }
@@ -82,9 +75,8 @@ public class ModeSelection extends JPanel {
         }
 
         @Override
-        public void onSelected(int index) {
-            lobby.mode = mode;
-            button.setText("Mode: " + mode.name);
+        public void onSelected() {
+            Lobby.changeMode(mode);
             MB.activePanel.closeDialog();
         }
 
@@ -95,7 +87,14 @@ public class ModeSelection extends JPanel {
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             MB.settings.enableAntiAliasing(g);
-            g.drawRect(4, 4, getWidth() - 8, getHeight() - 8);
+            g.drawRoundRect(
+                    4,
+                    4,
+                    getWidth() - 8,
+                    getHeight() - 8,
+                    MBBackground.CORNER_RADIUS,
+                    MBBackground.CORNER_RADIUS
+            );
         }
     }
 }

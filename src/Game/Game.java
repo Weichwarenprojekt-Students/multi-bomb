@@ -1,12 +1,10 @@
 package Game;
 
-import Game.Items.Bomb;
-import Game.Models.Map;
 import Game.Models.Player;
 import General.MB;
+import General.MultiBomb;
 import General.Shared.MBPanel;
-
-import java.awt.event.KeyEvent;
+import General.Shared.MBSpinner;
 
 /**
  * This class displays and handles the game
@@ -14,46 +12,35 @@ import java.awt.event.KeyEvent;
 public class Game extends MBPanel {
 
     /**
+     * The margin of the sidebar
+     */
+    public static int MARGIN = 16;
+    /**
      * The wait time for the targeted refresh rate
      */
     public static long WAIT_TIME = 1000 / MB.settings.refreshRate;
     /**
      * The time difference to the last repaint
      */
-    public static float deltaTime;
-    /**
-     * The last time the frame was repainted
-     */
-    public static long lastTime = System.currentTimeMillis();
+    public static long deltaTime;
     /**
      * True if the game is over
      */
     public static boolean gameOver = true;
     /**
-     * The overlay
+     * The battleground
      */
-    public static Overlay overlay;
-    /**
-     * The map
-     */
-    public static Map map;
-    /**
-     * The player that the client is controlling
-     */
-    public static Player player;
+    public Battleground battleground;
     /**
      * The sidebar
      */
     private Sidebar sidebar;
-    /**
-     * The battleground
-     */
-    private Battleground battleground;
 
     /**
      * Constructor
      */
     public Game() {
+        super(true);
         setupLayout();
     }
 
@@ -61,25 +48,30 @@ public class Game extends MBPanel {
      * Setup the layout
      */
     public void setupLayout() {
-        // The button for opening a lobby overview
-        overlay = new Overlay();
-        overlay.setVisible(false);
-        addComponent(overlay, () -> overlay.setBounds(0, 0, getWidth(), getHeight()));
-        addKeybinding(
-                false,
-                "Open Overlay",
-                (e) -> overlay.setVisible(!overlay.isVisible()),
-                KeyEvent.VK_ESCAPE
-        );
+        // React to lobby changes
+        Lobby.setLobbyChangeEvent(new Lobby.LobbyChangeEvent() {
+            @Override
+            public void playerJoined(String name, int color) {
+                Lobby.lobby.addPlayer(name, color);
+            }
 
-        // Add the sidebar
-        sidebar = new Sidebar();
-        addComponent(sidebar, () -> sidebar.setBounds(
-                (int) (getWidth() / 2 - 0.75 * getHeight()),
-                0,
-                (int) (0.5 * getHeight()),
-                getHeight()
-        ));
+            @Override
+            public void playerLeft(String name) {
+                toastError(name + " left the lobby!");
+                sidebar.removePlayer(name);
+                Lobby.lobby.list.removeItem(name);
+            }
+
+            @Override
+            public void hostChanged(String name) {
+                toastSuccess(name + " is host now!");
+                Lobby.lobby.changeButtonActivity();
+            }
+
+            @Override
+            public void gameModeChanged(String gameMode) {
+            }
+        });
     }
 
     /**
@@ -87,67 +79,72 @@ public class Game extends MBPanel {
      */
     @Override
     public void afterVisible() {
-        // Add the battleground
-        map = new Map();
-        player = new Player();
-        battleground = new Battleground(map, player);
-        addComponent(battleground, () -> battleground.setBounds(
-                (int) (getWidth() / 2 - 0.25 * getHeight()),
-                0,
-                getHeight(),
-                getHeight()
+        // The loading spinner
+        MBSpinner spinner = new MBSpinner();
+        addComponent(spinner, () -> spinner.setBounds(
+                getWidth() / 2 - 50,
+                getHeight() / 2 - 50,
+                100,
+                100
         ));
 
-        // Call the after visible methods
+        // Add the battleground
+        battleground = new Battleground(Lobby.map, true, false);
+        battleground.setVisible(false);
+        addComponent(battleground, () -> {
+            battleground.setBounds(
+                    (int) (getWidth() / 2 - 0.25 * getHeight()) + 2 * MARGIN,
+                    2 * MARGIN,
+                    getHeight() - 4 * MARGIN,
+                    getHeight() - 4 * MARGIN
+            );
+            battleground.calculateSize();
+        });
+
+        // Add the sidebar
+        sidebar = new Sidebar();
+        addComponent(sidebar, () -> sidebar.setBounds(
+                (int) (getWidth() / 2 - 0.75 * getHeight()) + MARGIN,
+                MARGIN,
+                (int) (1.5 * getHeight()) - 2 * MARGIN,
+                getHeight() - 2 * MARGIN
+        ));
         sidebar.afterVisible();
         battleground.afterVisible();
 
-        // Start game in new thread
-        new Thread(this::startGame).start();
+        // Show the battleground
+        spinner.setVisible(false);
+        battleground.setVisible(true);
+        MB.frame.repaint();
+        MB.frame.revalidate();
     }
 
     /**
      * Start the game
      */
     public void startGame() {
-        // Reset the bomb upgrades
-        Bomb.reset();
         // Initialize the player
-        player.initialize(this, map);
+        for (java.util.Map.Entry<String, Player> player : Lobby.players.entrySet()) {
+            player.getValue().initialize();
+        }
 
         // Start the game loop
         gameOver = false;
-        while (!gameOver) {
-            // Update the global times
-            deltaTime = (float) (System.currentTimeMillis() - lastTime) / 1000;
-            lastTime = System.currentTimeMillis();
-
-            // Record the start time
-            long start = System.currentTimeMillis();
+        MultiBomb.startTimedAction(WAIT_TIME, (deltaTime, lastTime) -> {
+            Game.deltaTime = deltaTime;
 
             // Update the player and repaint
-            player.update();
+            Lobby.players.get(Lobby.player).move();
+
+            // End the game if gameOver is true
+            return !gameOver;
+        });
+        MultiBomb.startTimedAction(WAIT_TIME, (deltaTime, lastTime) -> {
             MB.frame.revalidate();
             MB.frame.repaint();
 
-            // Wait for the next run
-            targetRefreshRate(start);
-        }
-    }
-
-    /**
-     * Target the refresh rate by waiting for the next run
-     *
-     * @param start time in milliseconds
-     */
-    private void targetRefreshRate(long start) {
-        long localDelta = System.currentTimeMillis() - start;
-        if (localDelta < WAIT_TIME) {
-            try {
-                Thread.sleep(WAIT_TIME - localDelta);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+            // End the game if gameOver is true
+            return !gameOver;
+        });
     }
 }

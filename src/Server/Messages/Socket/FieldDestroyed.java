@@ -14,9 +14,15 @@ public class FieldDestroyed extends Message {
 
     /**
      * Constructor
+     *
+     * @param m coordinate on the map
+     * @param n coordinate on the map
      */
-    public FieldDestroyed() {
+    public FieldDestroyed(int m, int n) {
         // Initialize message with type
         super(Message.FIELD_DESTROYED_TYPE);
+
+        this.m = m;
+        this.n = n;
     }
 }

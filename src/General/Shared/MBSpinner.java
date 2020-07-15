@@ -1,6 +1,7 @@
 package General.Shared;
 
 import General.MB;
+import General.MultiBomb;
 
 import javax.swing.*;
 import java.awt.*;
@@ -70,17 +71,14 @@ public class MBSpinner extends JPanel {
      * Sleep until animation continues
      */
     private void sleep() {
-        try {
-            Thread.sleep(16);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        MultiBomb.sleep(16);
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         MB.settings.enableAntiAliasing(g);
+        g.setColor(Color.WHITE);
         g.fillArc(0, 0, getWidth(), getHeight(), progress + deltaAngle, -2 * progress);
     }
 }

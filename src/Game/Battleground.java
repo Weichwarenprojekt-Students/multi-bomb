@@ -1,10 +1,14 @@
 package Game;
 
+import Game.Items.Item;
 import Game.Models.Field;
-import Game.Models.Map;
 import Game.Models.Player;
 import General.MB;
+import General.Shared.MBBackground;
+import General.Shared.MBButton;
 import General.Shared.MBPanel;
+import Server.Messages.Socket.Map;
+import Server.Messages.Socket.Position;
 
 import java.awt.*;
 
@@ -24,11 +28,15 @@ public class Battleground extends MBPanel {
     /**
      * The map to be drawn
      */
-    private final Map map;
+    public static Map map;
     /**
-     * The player to be drawn
+     * True if the players shall be drawn
      */
-    private final Player player;
+    private final boolean drawPlayers;
+    /**
+     * True if the spawns shall be drawn
+     */
+    private final boolean drawSpawns;
     /**
      * True if the panel should start drawing the battleground
      */
@@ -37,20 +45,21 @@ public class Battleground extends MBPanel {
     /**
      * Constructor
      *
-     * @param map to be drawn
+     * @param map         to be drawn
+     * @param drawPlayers true if the player should be drawn
      */
-    public Battleground(Map map, Player player) {
-        this.map = map;
-        this.player = player;
-
-        // Listen for resize events
-        MB.activePanel.addComponentEvent(this::calculateSize);
+    public Battleground(Map map, boolean drawPlayers, boolean drawSpawns) {
+        super(false);
+        setOpaque(false);
+        Battleground.map = map;
+        this.drawPlayers = drawPlayers;
+        this.drawSpawns = drawSpawns;
     }
 
     /**
      * Calculate the size and the offset for the fields
      */
-    private void calculateSize() {
+    public void calculateSize() {
         // Calculate the field size
         fieldSize = (int) ((float) getHeight() / Map.SIZE);
         // Calculate the ratio
@@ -72,8 +81,9 @@ public class Battleground extends MBPanel {
         calculateSize();
 
         // Load the item textures and repaint
-        Field.loadTextures(map.theme);
-        MB.activePanel.resize();
+        Field.loadTextures(map.theme, this);
+        Item.loadTextures(this);
+        MB.activePanel.toggleResizeEvents();
         startDrawing = true;
     }
 
@@ -85,6 +95,7 @@ public class Battleground extends MBPanel {
         if (!startDrawing) {
             return;
         }
+        Graphics2D g2d = (Graphics2D) g;
         MB.settings.enableAntiAliasing(g);
 
         // Draw the ground
@@ -99,11 +110,25 @@ public class Battleground extends MBPanel {
             }
         }
 
+        // Draw the spawns
+        if (drawSpawns) {
+            for (Position spawn : map.spawns) {
+                if (spawn != null) {
+                    g.drawImage(
+                            Field.SPAWN.image.image,
+                            (int) (spawn.x * fieldSize + offset + Field.offset_x),
+                            (int) (spawn.y * fieldSize + offset + Field.offset_y),
+                            null
+                    );
+                }
+            }
+        }
+
         // Draw the map
         for (int m = 0; m < Map.SIZE; m++) {
             for (int n = 0; n < Map.SIZE; n++) {
                 // Identify the field item
-                Field field = Field.getItem(map.fields[m][n]);
+                Field field = Field.getItem(map.getField(m, n));
 
                 // Check if item doesn't exist or is ground
                 if (field != null && field.id != Field.GROUND.id) {
@@ -117,15 +142,30 @@ public class Battleground extends MBPanel {
                 }
 
                 // Check if it should draw the player
-                if (player != null && player.isOnField(m, n)) {
-                    player.draw(g);
+                if (drawPlayers) {
+                    for (Player player : Lobby.players.values()) {
+                        if (player != null && player.isOnField(m, n)) {
+                            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, player.opacity));
+                            player.draw(g);
+                            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+                        }
+                    }
                 }
 
                 // Draw item above player
-                if (map.items[m][n] != null) {
-                    map.items[m][n] = map.items[m][n].draw((Graphics2D) g, m, n);
+                Item item = Map.getItem(m, n);
+                if (item != null) {
+                    Map.setItem(m, n, item.draw((Graphics2D) g, m, n));
                 }
             }
         }
+
+        // Draw the picture frame
+        g.setColor(MBButton.GREY);
+        int size = 16;
+        g.fillRoundRect(0, 0, size, getHeight(), MBBackground.CORNER_RADIUS, MBBackground.CORNER_RADIUS);
+        g.fillRoundRect(0, 0, getWidth(), size, MBBackground.CORNER_RADIUS, MBBackground.CORNER_RADIUS);
+        g.fillRoundRect(getWidth() - size, 0, size, getHeight(), MBBackground.CORNER_RADIUS, MBBackground.CORNER_RADIUS);
+        g.fillRoundRect(0, getHeight() - size, getWidth(), size, MBBackground.CORNER_RADIUS, MBBackground.CORNER_RADIUS);
     }
 }

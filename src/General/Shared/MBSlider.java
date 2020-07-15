@@ -8,16 +8,18 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import static General.Shared.MBButton.BACKGROUND_COLOR;
+
 public class MBSlider extends JLabel {
 
-    /**
-     * The percentage of the slider
-     */
-    private int percentage;
     /**
      * The event that is triggered when sliding
      */
     private final SlideEvent event;
+    /**
+     * The percentage of the slider
+     */
+    public int percentage;
 
     /**
      * Constructor
@@ -32,6 +34,7 @@ public class MBSlider extends JLabel {
             public void mouseDragged(MouseEvent e) {
                 slide(e.getX());
             }
+
             @Override
             public void mouseMoved(MouseEvent e) {
             }
@@ -40,16 +43,20 @@ public class MBSlider extends JLabel {
             @Override
             public void mouseClicked(MouseEvent e) {
             }
+
             @Override
             public void mousePressed(MouseEvent e) {
                 slide(e.getX());
             }
+
             @Override
             public void mouseReleased(MouseEvent e) {
             }
+
             @Override
             public void mouseEntered(MouseEvent e) {
             }
+
             @Override
             public void mouseExited(MouseEvent e) {
             }
@@ -68,7 +75,7 @@ public class MBSlider extends JLabel {
         } else if (x >= getWidth()) {
             percentage = 100;
         } else {
-            percentage = (int) ((float)x / getWidth() * 100);
+            percentage = (int) ((float) x / getWidth() * 100);
         }
 
         // Fire the event
@@ -90,10 +97,25 @@ public class MBSlider extends JLabel {
         MB.settings.enableAntiAliasing(g);
 
         // Draw the slider
-        g.setColor(MBScrollView.BACKGROUND_COLOR);
-        g.fillRect(0, 0, (int) ((float) percentage / 100 * getWidth()), getHeight());
-        g.setColor(Color.black);
-        g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+        g.setColor(BACKGROUND_COLOR);
+        g.fillRoundRect(
+                0,
+                0,
+                getWidth() - 1,
+                getHeight() - 1,
+                MBBackground.CORNER_RADIUS,
+                MBBackground.CORNER_RADIUS
+        );
+        g.setColor(Color.WHITE);
+        g.fillRoundRect(
+                0,
+                0,
+                (int) ((float) percentage / 100 * getWidth()),
+                getHeight() - 1,
+                MBBackground.CORNER_RADIUS,
+                MBBackground.CORNER_RADIUS
+        );
+        //g.fillRect(0, 0, (int) ((float) percentage / 100 * getWidth()), getHeight());
     }
 
     /**
@@ -102,4 +124,5 @@ public class MBSlider extends JLabel {
     public interface SlideEvent {
         void onSlide(int percentage);
     }
+
 }

@@ -2,31 +2,49 @@ package Game.Models;
 
 import Game.Battleground;
 import Game.Game;
-import Game.Items.Bomb;
-import Game.Items.Item;
-import General.Shared.MBImage;
-import General.Shared.MBPanel;
-import Server.Messages.Socket.Position;
+import Game.Items.*;
+import Game.Lobby;
+import General.MultiBomb;
+import General.Shared.*;
+import General.Sound.SoundControl;
+import General.Sound.SoundEffect;
+import Server.Items.ServerProtection;
+import Server.Messages.Socket.*;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+
+import static Game.Models.Animation.*;
 
 /**
  * The basic player model
  */
 public class Player {
+
     /**
-     * The speed of a player
+     * The font for the name
      */
-    public static float SPEED = 45f;
+    public static final Font nameFont = new Font(MBLabel.FONT_NAME, Font.BOLD, 14);
     /**
-     * The size of the player sprite
+     * The maximum speed value for a player
      */
-    public static int SPRITE_SIZE = 64;
+    public static final float MAX_SPEED = 0.1f, MIN_SPEED = 0.06f;
     /**
-     * The sprite of the player
+     * The time the player fades out after dying
      */
-    private MBImage sprite;
+    public static final long DIE_DURATION = ServerProtection.DIE_DURATION;
+    /**
+     * The time the player is protected after a hit
+     */
+    public static final long HIT_DURATION = ServerProtection.HIT_DURATION;
+    /**
+     * True if the player is on an item
+     */
+    private final Item.OnItem onItem = new Item.OnItem();
+    /**
+     * The current speed value for a player
+     */
+    public float speed = MIN_SPEED;
     /**
      * The name of the player
      */
@@ -38,35 +56,161 @@ public class Player {
     /**
      * The theme of the player
      */
-    public String theme = "Philipp";
+    public int color;
     /**
-     * The players item
+     * Opacity of the player
      */
-    private Item item = new Bomb();
+    public float opacity = 1f;
+    /**
+     * The player state
+     */
+    public PlayerState state = new PlayerState();
+    /**
+     * The player's item
+     */
+    public Item item = new Bomb();
+    /**
+     * True if the player is fading out
+     */
+    public boolean fadingOut = false;
+    /**
+     * True if the player is controllable
+     */
+    private boolean controllable = true;
+    /**
+     * The sprite of the player
+     */
+    private MBImage sprite;
+    /**
+     * True if the player is currently using an item
+     */
+    private boolean usingItem = false;
 
     /**
      * Constructor
      */
-    public Player() {
-        // Load the sprite
-        sprite = new MBImage("Characters/" + theme + ".png", () -> {
-            sprite.width = (int) (sprite.original.getWidth(null) * Battleground.ratio);
-            sprite.height = (int) (sprite.original.getHeight(null) * Battleground.ratio);
-        });
+    public Player(String name, int color) {
+        this.name = name;
+        this.color = color;
     }
 
     /**
      * Initialize the players position and controls
-     *
-     * @param panel the game panel
-     * @param map   the player is on
      */
-    public void initialize(MBPanel panel, Map map) {
+    public void initialize() {
         // Set the players position
-        position.x = map.spawns[0].x * Map.FIELD_SIZE + (float) Map.FIELD_SIZE / 2;
-        position.y = map.spawns[0].y * Map.FIELD_SIZE + (float) Map.FIELD_SIZE / 2;
-        position.direction = map.spawns[0].direction;
+        setSpawn();
 
+        // Load the sprite
+        sprite = new MBImage("Characters/" + color + ".png", Lobby.game.battleground, () -> {
+            // Update the ratio
+            spriteRatio = (float) Battleground.fieldSize / PLAYER_WIDTH;
+
+            // Update the measurements
+            sprite.width = (int) (spriteRatio * SCALE * 3 * PLAYER_WIDTH);
+            sprite.height = (int) (spriteRatio * SCALE * 4 * PLAYER_HEIGHT);
+        });
+        sprite.refresh();
+    }
+
+    /**
+     * Set the spawn
+     */
+    public void setSpawn() {
+        position.x = Lobby.map.spawns[color].x * Map.FIELD_SIZE + (float) Map.FIELD_SIZE / 2;
+        position.y = Lobby.map.spawns[color].y * Map.FIELD_SIZE + (float) Map.FIELD_SIZE / 2;
+        position.direction = Lobby.map.spawns[color].direction;
+    }
+
+    /**
+     * Method to disable movement
+     */
+    public void enable() {
+        this.controllable = true;
+    }
+
+    /**
+     * Method to disable movement
+     */
+    public void disable() {
+        this.controllable = false;
+        position.moving = false;
+    }
+
+    /**
+     * @return the ammunition count matching the current item
+     */
+    public int getAmmunition() {
+        if (item.name.equals(Item.BOMB)) {
+            return state.upgrades.bombCount;
+        }
+        return item.ammunition;
+    }
+
+    /**
+     * Update the speed of the player
+     */
+    private void updateSpeed() {
+        speed = (MAX_SPEED - MIN_SPEED) * state.upgrades.speed / Upgrades.MAX_SPEED + MIN_SPEED;
+    }
+
+    /**
+     * Show visually that the player took a hit
+     */
+    public void takeHit() {
+        MultiBomb.startTimedAction(Game.WAIT_TIME, (deltaTime, totalTime) -> {
+            // Reset the opacity and respawn the player
+            if (totalTime > HIT_DURATION) {
+                opacity = 1f;
+                return false;
+            }
+
+            // Reduce the players opacity
+            opacity = (float) (0.3 * Math.cos(6 * Math.PI * (HIT_DURATION - totalTime) / HIT_DURATION)) + 0.5f;
+            return true;
+        });
+    }
+
+    /**
+     * Let the player die
+     *
+     * @param respawn true if the player shall respawn
+     */
+    public void die(boolean respawn) {
+        SoundControl.playSoundEffect(SoundEffect.CHARACTER_DEATH);
+        fadingOut = true;
+        disable();
+
+        MultiBomb.startTimedAction(Game.WAIT_TIME, (deltaTime, totalTime) -> {
+            // Reset the opacity and respawn the player
+            if (totalTime > DIE_DURATION) {
+                if (respawn) {
+                    setSpawn();
+                    enable();
+                    fadingOut = false;
+
+                    // Reduce the opacity
+                    opacity = 0.5f;
+                    MultiBomb.sleep(ServerProtection.STANDARD_DURATION);
+                } else {
+                    state.health = 0;
+                }
+                opacity = 1f;
+                return false;
+            }
+
+            // Reduce the players opacity
+            opacity = (float) (DIE_DURATION - totalTime) / DIE_DURATION;
+            return true;
+        });
+    }
+
+    /**
+     * Setup the players controls
+     *
+     * @param panel that is active
+     */
+    public void setupControls(MBPanel panel) {
         // Move upwards
         panel.addKeybinding(
                 false,
@@ -79,7 +223,9 @@ public class Player {
         panel.addKeybinding(
                 true,
                 "STOP UP",
-                (e) -> Direction.NORTH.moving = false,
+                (e) -> {
+                    if (position.direction == Direction.NORTH) position.moving = false;
+                },
                 KeyEvent.VK_UP,
                 KeyEvent.VK_W
         );
@@ -97,7 +243,9 @@ public class Player {
         panel.addKeybinding(
                 true,
                 "STOP RIGHT",
-                (e) -> Direction.EAST.moving = false,
+                (e) -> {
+                    if (position.direction == Direction.EAST) position.moving = false;
+                },
                 KeyEvent.VK_RIGHT,
                 KeyEvent.VK_D
         );
@@ -115,7 +263,9 @@ public class Player {
         panel.addKeybinding(
                 true,
                 "STOP DOWN",
-                (e) -> Direction.SOUTH.moving = false,
+                (e) -> {
+                    if (position.direction == Direction.SOUTH) position.moving = false;
+                },
                 KeyEvent.VK_DOWN,
                 KeyEvent.VK_S
         );
@@ -133,7 +283,9 @@ public class Player {
         panel.addKeybinding(
                 true,
                 "STOP LEFT",
-                (e) -> Direction.WEST.moving = false,
+                (e) -> {
+                    if (position.direction == Direction.WEST) position.moving = false;
+                },
                 KeyEvent.VK_LEFT,
                 KeyEvent.VK_A
         );
@@ -153,33 +305,98 @@ public class Player {
      * @param direction of movement
      */
     private void startMoving(Direction direction) {
-        position.direction = direction;
-        direction.moving = true;
+        if (controllable) {
+            position.direction = direction;
+            position.moving = true;
+        }
     }
 
     /**
      * Use the players current item
      */
     private void useItem() {
-        item = item.use(position);
+        int m = (int) (position.y / Map.FIELD_SIZE);
+        int n = (int) (position.x / Map.FIELD_SIZE);
+        if (!usingItem && controllable && item.isUsable(m, n, state.upgrades)) {
+            usingItem = true;
+            Lobby.sendMessage(new ItemAction(item.name, name, position.direction, m, n));
+        }
+    }
+
+    /**
+     * Handle an item action
+     *
+     * @param action the item action
+     */
+    public void handleItemAction(ItemAction action) {
+        if (!action.itemId.equals(item.name)) {
+            item = Item.getItem(action.itemId);
+        }
+        item = item.use(action, this);
+        usingItem = false;
+    }
+
+    /**
+     * Handle an item collection
+     *
+     * @param item that was collected
+     */
+    public void handleItemCollection(ItemCollected item) {
+        // Check if the player state should be updated
+        state.collectItem(item.item, false);
+        updateSpeed();
+
+        // Check if the player collected a weapon
+        if (item.item.name.equals(Field.ARROW.name)) {
+            this.item = new Arrow();
+        } else if (item.item.name.equals(Field.SWORD.name)) {
+            this.item = new Sword();
+        } else if (item.item.name.equals(Field.TELEPORT.name)) {
+            this.item = new Teleport();
+        }
+    }
+
+    /**
+     * Check if player is on item
+     *
+     * @param m position
+     * @param n position
+     */
+    public void isOnItem(int m, int n) {
+        // Calculate the item on the next field
+        int mPlayer = (int) (position.y) / Map.FIELD_SIZE;
+        int nPlayer = (int) (position.x) / Map.FIELD_SIZE;
+
+        // Check it and update position
+        boolean samePosition = (mPlayer == m && nPlayer == n);
+        onItem.onItem = onItem.onItem || samePosition;
+        if (samePosition) {
+            onItem.setPosition(m, n);
+        }
     }
 
     /**
      * Update the players position
      */
-    public void update() {
+    public void move() {
         // Calculate the next position
-        float newX = position.x + position.direction.x * Game.deltaTime * SPEED;
-        float newY = position.y + position.direction.y * Game.deltaTime * SPEED;
+        float newX = position.x + position.direction.x * Game.deltaTime * speed;
+        float newY = position.y + position.direction.y * Game.deltaTime * speed;
 
         // Calculate the item on the next field (with some offset for collision detection)
         int m = (int) (newY + position.direction.y * 10) / Map.FIELD_SIZE;
         int n = (int) (newX + position.direction.x * 10) / Map.FIELD_SIZE;
-
         // Check if character should move
-        if (position.direction.moving && Field.getItem(Game.map.fields[m][n]).isPassable()) {
+        if (position.moving && Field.getItem(Lobby.map.getField(m, n)).isPassable()
+                && Item.isPassable(onItem, m, n)) {
+            // Update the position
             position.x = newX;
             position.y = newY;
+
+            // Update on item state
+            m = (int) (position.y) / Map.FIELD_SIZE;
+            n = (int) (position.x) / Map.FIELD_SIZE;
+            onItem.onItem = Map.getItem(m, n) != null && onItem.m == m && onItem.n == n;
         }
     }
 
@@ -207,26 +424,44 @@ public class Player {
      * @param g the corresponding graphics object
      */
     public void draw(Graphics g) {
+        if (sprite == null || !state.isAlive()) {
+            return;
+        }
         // Calculate the destination position
-        int dx = (int) ((position.x - 32) * Battleground.ratio) + Battleground.offset;
-        int dy = (int) ((position.y - 55) * Battleground.ratio) + Battleground.offset;
-
+        int dx = (int) ((position.x - 18) * Battleground.ratio) + Battleground.offset;
+        int dy = (int) ((position.y - 32) * Battleground.ratio) + Battleground.offset;
         // Calculate the position of the sprite
-        int[] spritePosition = position.direction.getSpritePosition();
-        int sx = (int) (spritePosition[1] * SPRITE_SIZE * Battleground.ratio);
-        int sy = (int) (spritePosition[0] * SPRITE_SIZE * Battleground.ratio);
+        int[] spritePosition = Animation.getSpritePosition(position, color);
+
+        // Create the sub image
+        Image image = sprite.getSub(
+                (int) (spriteRatio * SCALE * spritePosition[1] * PLAYER_WIDTH),
+                (int) (spriteRatio * SCALE * spritePosition[0] * PLAYER_HEIGHT),
+                (int) (spriteRatio * SCALE * PLAYER_WIDTH),
+                (int) (spriteRatio * SCALE * PLAYER_HEIGHT)
+        );
 
         // Draw the image
-        g.drawImage(
-                sprite.getSub(
-                        sx,
-                        sy,
-                        (int) (SPRITE_SIZE * Battleground.ratio),
-                        (int) (SPRITE_SIZE * Battleground.ratio)
-                ),
-                dx,
-                dy,
-                null
+        g.drawImage(image, dx, dy, null);
+
+        // Fill rect
+        g.setFont(nameFont);
+        g.setColor(MBButton.BACKGROUND_COLOR);
+        g.fillRoundRect(
+                dx + (image.getWidth(null) - g.getFontMetrics().stringWidth(name)) / 2 - 2,
+                dy - 18,
+                g.getFontMetrics().stringWidth(name) + 4,
+                16,
+                MBBackground.CORNER_RADIUS,
+                MBBackground.CORNER_RADIUS
+        );
+
+        // Draw the name
+        g.setColor(Color.WHITE);
+        g.drawString(
+                name,
+                dx + (image.getWidth(null) - g.getFontMetrics().stringWidth(name)) / 2,
+                dy - 5
         );
     }
 }

@@ -1,7 +1,8 @@
 package Server;
 
-import Server.Messages.Socket.CloseConnection;
+import General.MB;
 import Server.Messages.ErrorMessage;
+import Server.Messages.Socket.CloseConnection;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static General.MultiBomb.LOGGER;
 
 public class Server implements Runnable {
     /**
@@ -26,9 +29,21 @@ public class Server implements Runnable {
      */
     public static final int GAME_PORT = 42422;
     /**
+     * True if the server is running locally
+     */
+    public static boolean running = false;
+    /**
+     * Tick rate of the server
+     */
+    public static int ticksPerSecond;
+    /**
+     * Maximum number of lobbies
+     */
+    public static int maxLobbies;
+    /**
      * Map of lobby names to their lobby objects
      */
-    public final Map<String, Lobby> lobbies;
+    private final Map<String, Lobby> lobbies;
     /**
      * HTTP server thread which provides information about this server
      */
@@ -36,7 +51,7 @@ public class Server implements Runnable {
     /**
      * UDP Broadcast discovery thread
      */
-    private final Thread discoveryThread;
+    private final DiscoveryThread discoveryThread;
     /**
      * Map of ip addresses to players that requested to join a lobby
      */
@@ -46,17 +61,9 @@ public class Server implements Runnable {
      */
     public String name;
     /**
-     * Tick rate of the server
+     * The server socket
      */
-    public int ticksPerSecond;
-    /**
-     * Maximum number of lobbies
-     */
-    public int maxLobbies;
-    /**
-     * Indicate if server is running
-     */
-    private boolean running;
+    private ServerSocket serverSocket;
 
     /**
      * Constructor
@@ -66,15 +73,20 @@ public class Server implements Runnable {
      * @param maxLobbies     maximum number of lobbies
      */
     public Server(String name, int ticksPerSecond, int maxLobbies) {
-        this.name = name;
-        this.ticksPerSecond = ticksPerSecond;
-        this.maxLobbies = maxLobbies;
+        LOGGER.config(String.format("Entering: %s %s", Server.class.getName(), "Server()"));
 
-        discoveryThread = new Thread(new DiscoveryThread());
+        running = true;
+        this.name = name;
+        Server.ticksPerSecond = ticksPerSecond;
+        Server.maxLobbies = maxLobbies;
+
+        discoveryThread = new DiscoveryThread();
         httpThread = new HttpThread(this);
 
         lobbies = new HashMap<>();
         preparedPlayers = new HashMap<>();
+
+        LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "Server()"));
     }
 
     /**
@@ -87,10 +99,31 @@ public class Server implements Runnable {
     }
 
     /**
+     * Close the server
+     */
+    public void closeServer() {
+        LOGGER.config(String.format("Entering: %s %s", Server.class.getName(), "closeServer()"));
+
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            MB.activePanel.toastError("Could not close the server socket!");
+            return;
+        }
+        running = false;
+        httpThread.close();
+        discoveryThread.close();
+
+        LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "closeServer()"));
+    }
+
+    /**
      * Run server
      */
     @Override
     public void run() {
+        LOGGER.config(String.format("Entering: %s %s", Server.class.getName(), "run()"));
+
         // start UDP DiscoveryThread
         discoveryThread.start();
 
@@ -98,12 +131,13 @@ public class Server implements Runnable {
         httpThread.start();
 
         try {
-            ServerSocket serverSocket = new ServerSocket(GAME_PORT);
+            serverSocket = new ServerSocket(GAME_PORT);
             clientSocketLoop(serverSocket);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "run()"));
     }
 
     /**
@@ -112,7 +146,8 @@ public class Server implements Runnable {
      * @param serverSocket server socket which listens for new connections
      */
     public void clientSocketLoop(ServerSocket serverSocket) {
-        running = true;
+        LOGGER.config(String.format("Entering: %s %s", Server.class.getName(), "clientSocketLoop()"));
+
         while (running) {
             Socket clientSocket;
             try {
@@ -135,10 +170,16 @@ public class Server implements Runnable {
                 continue;
             }
 
-            String remoteIp = clientSocket.getRemoteSocketAddress().toString();
+            String remoteIp = clientSocket.getInetAddress().getHostAddress();
 
             LobbyTimestamp lobbyTimestamp;
-            if (preparedPlayers.containsKey(remoteIp) && !(lobbyTimestamp = preparedPlayers.get(remoteIp)).isExpired()) {
+            String errMsg = null;
+
+            synchronized (preparedPlayers) {
+                lobbyTimestamp = preparedPlayers.getOrDefault(remoteIp, null);
+            }
+
+            if (lobbyTimestamp != null && !lobbyTimestamp.isExpired()) {
                 String lobbyName = lobbyTimestamp.lobbyName;
 
                 Lobby lobby;
@@ -148,23 +189,30 @@ public class Server implements Runnable {
                             new PlayerConnection(clientSocket, lobby, lobbyTimestamp.playerID).start();
                             preparedPlayers.remove(remoteIp);
 
+                            LOGGER.info("New player (" + lobbyTimestamp.playerID + ") connected to " + lobbyName);
+
                             // success, listen for next socket connection
                             continue;
 
                         } catch (IOException e) {
                             // catch exception from PlayerConnection constructor
-                            out.println(new ErrorMessage("Could not connect to lobby!"));
+                            errMsg = "Could not connect to lobby!";
+                            out.println(new ErrorMessage(errMsg).toJson());
                         }
                     } else {
-                        out.println(new ErrorMessage("Lobby is full!").toJson());
+                        errMsg = "Lobby is full!";
+                        out.println(new ErrorMessage(errMsg).toJson());
                     }
                 } else {
                     out.println(new ErrorMessage("Lobby does not exist!").toJson());
                 }
             } else {
-                out.println(new ErrorMessage("Player could not be assigned to lobby").toJson());
+                errMsg = "Player could not be assigned to lobby";
+                out.println(new ErrorMessage(errMsg).toJson());
             }
             preparedPlayers.remove(remoteIp);
+
+            LOGGER.info("Problem while establishing new connection: " + errMsg);
 
             out.println(new CloseConnection().toJson());
 
@@ -175,6 +223,8 @@ public class Server implements Runnable {
             }
 
         }
+
+        LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "clientSocketLoop()"));
     }
 
     /**
@@ -182,8 +232,24 @@ public class Server implements Runnable {
      *
      * @return a list of open lobbies
      */
-    public synchronized List<Lobby> getLobbies() {
-        return lobbies.values().stream().filter(l -> l.isOpen()).collect(Collectors.toList());
+    public List<Lobby> getLobbies() {
+        LOGGER.config(String.format("Called: %s %s", Server.class.getName(), "getLobbies()"));
+        synchronized (lobbies) {
+            return lobbies.values().stream().filter(l -> l.isOpen()).collect(Collectors.toList());
+        }
+    }
+
+    /**
+     * Remove lobby from list
+     *
+     * @param lobbyName name of the lobby to remove
+     */
+    public void removeLobby(String lobbyName) {
+        LOGGER.config(String.format("Entering: %s %s", Server.class.getName(), "removeLobby()"));
+        synchronized (lobbies) {
+            lobbies.remove(lobbyName);
+        }
+        LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "removeLobby()"));
     }
 
     /**
@@ -194,24 +260,39 @@ public class Server implements Runnable {
      * @param playerID  name of the player
      * @return ErrorMessage in case of failure, null in case of success
      */
-    public synchronized ErrorMessage prepareNewPlayer(String ipAddress, String lobbyName, String playerID) {
-        if (lobbies.containsKey(lobbyName)) {
+    public ErrorMessage prepareNewPlayer(String ipAddress, String lobbyName, String playerID) {
+        LOGGER.config(String.format("Called: %s %s", Server.class.getName(), "prepareNewPlayer()"));
 
-            Lobby lobby = lobbies.get(lobbyName);
+        LobbyTimestamp lobbyTimestamp;
+        synchronized (lobbies) {
+            Lobby lobby = lobbies.getOrDefault(lobbyName, null);
 
-            if (lobby.isFull()) {
-                return new ErrorMessage("The requested lobby is full");
-            } else if (!lobby.isOpen()) {
-                lobbies.remove(lobbyName);
-            } else if (lobby.getPlayerColors().containsKey(playerID)) {
-                return new ErrorMessage("Name already taken, please choose a different one!");
-            } else {
-                preparedPlayers.put(ipAddress, new LobbyTimestamp(lobbyName, playerID));
-                return null;
+            lobbyTimestamp = null;
+            if (lobby != null) {
+                if (playerID == null || playerID.isEmpty()) {
+                    return new ErrorMessage("Player name may not be empty");
+                } else if (lobby.state != Lobby.WAITING) {
+                    return new ErrorMessage("Lobby is currently in-game");
+                } else if (lobby.isFull()) {
+                    return new ErrorMessage("The requested lobby is full");
+                } else if (!lobby.isOpen()) {
+                    removeLobby(lobbyName);
+                    return new ErrorMessage("The requested lobby doesn't exist");
+                } else if (lobby.getPlayerColors().containsKey(playerID)) {
+                    return new ErrorMessage("Name already taken!");
+                }
+                lobbyTimestamp = new LobbyTimestamp(lobbyName, playerID);
             }
         }
 
-        return new ErrorMessage("The requested lobby doesn't exist");
+        if (lobbyTimestamp != null) {
+            synchronized (preparedPlayers) {
+                preparedPlayers.put(ipAddress, lobbyTimestamp);
+            }
+            return null;
+        } else {
+            return new ErrorMessage("The requested lobby doesn't exist");
+        }
     }
 
     /**
@@ -220,12 +301,21 @@ public class Server implements Runnable {
      * @param lobbyName name of the lobby
      * @return ErrorMessage in case of failure, null in case of success
      */
-    public synchronized ErrorMessage createLobby(String lobbyName) {
-        if (lobbies.containsKey(lobbyName) && lobbies.get(lobbyName).isOpen()) {
-            return new ErrorMessage("Lobby already exists");
-        } else {
-            lobbies.put(lobbyName, new Lobby(lobbyName));
-            return null;
+    public ErrorMessage createLobby(String lobbyName) {
+        LOGGER.config(String.format("Entering: %s %s", Server.class.getName(), "createLobby()"));
+
+        synchronized (lobbies) {
+            if (lobbies.containsKey(lobbyName) && lobbies.get(lobbyName).isOpen()) {
+                LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "createLobby()"));
+                return new ErrorMessage("Lobby already exists");
+            } else if (getLobbies().size() >= maxLobbies) {
+                LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "createLobby()"));
+                return new ErrorMessage("Maximum number of lobbies reached!");
+            } else {
+                lobbies.put(lobbyName, new Lobby(lobbyName, this));
+                LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "createLobby()"));
+                return null;
+            }
         }
     }
 
@@ -234,12 +324,18 @@ public class Server implements Runnable {
      *
      * @param lobbyName name of the lobby
      */
-    public synchronized void closeLobby(String lobbyName) {
-        if (lobbies.containsKey(lobbyName)) {
-            Lobby lobby = lobbies.get(lobbyName);
-            lobbies.remove(lobbyName);
-            lobby.close();
+    public void closeLobby(String lobbyName) {
+        LOGGER.config(String.format("Entering: %s %s", Server.class.getName(), "closeLobby()"));
+
+        synchronized (lobbies) {
+            if (lobbies.containsKey(lobbyName)) {
+                Lobby lobby = lobbies.get(lobbyName);
+                lobbies.remove(lobbyName);
+                lobby.close();
+            }
         }
+
+        LOGGER.config(String.format("Exiting: %s %s", Server.class.getName(), "closeLobby()"));
     }
 
     private static class LobbyTimestamp {

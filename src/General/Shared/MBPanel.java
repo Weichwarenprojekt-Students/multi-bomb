@@ -1,6 +1,7 @@
 package General.Shared;
 
 import General.MB;
+import General.MultiBomb;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,15 +27,22 @@ public abstract class MBPanel extends JPanel {
      */
     private final MBDialogManager dialogManager = new MBDialogManager();
     /**
+     * True if the panel shall contain the background
+     */
+    private final boolean background;
+    /**
      * The buttons for the group
      */
     private MBButton[] buttons;
 
     /**
      * This class provides a general setup for a panel
+     *
+     * @param background true if
      */
-    public MBPanel() {
+    public MBPanel(boolean background) {
         // General stuff
+        this.background = background;
         setLayout(null);
         setBackground(Color.white);
 
@@ -46,21 +54,17 @@ public abstract class MBPanel extends JPanel {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                for (ComponentResize component : components) {
-                    component.resize();
-                }
-                resize();
+                components.forEach(ComponentResize::resize);
+                toggleResizeEvents();
             }
         });
     }
 
     /**
-     * Toggle the resize events
+     * Toggle the manually added resize events
      */
-    public void resize() {
-        for (ComponentResize resize : events) {
-            resize.resize();
-        }
+    public void toggleResizeEvents() {
+        events.forEach(ComponentResize::resize);
     }
 
     /**
@@ -76,16 +80,6 @@ public abstract class MBPanel extends JPanel {
         components.add(componentSizer);
         add(component);
     }
-
-    /**
-     * Add a component resize event
-     *
-     * @param resize event to be added
-     */
-    public void addComponentEvent(ComponentResize resize) {
-        components.add(resize);
-    }
-
 
     /**
      * Add a resize event
@@ -160,12 +154,30 @@ public abstract class MBPanel extends JPanel {
     }
 
     /**
+     * Draw the background
+     */
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (background) {
+            if (MB.background != null) {
+                g.drawImage(
+                        MB.background.image,
+                        getWidth() / 2 - MB.background.width / 2,
+                        getHeight() / 2 - MB.background.height / 2,
+                        null
+                );
+            }
+        }
+    }
+
+    /**
      * Make toast with green background
      *
      * @param text of the toast
      */
     public void toastSuccess(String... text) {
-        new Thread(() -> toastManager.show(Color.green, text)).start();
+        new Thread(() -> toastManager.show(MBToastManager.GREEN, text)).start();
     }
 
     /**
@@ -174,13 +186,13 @@ public abstract class MBPanel extends JPanel {
      * @param text of the toast
      */
     public void toastError(String... text) {
-        new Thread(() -> toastManager.show(Color.red, text)).start();
+        new Thread(() -> toastManager.show(MBToastManager.RED, text)).start();
     }
 
     /**
      * Show a panel in a dialog
      *
-     * @param panel to be shown
+     * @param panel   to be shown
      * @param onClose the close handler
      */
     public void showDialog(JPanel panel, MBDialogManager.OnClose onClose) {
@@ -201,8 +213,12 @@ public abstract class MBPanel extends JPanel {
         void resize();
     }
 
-    private static class MBToastManager extends JPanel {
+    public static class MBToastManager extends JPanel {
 
+        /**
+         * The colors for the toasts
+         */
+        private static final Color GREEN = new Color(141, 211, 95), RED = new Color(255, 47, 0);
         /**
          * Duration of the toast
          */
@@ -247,6 +263,33 @@ public abstract class MBPanel extends JPanel {
         }
 
         /**
+         * Let the toast slide in
+         *
+         * @param toast to be moved
+         * @param fade  describes the fade progress
+         */
+        public static void slide(JComponent toast, FadeEvent fade) {
+            // Initialize the animation
+            final int duration = 500;
+            final int delay = 10;
+            final int distance = toast.getWidth() + MARGIN;
+            final int startX = toast.getX();
+
+            // Execute the fading
+            for (int time = 0; time <= duration; time += delay) {
+                // Move the toast
+                toast.setLocation(startX + fade.fade((float) time / duration, distance), toast.getY());
+                MB.activePanel.revalidate();
+                MB.activePanel.repaint();
+
+                // Wait
+                MultiBomb.sleep(delay);
+            }
+            toast.setLocation(startX + fade.fade(1, distance), toast.getY());
+            MB.activePanel.revalidate();
+        }
+
+        /**
          * Make the toast
          *
          * @param color of the toast
@@ -262,7 +305,6 @@ public abstract class MBPanel extends JPanel {
             int width = 0, height = 0;
             for (String message : text) {
                 MBLabel label = new MBLabel(message);
-                label.setFontColor(Color.WHITE);
                 label.setBold();
                 label.alignTextTop();
 
@@ -287,11 +329,7 @@ public abstract class MBPanel extends JPanel {
             slide(toast, (progress, distance) -> (int) -(Math.sin(Math.PI / 2 * progress) * distance));
 
             // Show the toast
-            try {
-                Thread.sleep(DURATION);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            MultiBomb.sleep(DURATION);
             slide(toast, (progress, distance) -> (int) (progress * progress * distance));
             synchronized (this) {
                 toasts.remove(toast);
@@ -302,53 +340,25 @@ public abstract class MBPanel extends JPanel {
         }
 
         /**
-         * Let the toast slide in
-         *
-         * @param toast to be moved
-         * @param fade  describes the fade progress
-         */
-        private void slide(JPanel toast, FadeEvent fade) {
-            // Initialize the animation
-            final int duration = 500;
-            final int delay = 10;
-            final int distance = toast.getWidth() + MARGIN;
-            final int startX = toast.getX();
-
-            // Execute the fading
-            for (int time = 0; time <= duration; time += delay) {
-                // Move the toast
-                toast.setLocation(startX + fade.fade((float) time / duration, distance), toast.getY());
-                revalidate();
-
-                // Wait
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            toast.setLocation(startX + fade.fade(1, distance), toast.getY());
-            revalidate();
-        }
-
-        /**
          * Relocate the toast
          *
          * @param hideLatest true if first toast should be hidden
          */
         private synchronized void relocateToasts(boolean hideLatest) {
             // Move every toast
-            int height = 0;
-            for (int i = toasts.size() - 1; i >= 0; i--) {
-                toasts.get(i).setLocation(
-                        getWidth() - toasts.get(i).getWidth() - MBToastManager.MARGIN,
-                        height + MARGIN
-                );
-                height += toasts.get(i).getHeight() + MARGIN / 2;
-            }
-            // Hide the newest toast
-            if (hideLatest) {
-                toasts.get(toasts.size() - 1).setLocation(getWidth(), toasts.get(toasts.size() - 1).getY());
+            synchronized (toasts) {
+                int height = 0;
+                for (int i = toasts.size() - 1; i >= 0; i--) {
+                    toasts.get(i).setLocation(
+                            getWidth() - toasts.get(i).getWidth() - MBToastManager.MARGIN,
+                            height + MARGIN
+                    );
+                    height += toasts.get(i).getHeight() + MARGIN / 2;
+                }
+                // Hide the newest toast
+                if (hideLatest) {
+                    toasts.get(toasts.size() - 1).setLocation(getWidth(), toasts.get(toasts.size() - 1).getY());
+                }
             }
             revalidate();
             repaint();
@@ -357,12 +367,12 @@ public abstract class MBPanel extends JPanel {
         /**
          * Interface that describes the fade behavior
          */
-        private interface FadeEvent {
+        public interface FadeEvent {
             int fade(float progress, int distance);
         }
     }
 
-    private static class MBDialogManager extends JPanel {
+    public static class MBDialogManager extends JPanel {
 
         /**
          * The content of the dialog
@@ -419,6 +429,7 @@ public abstract class MBPanel extends JPanel {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                 }
+
                 @Override
                 public void mousePressed(MouseEvent e) {
                     // Check whether the mouse is outside the dialog
@@ -429,12 +440,15 @@ public abstract class MBPanel extends JPanel {
                         close();
                     }
                 }
+
                 @Override
                 public void mouseReleased(MouseEvent e) {
                 }
+
                 @Override
                 public void mouseEntered(MouseEvent e) {
                 }
+
                 @Override
                 public void mouseExited(MouseEvent e) {
                 }

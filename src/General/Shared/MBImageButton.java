@@ -10,6 +10,10 @@ import java.awt.event.MouseListener;
 public class MBImageButton extends JLabel {
 
     /**
+     * True if the button shall be enabled
+     */
+    public boolean enabled = true;
+    /**
      * The Button image
      */
     private MBImage image;
@@ -20,7 +24,7 @@ public class MBImageButton extends JLabel {
      * @param path of the image
      */
     public MBImageButton(String path) {
-        this.image = new MBImage(path, true);
+        this.image = new MBImage(path, true, null);
     }
 
     /**
@@ -33,17 +37,23 @@ public class MBImageButton extends JLabel {
             @Override
             public void mouseClicked(MouseEvent e) {
             }
+
             @Override
             public void mousePressed(MouseEvent e) {
-                listener.onPressed();
+                if (enabled) {
+                    listener.onPressed();
+                }
             }
+
             @Override
             public void mouseReleased(MouseEvent e) {
             }
+
             @Override
             public void mouseEntered(MouseEvent e) {
                 MB.frame.setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
+
             @Override
             public void mouseExited(MouseEvent e) {
                 MB.frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -57,7 +67,7 @@ public class MBImageButton extends JLabel {
      * @param path of the image
      */
     public void setImage(String path) {
-        this.image = new MBImage(path, true);
+        this.image = new MBImage(path, true, null);
     }
 
     /**

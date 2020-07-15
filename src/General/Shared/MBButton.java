@@ -4,10 +4,29 @@ import General.MB;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 
 public class MBButton extends JButton {
 
+    /**
+     * The transparency of the background
+     */
+    public static final float TRANSPARENCY = 0.2f;
+    /**
+     * The color of non-highlighted text
+     */
+    public static final Color GREY = new Color(230, 230, 230);
+    /**
+     * The background color
+     */
+    public static final Color BACKGROUND_COLOR = new Color(0, 0, 0, TRANSPARENCY);
+    /**
+     * The font for the buttons
+     */
+    private static final Font font = new Font(MBLabel.FONT_NAME, Font.BOLD, MBLabel.NORMAL);
     /**
      * True if the button is enabled
      */
@@ -74,16 +93,24 @@ public class MBButton extends JButton {
         super.paint(g);
         MB.settings.enableAntiAliasing(g);
 
+        // The border and the text
+        g.setColor(BACKGROUND_COLOR);
+        g.fillRoundRect(
+                0,
+                0,
+                getWidth() - 1,
+                getHeight() - 1,
+                MBBackground.CORNER_RADIUS,
+                MBBackground.CORNER_RADIUS
+        );
+
         // The hover effect
         if (hasFocus() && enabled) {
-            g.setColor(Color.lightGray);
-            g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+            g.setColor(Color.white);
+        } else {
+            g.setColor(GREY);
         }
-
-        // The border and the text
-        g.setColor(Color.black);
-        g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
-        g.setFont(new Font("Calibri", Font.PLAIN, MBLabel.NORMAL));
+        g.setFont(font);
         g.drawString(
                 text,
                 getWidth() / 2 - g.getFontMetrics().stringWidth(text) / 2,

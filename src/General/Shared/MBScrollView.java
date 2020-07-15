@@ -25,6 +25,10 @@ public class MBScrollView extends JPanel {
      */
     private static final int SPEED = 20;
     /**
+     * The content of the scroll view
+     */
+    private JPanel content;
+    /**
      * True if the component is scrollable
      */
     private boolean scrollable = false;
@@ -40,10 +44,6 @@ public class MBScrollView extends JPanel {
      * The measurements for the scrollbar
      */
     private int barY, barHeight;
-    /**
-     * The content of the scroll view
-     */
-    JPanel content;
 
     /**
      * Constructor
@@ -71,6 +71,7 @@ public class MBScrollView extends JPanel {
             public void mouseDragged(MouseEvent e) {
                 mouseScroll(e.getY());
             }
+
             @Override
             public void mouseMoved(MouseEvent e) {
             }
@@ -81,6 +82,7 @@ public class MBScrollView extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
             }
+
             @Override
             public void mousePressed(MouseEvent e) {
                 // Renew the mouse state
@@ -90,13 +92,16 @@ public class MBScrollView extends JPanel {
                 // Scroll the bar
                 mouseScroll(e.getY());
             }
+
             @Override
             public void mouseReleased(MouseEvent e) {
                 dragged = false;
             }
+
             @Override
             public void mouseEntered(MouseEvent e) {
             }
+
             @Override
             public void mouseExited(MouseEvent e) {
             }
@@ -189,8 +194,8 @@ public class MBScrollView extends JPanel {
     /**
      * Draw a scrollbar
      *
-     * @param g graphics
-     * @param y position of the scrollbar
+     * @param g      graphics
+     * @param y      position of the scrollbar
      * @param height of the scrollbar
      */
     private void drawBar(Graphics g, int y, int height) {

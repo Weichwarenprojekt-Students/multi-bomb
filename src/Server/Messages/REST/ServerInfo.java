@@ -20,6 +20,10 @@ public class ServerInfo extends Message {
      * Maximum number of lobbies
      */
     public int maxLobbies;
+    /**
+     * The server type (remote or local)
+     */
+    public String serverType;
 
     /**
      * Constructor
@@ -31,8 +35,8 @@ public class ServerInfo extends Message {
         super(Message.SERVER_INFO_TYPE);
 
         name = server.name;
-        ticksPerSecond = server.ticksPerSecond;
-        lobbyCount = server.lobbies.size();
-        maxLobbies = server.maxLobbies;
+        ticksPerSecond = Server.ticksPerSecond;
+        lobbyCount = server.getLobbies().size();
+        maxLobbies = Server.maxLobbies;
     }
 }
