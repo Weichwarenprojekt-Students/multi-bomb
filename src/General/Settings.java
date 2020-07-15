@@ -24,7 +24,7 @@ public class Settings {
     /**
      * True if anti aliasing is active
      */
-    public boolean antiAliasing = true;
+    public boolean antiAliasing = false;
     /**
      * The refresh rate the game should target
      */
@@ -52,7 +52,7 @@ public class Settings {
     /**
      * The sound volume in dB
      */
-    public float soundVolume = -30;
+    public float soundVolume = -20;
 
     /**
      * Load the settings

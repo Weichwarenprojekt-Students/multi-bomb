@@ -207,6 +207,11 @@ public class SettingsOverview extends MBPanel {
         antiAliasing.setText(MB.settings.antiAliasing ? "Activated" : "Deactivated");
         MB.frame.repaint();
 
+        // Give a warning if anti aliasing gets activated
+        if (MB.settings.antiAliasing) {
+            toastError("Anti Aliasing can cause", "serious performance issues!");
+        }
+
         // Save the settings
         MB.settings.saveSettings();
     }
