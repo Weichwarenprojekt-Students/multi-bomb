@@ -346,17 +346,19 @@ public abstract class MBPanel extends JPanel {
          */
         private synchronized void relocateToasts(boolean hideLatest) {
             // Move every toast
-            int height = 0;
-            for (int i = toasts.size() - 1; i >= 0; i--) {
-                toasts.get(i).setLocation(
-                        getWidth() - toasts.get(i).getWidth() - MBToastManager.MARGIN,
-                        height + MARGIN
-                );
-                height += toasts.get(i).getHeight() + MARGIN / 2;
-            }
-            // Hide the newest toast
-            if (hideLatest) {
-                toasts.get(toasts.size() - 1).setLocation(getWidth(), toasts.get(toasts.size() - 1).getY());
+            synchronized (toasts) {
+                int height = 0;
+                for (int i = toasts.size() - 1; i >= 0; i--) {
+                    toasts.get(i).setLocation(
+                            getWidth() - toasts.get(i).getWidth() - MBToastManager.MARGIN,
+                            height + MARGIN
+                    );
+                    height += toasts.get(i).getHeight() + MARGIN / 2;
+                }
+                // Hide the newest toast
+                if (hideLatest) {
+                    toasts.get(toasts.size() - 1).setLocation(getWidth(), toasts.get(toasts.size() - 1).getY());
+                }
             }
             revalidate();
             repaint();
