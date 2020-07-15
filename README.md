@@ -1,5 +1,11 @@
 # Multi-Bomb
 
+* [Description](#description)
+* [Installation](#installation)
+* [Running the server](#running-the-server)
+* [Troubleshooting](#troubleshooting)
+  * [High DPI display incompatibility on Windows](#high-dpi-display-incompatibility-on-windows)
+
 ## Description
 This project is a multiplayer version of the game "Bomberman".
 In Multi-Bomb 8 players can compete on a map consisting of quadratic fields and try to eliminate each other. 
@@ -19,7 +25,7 @@ Alternatively you can just clone the repository and build the project yourself.
 ## Running the server
 For running just the server without the UI you need the .jar file and can't use an installer. The jar must be started with the `-s` command line argument.
 
-The full syntax is 
+The full syntax is:
 
 ```
 java -jar Multi-Bomb.jar -s <serverName> <tickrate> <maxLobbies>
@@ -28,7 +34,7 @@ java -jar Multi-Bomb.jar -s <serverName> <tickrate> <maxLobbies>
 Where `<serverName>` is the display name of the server, `<tickrate>` is the rate in which the game loop runs and `<maxLobbies>` is the maximum number of lobbies that can be opened on the server.
 
 ## Troubleshooting
-### High DPI Display Incompatibility On Windows
+### High DPI display incompatibility on Windows
 1. Right click on the application
 2. Select Properties
 3. Select Compatibility
