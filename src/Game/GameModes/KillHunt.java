@@ -28,7 +28,7 @@ public class KillHunt extends GameMode {
     }
 
     @Override
-    public synchronized Optional<String> calculateWinner() {
+    public Optional<String> calculateWinner() {
         LOGGER.config(String.format("Entering: %s %s", KillHunt.class.getName(), "calculateWinner()"));
 
         // Get list of all players that are alive
@@ -46,7 +46,7 @@ public class KillHunt extends GameMode {
     }
 
     @Override
-    public synchronized List<Message> handleHit(Player player, Player from) {
+    public List<Message> handleHit(Player player, Player from) {
         LOGGER.config(String.format("Exiting: %s %s", KillHunt.class.getName(), "handleHit()"));
 
         List<Message> result = new ArrayList<>();

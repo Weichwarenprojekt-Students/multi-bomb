@@ -141,7 +141,7 @@ public class PlayerConnection extends Thread {
      *
      * @param msg message to handle
      */
-    private synchronized void handleMessage(Message msg) {
+    private void handleMessage(Message msg) {
         if (!msg.type.equals(Message.POSITION_TYPE)) {
             LOGGER.config(String.format("Entering: %s %s", PlayerConnection.class.getName(), "handleMessage(" + msg.type + ")"));
         }

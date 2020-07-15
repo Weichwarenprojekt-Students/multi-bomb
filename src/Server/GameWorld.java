@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static General.MultiBomb.LOGGER;
 
@@ -56,7 +57,7 @@ public class GameWorld extends Thread {
     /**
      * The number of items currently on the map
      */
-    private volatile int currentItems;
+    private final AtomicInteger currentItems = new AtomicInteger();
     /**
      * The name of the winner of the game
      */
@@ -115,7 +116,7 @@ public class GameWorld extends Thread {
             // spawn an item randomly on the map
             spawnItem();
 
-            synchronized (gameMode) {
+            synchronized (players) {
                 gameMode.calculateWinner().ifPresent(s -> {
                     // if there is a winner, set the variable and stop the game loop
                     winner = s;
@@ -141,10 +142,12 @@ public class GameWorld extends Thread {
      *
      * @param name name of the player
      */
-    public synchronized void removePlayer(String name) {
+    public void removePlayer(String name) {
         LOGGER.config(String.format("Entering: %s %s", GameWorld.class.getName(), "removePlayer(" + name + ")"));
-        // disconnected players are dead
-        players.get(name).kill();
+        synchronized (players) {
+            // disconnected players are dead
+            players.get(name).kill();
+        }
 
         // send update about dead player to all players
         lobby.sendToAllPlayers(players.get(name).playerState);
@@ -154,7 +157,7 @@ public class GameWorld extends Thread {
     /**
      * Stop the game loop
      */
-    public synchronized void stopGame() {
+    public void stopGame() {
         LOGGER.config(String.format("Entering: %s %s", GameWorld.class.getName(), "stopGame()"));
         isRunning = false;
         LOGGER.config(String.format("Exiting: %s %s", GameWorld.class.getName(), "stopGame()"));
@@ -224,25 +227,23 @@ public class GameWorld extends Thread {
 
                     // set the field to ground
                     map.setField(m, n, Field.GROUND.id);
-
-                    // randomly spawn a new item at the fields position
-                    spawnItem(m, n, true);
                 }
             }
         }
 
         if (hitBreakable) {
-            synchronized (lobby) {
-                // field is destroyed, notify players
-                lobby.sendToAllPlayers(new FieldDestroyed(m, n));
-            }
+            // field is destroyed, notify players
+            lobby.sendToAllPlayers(new FieldDestroyed(m, n));
+
+            // randomly spawn a new item at the fields position
+            spawnItem(m, n, true);
         }
         return hitSomething;
     }
 
     /**
      * Handle hit of players in a certain distance to a middle point of a field
-     *
+     * <p>
      * The player that is using the item does not get hit
      *
      * @param from   the player that used the item
@@ -279,19 +280,15 @@ public class GameWorld extends Thread {
         if (player.isAlive()) {
 
             PlayerConnection playerConnection;
-            synchronized (lobby.players) {
-                // get the PlayerConnection for the player
-                playerConnection = lobby.players.get(player.name);
-            }
+            // get the PlayerConnection for the player
+            playerConnection = lobby.players.get(player.name);
 
             // set the last position of the player
             player.position = playerConnection.lastPosition;
 
             if (player.position != null) {
-                synchronized (lobby) {
-                    // notify all players about the new position
-                    lobby.sendToAllPlayers(player.position);
-                }
+                // notify all players about the new position
+                lobby.sendToAllPlayers(player.position);
 
                 // position on the map
                 int m = (int) (player.position.y / Map.FIELD_SIZE);
@@ -304,19 +301,20 @@ public class GameWorld extends Thread {
                     if (field.id < 0) {
                         // item is collectible
                         map.setField(m, n, Field.GROUND.id);
-                        decrementCurrentItems();
-                        // handle the collected item
-                        player.playerState.collectItem(field, true);
+                        currentItems.decrementAndGet();
 
                         LOGGER.info(player.name + " collected " + field.name);
                     }
                 }
-                synchronized (lobby) {
-                    if (field.id < 0) {
-                        // notify all players about the collected item and the new player state
-                        lobby.sendToAllPlayers(new ItemCollected(player.name, field, m, n));
-                        lobby.sendToAllPlayers(player.playerState);
+                if (field.id < 0) {
+                    synchronized (players) {
+                        // handle the collected item
+                        player.playerState.collectItem(field, true);
                     }
+
+                    // notify all players about the collected item and the new player state
+                    lobby.sendToAllPlayers(new ItemCollected(player.name, field, m, n));
+                    lobby.sendToAllPlayers(player.playerState);
                 }
 
                 // handle item actions of the player
@@ -324,20 +322,6 @@ public class GameWorld extends Thread {
             }
         }
         LOGGER.config(String.format("Exiting: %s %s", GameWorld.class.getName(), "handlePlayerEvents(" + player.name + ")"));
-    }
-
-    /**
-     * Decrement the counter for the current items
-     */
-    private synchronized void decrementCurrentItems() {
-        currentItems--;
-    }
-
-    /**
-     * Increment the counter for the current items
-     */
-    private synchronized void incrementCurrentItems() {
-        currentItems++;
     }
 
     /**
@@ -363,9 +347,7 @@ public class GameWorld extends Thread {
 
             itemActions.forEach(iA -> {
                 // send item action to all players
-                synchronized (lobby) {
-                    lobby.sendToAllPlayers(iA);
-                }
+                lobby.sendToAllPlayers(iA);
 
                 LOGGER.info(player.name + " used item " + iA.itemId);
 
@@ -432,7 +414,7 @@ public class GameWorld extends Thread {
         }
 
         synchronized (map) {
-            if (currentItems < alivePlayers + 2) {
+            if (currentItems.get() < alivePlayers + 2) {
                 float random_threshold;
                 if (fromBreakable) {
                     random_threshold = RANDOM_THRESHOLD * 2;
@@ -451,7 +433,7 @@ public class GameWorld extends Thread {
                     // set new item on map
                     map.setField(m, n, gameMode.items[index]);
 
-                    incrementCurrentItems();
+                    currentItems.incrementAndGet();
 
                     // notify all players about new item
                     lobby.sendToAllPlayers(new NewItem(Field.getItem(gameMode.items[index]), m, n));
@@ -464,7 +446,7 @@ public class GameWorld extends Thread {
     /**
      * Randomly spawn a new item on a random location on the map
      */
-    private synchronized void spawnItem() {
+    private void spawnItem() {
         LOGGER.config(String.format("Entering: %s %s", GameWorld.class.getName(), "spawnItem()"));
         // set number for maximum number of tries a new random position is generated
         int maxTries = 40;

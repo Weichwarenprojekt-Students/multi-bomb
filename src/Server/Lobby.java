@@ -245,9 +245,7 @@ public class Lobby {
 
             players.values().forEach(p -> {
                 p.preparationReady = false;
-                synchronized (p.itemActions) {
-                    p.itemActions.clear();
-                }
+                p.itemActions.clear();
                 p.lastPosition = new Position(-5, -5);
             });
 

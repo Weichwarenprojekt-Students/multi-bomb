@@ -36,7 +36,7 @@ public class Player {
     /**
      * Kill the player instantly
      */
-    public synchronized void kill() {
+    public void kill() {
         playerState.health = 0;
     }
 
@@ -55,7 +55,7 @@ public class Player {
      *
      * @param value set the protection to true or false
      */
-    public synchronized void protect(boolean value) {
+    public void protect(boolean value) {
         isProtected = value;
     }
 
@@ -64,7 +64,7 @@ public class Player {
      *
      * @return boolean indicating if the player is still alive
      */
-    public synchronized boolean isAlive() {
+    public boolean isAlive() {
         return playerState.isAlive();
     }
 }
