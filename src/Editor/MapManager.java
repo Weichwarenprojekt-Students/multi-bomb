@@ -35,6 +35,7 @@ public class MapManager {
         loadStandardMap("Breakable");
         loadStandardMap("Cage-Fight");
         loadStandardMap("Krais");
+        loadStandardMap("Mini Cage-Fight");
     }
 
     /**
