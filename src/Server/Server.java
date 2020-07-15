@@ -272,14 +272,14 @@ public class Server implements Runnable {
                 if (playerID == null || playerID.isEmpty()) {
                     return new ErrorMessage("Player name may not be empty");
                 } else if (lobby.state != Lobby.WAITING) {
-                    return new ErrorMessage("Lobby is not in the correct state");
+                    return new ErrorMessage("Lobby is currently in-game");
                 } else if (lobby.isFull()) {
                     return new ErrorMessage("The requested lobby is full");
                 } else if (!lobby.isOpen()) {
                     removeLobby(lobbyName);
                     return new ErrorMessage("The requested lobby doesn't exist");
                 } else if (lobby.getPlayerColors().containsKey(playerID)) {
-                    return new ErrorMessage("Name already taken, please choose a different one!");
+                    return new ErrorMessage("Name already taken!");
                 }
                 lobbyTimestamp = new LobbyTimestamp(lobbyName, playerID);
             }
