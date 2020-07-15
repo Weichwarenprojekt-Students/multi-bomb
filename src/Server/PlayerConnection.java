@@ -42,6 +42,10 @@ public class PlayerConnection extends Thread {
      */
     private final BufferedReader in;
     /**
+     * Queue for outgoing messages
+     */
+    private final BlockingQueue<Message> messageQueue = new LinkedBlockingQueue<>(1000);
+    /**
      * Color of the player
      */
     public int color;
@@ -57,10 +61,6 @@ public class PlayerConnection extends Thread {
      * Indicate if PlayerConnection is still alive
      */
     private boolean alive;
-    /**
-     * Queue for outgoing messages
-     */
-    private final BlockingQueue<Message> messageQueue = new LinkedBlockingQueue<>(1000);
 
     /**
      * Constructor

@@ -1,8 +1,8 @@
 package Menu;
 
+import Game.Game;
 import General.MB;
 import General.Shared.*;
-import Game.Game;
 import General.Sound.SoundControl;
 
 import java.awt.*;
@@ -15,6 +15,10 @@ import static Menu.Menu.START_Y;
  */
 public class SettingsOverview extends MBPanel {
     /**
+     * The last panel that was open
+     */
+    private final MBPanel last;
+    /**
      * The button to change the screen state
      */
     private MBButton fullscreen;
@@ -26,10 +30,6 @@ public class SettingsOverview extends MBPanel {
      * The button to change the refresh rate
      */
     private MBButton refreshRate;
-    /**
-     * The last panel that was open
-     */
-    private final MBPanel last;
 
     /**
      * Constructor

@@ -31,7 +31,7 @@ public class MBBackground extends JLabel {
      * Constructor
      *
      * @param parent of the background
-     * @param color of the background
+     * @param color  of the background
      * @param follow true if the background shall follow the parent
      */
     public MBBackground(Component parent, Color color, boolean follow) {
@@ -43,6 +43,7 @@ public class MBBackground extends JLabel {
             public void componentResized(ComponentEvent e) {
                 resize(parent, follow);
             }
+
             @Override
             public void componentMoved(ComponentEvent e) {
                 resize(parent, follow);

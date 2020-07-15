@@ -13,13 +13,13 @@ import static General.MultiBomb.LOGGER;
 
 public class Lobby {
     /**
-     * The wait time until the game starts
-     */
-    public static long WAIT_TIME = 5000;
-    /**
      * Possible states of the lobby
      */
     public static final int WAITING = 0, GAME_STARTING = 1, IN_GAME = 2;
+    /**
+     * The wait time until the game starts
+     */
+    public static final long WAIT_TIME = 5000;
     /**
      * List of all players inside the lobby
      */

@@ -13,13 +13,13 @@ import static General.Shared.MBButton.BACKGROUND_COLOR;
 public class MBSlider extends JLabel {
 
     /**
-     * The percentage of the slider
-     */
-    public int percentage;
-    /**
      * The event that is triggered when sliding
      */
     private final SlideEvent event;
+    /**
+     * The percentage of the slider
+     */
+    public int percentage;
 
     /**
      * Constructor
@@ -34,6 +34,7 @@ public class MBSlider extends JLabel {
             public void mouseDragged(MouseEvent e) {
                 slide(e.getX());
             }
+
             @Override
             public void mouseMoved(MouseEvent e) {
             }
@@ -42,16 +43,20 @@ public class MBSlider extends JLabel {
             @Override
             public void mouseClicked(MouseEvent e) {
             }
+
             @Override
             public void mousePressed(MouseEvent e) {
                 slide(e.getX());
             }
+
             @Override
             public void mouseReleased(MouseEvent e) {
             }
+
             @Override
             public void mouseEntered(MouseEvent e) {
             }
+
             @Override
             public void mouseExited(MouseEvent e) {
             }
@@ -70,7 +75,7 @@ public class MBSlider extends JLabel {
         } else if (x >= getWidth()) {
             percentage = 100;
         } else {
-            percentage = (int) ((float)x / getWidth() * 100);
+            percentage = (int) ((float) x / getWidth() * 100);
         }
 
         // Fire the event

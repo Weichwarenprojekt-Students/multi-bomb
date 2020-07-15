@@ -4,8 +4,7 @@ import Game.Battleground;
 import Game.Models.Field;
 import General.MB;
 import General.MultiBomb;
-import General.Shared.*;
-
+import General.Shared.MBPanel;
 import Server.Messages.Socket.Map;
 
 import javax.swing.*;
@@ -132,7 +131,7 @@ public class Editor extends MBPanel {
     /**
      * Try to set or remove a field
      *
-     * @param e the mouse event
+     * @param e            the mouse event
      * @param notification true if the user shall be notified
      */
     private void changeField(MouseEvent e, boolean notification) {

@@ -35,6 +35,7 @@ public class MapSelection extends MBPanel {
      * The selected map
      */
     private Map selectedMap;
+
     /**
      * Constructor
      */
@@ -102,7 +103,7 @@ public class MapSelection extends MBPanel {
             } else {
                 toastError("Something went wrong!", "Map was not deleted!");
             }
-         });
+        });
         addComponent(delete, () -> delete.setBounds(
                 scroll.getX() + scroll.getWidth() + MARGIN,
                 scroll.getY() + 96,
@@ -139,7 +140,7 @@ public class MapSelection extends MBPanel {
                 scroll.getWidth() + 8,
                 scroll.getHeight() + 8
         ));
-        
+
         addButtonGroup(newMap, edit, delete, leave);
     }
 

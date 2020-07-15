@@ -2,12 +2,12 @@ package Game;
 
 import Game.Items.Item;
 import Game.Models.Field;
-import General.Shared.MBBackground;
-import General.Shared.MBButton;
-import Server.Messages.Socket.Map;
 import Game.Models.Player;
 import General.MB;
+import General.Shared.MBBackground;
+import General.Shared.MBButton;
 import General.Shared.MBPanel;
+import Server.Messages.Socket.Map;
 import Server.Messages.Socket.Position;
 
 import java.awt.*;

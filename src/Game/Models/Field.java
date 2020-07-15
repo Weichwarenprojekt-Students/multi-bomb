@@ -74,7 +74,7 @@ public enum Field {
     /**
      * Load the textures of the items
      *
-     * @param theme name of the theme
+     * @param theme  name of the theme
      * @param parent the image's size depends on
      */
     public static void loadTextures(String theme, MBPanel parent) {
@@ -114,6 +114,17 @@ public enum Field {
     }
 
     /**
+     * @return all consumable items
+     */
+    public static byte[] getAllItems(boolean withHeart) {
+        if (withHeart) {
+            return new byte[]{HEART.id, BOMB.id, SPEED.id, EXPLOSION.id, ARROW.id, SWORD.id, TELEPORT.id};
+        } else {
+            return new byte[]{BOMB.id, SPEED.id, EXPLOSION.id, ARROW.id, SWORD.id, TELEPORT.id};
+        }
+    }
+
+    /**
      * @return true if the item is solid
      */
     public boolean isSolid() {
@@ -134,16 +145,5 @@ public enum Field {
      */
     public boolean isPassable() {
         return id <= 0;
-    }
-
-    /**
-     * @return all consumable items
-     */
-    public static byte[] getAllItems(boolean withHeart) {
-        if (withHeart) {
-            return new byte[] {HEART.id, BOMB.id, SPEED.id, EXPLOSION.id, ARROW.id, SWORD.id, TELEPORT.id};
-        } else {
-            return new byte[] {BOMB.id, SPEED.id, EXPLOSION.id, ARROW.id, SWORD.id, TELEPORT.id};
-        }
     }
 }

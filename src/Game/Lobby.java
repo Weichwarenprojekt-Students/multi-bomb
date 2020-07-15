@@ -355,7 +355,7 @@ public class Lobby {
         }
         while (timeDifference > 0) {
             MB.activePanel.toastSuccess(
-                    "Game starts in " + ((timeDifference / 1000) + 1)+ "s!"
+                    "Game starts in " + ((timeDifference / 1000) + 1) + "s!"
             );
             MultiBomb.sleep(1000);
             timeDifference -= 1000;

@@ -18,7 +18,7 @@ public class ServerList {
     /**
      * Search for servers in local network
      */
-    public void searchServers () {
+    public void searchServers() {
         servers.clear();
 
         // Add local servers

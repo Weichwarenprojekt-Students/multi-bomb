@@ -1,12 +1,12 @@
 package Game.Items;
 
 import Game.Game;
+import Game.Lobby;
 import Game.Models.Field;
 import Game.Models.Player;
 import Game.Models.Upgrades;
 import General.MultiBomb;
 import Server.Messages.Socket.ItemAction;
-import Game.Lobby;
 
 import java.awt.*;
 import java.util.Random;
@@ -14,13 +14,13 @@ import java.util.Random;
 public class Teleport extends Item {
 
     /**
-     * The time it takes to teleport
-     */
-    public static long PREPARATION_TIME = 500;
-    /**
      * The random object
      */
     private static final Random random = new Random();
+    /**
+     * The time it takes to teleport
+     */
+    public static long PREPARATION_TIME = 500;
 
     /**
      * Constructor

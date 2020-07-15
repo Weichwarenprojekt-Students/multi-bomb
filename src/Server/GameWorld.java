@@ -51,13 +51,13 @@ public class GameWorld extends Thread {
      */
     private final GameMode gameMode;
     /**
-     * Indicate if the game is still running
-     */
-    private boolean isRunning = true;
-    /**
      * The number of items currently on the map
      */
     private final AtomicInteger currentItems = new AtomicInteger();
+    /**
+     * Indicate if the game is still running
+     */
+    private boolean isRunning = true;
     /**
      * The name of the winner of the game
      */

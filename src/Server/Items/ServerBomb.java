@@ -1,7 +1,5 @@
 package Server.Items;
 
-import Game.Models.Field;
-
 import java.util.logging.Level;
 
 import static General.MultiBomb.LOGGER;

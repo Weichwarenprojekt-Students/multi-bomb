@@ -1,7 +1,5 @@
 package Game.Models;
 
-import Server.Messages.Socket.Position;
-
 /**
  * The possible directions
  */

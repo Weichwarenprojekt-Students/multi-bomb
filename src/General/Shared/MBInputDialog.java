@@ -93,7 +93,6 @@ public class MBInputDialog extends JPanel {
     }
 
 
-
     /**
      * Event that is triggered when confirm button is used
      */

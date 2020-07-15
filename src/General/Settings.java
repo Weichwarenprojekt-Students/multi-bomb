@@ -32,15 +32,15 @@ public class Settings {
     /**
      * Default player name
      */
-    public String playerName ="";
+    public String playerName = "";
     /**
      * Default lobby name
      */
-    public String lobbyName ="";
+    public String lobbyName = "";
     /**
      * Default server name
      */
-    public String serverName ="";
+    public String serverName = "";
     /**
      * Remote server
      */
@@ -99,7 +99,7 @@ public class Settings {
             Graphics2D g2d = (Graphics2D) g;
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
             g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         }
     }
 }

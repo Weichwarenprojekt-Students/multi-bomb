@@ -3,9 +3,6 @@ package Game.Models;
 import Game.Game;
 import Server.Messages.Socket.Position;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 /**
  * This enum contains all the required information for the animations
  */

@@ -1,6 +1,7 @@
 package Server;
 
-import Server.Messages.*;
+import Server.Messages.ErrorMessage;
+import Server.Messages.Message;
 import Server.Messages.REST.CreateLobby;
 import Server.Messages.REST.JoinLobby;
 import Server.Messages.REST.LobbyInfo;

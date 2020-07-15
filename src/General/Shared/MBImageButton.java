@@ -37,19 +37,23 @@ public class MBImageButton extends JLabel {
             @Override
             public void mouseClicked(MouseEvent e) {
             }
+
             @Override
             public void mousePressed(MouseEvent e) {
                 if (enabled) {
                     listener.onPressed();
                 }
             }
+
             @Override
             public void mouseReleased(MouseEvent e) {
             }
+
             @Override
             public void mouseEntered(MouseEvent e) {
                 MB.frame.setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
+
             @Override
             public void mouseExited(MouseEvent e) {
                 MB.frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));

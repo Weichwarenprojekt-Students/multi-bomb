@@ -4,8 +4,8 @@ import Game.Models.Player;
 import General.MB;
 import General.MultiBomb;
 import General.Shared.*;
-import Menu.SettingsOverview;
 import Menu.LobbyView;
+import Menu.SettingsOverview;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

@@ -1,11 +1,11 @@
 package Menu.Dialogs;
 
 import Game.GameModes.GameMode;
+import Game.Lobby;
 import General.MB;
 import General.Shared.MBBackground;
 import General.Shared.MBLabel;
 import General.Shared.MBListView;
-import Game.Lobby;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,6 +50,7 @@ public class ModeSelection extends JPanel {
          * The mode
          */
         private final GameMode mode;
+
         /**
          * Constructor
          */

@@ -1,14 +1,17 @@
 package Editor;
 
-import General.Shared.MBInputDialog;
 import Game.Battleground;
 import General.MB;
 import General.Settings;
+import General.Shared.MBInputDialog;
 import General.Shared.MBPanel;
 import Server.Messages.Socket.Map;
 import com.google.gson.Gson;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Objects;
@@ -82,7 +85,7 @@ public class MapManager {
     /**
      * Save a map
      *
-     * @param map the map to be saved
+     * @param map     the map to be saved
      * @param onClose event for the dialog
      */
     public static void saveMap(Map map, MBPanel.MBDialogManager.OnClose onClose) {
@@ -108,7 +111,7 @@ public class MapManager {
     /**
      * Save a map with a new name
      *
-     * @param map the map to be saved
+     * @param map  the map to be saved
      * @param name the name of the map
      */
     public static void saveMapAs(Map map, String name) {
@@ -126,7 +129,7 @@ public class MapManager {
     private static void save(Map map) {
         // Check if the map contains 8 spawn points
         if (!map.allSpawnsSet()) {
-            MB.activePanel.toastError("The map only has " + map.countSpawns() + " of 8 spawns!" );
+            MB.activePanel.toastError("The map only has " + map.countSpawns() + " of 8 spawns!");
             return;
         }
 

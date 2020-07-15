@@ -20,7 +20,7 @@ public abstract class Item {
      * The available items
      */
     public static final String BOMB = ServerBomb.NAME, ARROW = ServerArrow.NAME, SWORD = ServerSword.NAME,
-                               TELEPORT = "Teleport";
+            TELEPORT = "Teleport";
     /**
      * The name of the item
      */

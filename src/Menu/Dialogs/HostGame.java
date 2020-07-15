@@ -3,7 +3,6 @@ package Menu.Dialogs;
 import General.MB;
 import General.Shared.MBButton;
 import General.Shared.MBLabel;
-import Menu.DetailedLobbyView;
 
 import javax.swing.*;
 import java.awt.*;

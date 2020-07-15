@@ -130,7 +130,7 @@ public class ServerManagement extends JPanel {
      * @return true if the address is local
      */
     private boolean isLocal(String address) {
-        return  address.startsWith("192.168") || address.equals("localhost") || address.equals("127.0.0.1")
+        return address.startsWith("192.168") || address.equals("localhost") || address.equals("127.0.0.1")
                 || address.startsWith("10.") || address.equals("0.0.0.0");
     }
 

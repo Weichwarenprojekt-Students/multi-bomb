@@ -99,7 +99,7 @@ public class Sword extends Item {
         // Update the counter
         long counter = System.currentTimeMillis() - startTime;
 
-        if (counter > SPINNING_TIME){
+        if (counter > SPINNING_TIME) {
             return null;
         } else {
             // Calculate the new rotation

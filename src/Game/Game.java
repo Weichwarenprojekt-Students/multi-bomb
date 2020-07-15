@@ -5,7 +5,6 @@ import General.MB;
 import General.MultiBomb;
 import General.Shared.MBPanel;
 import General.Shared.MBSpinner;
-import Menu.DetailedLobbyView;
 
 /**
  * This class displays and handles the game

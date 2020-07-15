@@ -331,8 +331,8 @@ public class LobbyView extends MBPanel {
             }
             descriptionLabel.setText(
                     "Players " + lobby.players
-                    + "/8 \u2022 Game Mode " + lobby.gameMode
-                    + " \u2022 Status " + lobby.status
+                            + "/8 \u2022 Game Mode " + lobby.gameMode
+                            + " \u2022 Status " + lobby.status
             );
         }
 

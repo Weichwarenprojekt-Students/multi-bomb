@@ -1,9 +1,9 @@
 package Menu.Dialogs;
 
+import Game.Lobby;
 import General.MB;
 import General.Shared.MBButton;
 import General.Shared.MBLabel;
-import Game.Lobby;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +31,7 @@ public class HostPromotion extends JPanel {
         title.setFontColor(Color.BLACK);
         title.setBounds(MARGIN, MARGIN, getWidth() - 2 * MARGIN, 20);
         add(title);
-        
+
         // The cancel button
         MBButton cancel = new MBButton("Cancel");
         cancel.setBounds(MARGIN, 50, BUTTON_WIDTH, BUTTON_HEIGHT);
