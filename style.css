@@ -1,0 +1,88 @@
+/* Variables */
+:root {
+    /* The radius of the borders */
+    --border-radius: 3px;
+}
+
+/* Remove the body's paddings and margins */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background: url('assets/background.png') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    height: 100%;
+}
+
+/* The header */
+.content {
+    position: absolute;
+    top: 0;
+    margin: 0;
+    text-align: center;
+    width: calc(100% - 32px);
+    height: 100%;
+    padding: 0 16px;
+}
+
+/* The title */
+.title {
+    color: white;
+    display: inline-block;
+    margin-top: 64px;
+    margin-bottom: 24px;
+    font-size: 64px;
+    border-radius: var(--border-radius);
+    border: 1px;
+    padding: 0 8px;
+    border-style: solid;
+    border-color: white;
+}
+
+/* Switch content if site is too small */
+@media (max-width: 500px) {
+    .title {
+        font-size: 48px;
+    }
+}
+
+/* The text field for the information tab */
+p {
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 16px;
+    text-align: left;
+    max-width: 600px;
+    margin: auto;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius);
+}
+
+/* Remove the underline from links */
+a {
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    color: #e6e6e6;
+    display: block;
+    margin: 16px auto;
+    width: 250px;
+    line-height: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius);
+}
+a:hover {
+    color: white;
+    cursor: pointer;
+}
+
+/* Links with more margin */
+.extra-link {
+    margin-top: 32px;
+}
