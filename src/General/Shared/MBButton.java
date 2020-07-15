@@ -4,7 +4,10 @@ import General.MB;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 
 public class MBButton extends JButton {
 
@@ -20,6 +23,10 @@ public class MBButton extends JButton {
      * The background color
      */
     public static final Color BACKGROUND_COLOR = new Color(0, 0, 0, TRANSPARENCY);
+    /**
+     * The font for the buttons
+     */
+    private static final Font font = new Font(MBLabel.FONT_NAME, Font.BOLD, MBLabel.NORMAL);
     /**
      * True if the button is enabled
      */
@@ -103,7 +110,7 @@ public class MBButton extends JButton {
         } else {
             g.setColor(GREY);
         }
-        g.setFont(new Font(MBLabel.FONT_NAME, Font.BOLD, MBLabel.NORMAL));
+        g.setFont(font);
         g.drawString(
                 text,
                 getWidth() / 2 - g.getFontMetrics().stringWidth(text) / 2,

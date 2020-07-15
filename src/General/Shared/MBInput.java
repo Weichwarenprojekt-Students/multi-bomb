@@ -8,6 +8,10 @@ import java.awt.*;
 public class MBInput extends JTextField {
 
     /**
+     * The font for the input field
+     */
+    private final static Font textFont = new Font(MBLabel.FONT_NAME, Font.PLAIN, MBLabel.NORMAL);
+    /**
      * Padding of the cursor
      */
     private static final int PADDING = 8;
@@ -16,7 +20,7 @@ public class MBInput extends JTextField {
      * Constructor
      */
     public MBInput() {
-        setFont(new Font(MBLabel.FONT_NAME, Font.PLAIN, MBLabel.NORMAL));
+        setFont(textFont);
         setBorder(BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING));
     }
 
