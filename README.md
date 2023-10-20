@@ -15,7 +15,7 @@ Different weapons are available such as Bombs, Arrows and Swords to make the gam
 On a map there are obstacles, trees which are indestructible and mushrooms which can be destroyed by items. A few maps are included in the game, but new ones can easily be created with the built in map editor.
 
 ## Installation
-For running the client you can use one of the official installers (.msi, .exe and .deb) from our [github.io page](https://Timbogen.github.io/Multi-Bomb).
+For running the client you can use one of the official installers (.msi, .exe and .deb) from our [github.io page](http://weichwarenprojekt-students.github.io/multi-bomb/).
 
 If you don't want to or are not able to use the installers, you can also download the .jar file from the same page.
 For the .jar file you need to have java 11 or higher installed!
